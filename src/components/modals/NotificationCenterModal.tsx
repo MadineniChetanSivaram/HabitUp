@@ -170,7 +170,7 @@ export const NotificationCenterModal: React.FC = () => {
             <View style={styles.habitsTimesList}>
               {todayHabits.map((h, idx) => {
                 const isDone = completions.some(
-                  (c) => c.habit_id === h.id && c.completion_date === selectedDate
+                  (c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === selectedDate
                 );
                 const habitTime = h.reminder_time || (idx === 0 ? '07:00' : '08:00');
 

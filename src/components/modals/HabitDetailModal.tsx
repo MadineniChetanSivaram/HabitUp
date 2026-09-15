@@ -306,12 +306,13 @@ export const HabitDetailModal: React.FC = () => {
                     cellBg = '#10B981';
                     textColor = '#FFFFFF';
                     fontWeight = '900';
-                  } else if (isScheduled && (isPast || isToday)) {
-                    // Otherwise not completed -> RED
+                  } else if (isScheduled && isPast) {
+                    // Missed past scheduled day -> RED
                     cellBg = '#EF4444';
                     textColor = '#FFFFFF';
                     fontWeight = '900';
                   } else if (isToday) {
+                    // Today pending -> purple border
                     cellBorder = '#7C5CFF';
                     textColor = isDark ? '#FFFFFF' : '#7C5CFF';
                     fontWeight = '800';

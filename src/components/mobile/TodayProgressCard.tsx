@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
-import { isHabitScheduledOnDate } from '../../utils/streakCalculator';
+import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
 import { PlantVisualizer } from './PlantVisualizer';
 import { Sparkles, Sprout, ChevronRight } from 'lucide-react-native';
 
@@ -61,7 +61,7 @@ export const TodayProgressCard: React.FC = () => {
         <View style={styles.leftInfo}>
           <View style={styles.titleRow}>
             <Text style={[styles.cardTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              {selectedDate === new Date().toISOString().split('T')[0]
+              {selectedDate === formatDateKey(new Date())
                 ? "TODAY'S PROGRESS"
                 : `${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(selectedDateTime).toUpperCase()} PROGRESS`}
             </Text>

@@ -5,7 +5,7 @@ import { HomeHero } from '../mobile/HomeHero';
 import { DateStrip } from '../mobile/DateStrip';
 import { TodayProgressCard } from '../mobile/TodayProgressCard';
 import { HabitCard } from '../mobile/HabitCard';
-import { isHabitScheduledOnDate } from '../../utils/streakCalculator';
+import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
 import { Plus, Sparkles, CheckCircle2 } from 'lucide-react-native';
 
 export const HomeView: React.FC = () => {
@@ -53,7 +53,7 @@ export const HomeView: React.FC = () => {
       <View style={styles.sectionHeader}>
         <View style={styles.sectionTitleRow}>
           <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            {selectedDate === new Date().toISOString().split('T')[0]
+            {selectedDate === formatDateKey(new Date())
               ? "Today's Habits"
               : `Habits for ${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).format(selectedDateTime)}`}
           </Text>

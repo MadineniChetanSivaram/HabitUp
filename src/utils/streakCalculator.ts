@@ -88,11 +88,13 @@ export function calculateHabitStats(
   referenceDate: Date = new Date()
 ): HabitCalculatedStats {
   const habitCompletions = completions.filter((c) => c.habit_id === habit.id);
-  const completionSet = new Set(habitCompletions.map((c) => (c.completion_date || '').split('T')[0]));
+  const completionSet = new Set(
+    habitCompletions.map((c) => (c.completion_date || (c as any).completed_on || (c as any).date || '').split('T')[0])
+  );
 
   const historyMap: Record<string, boolean> = {};
   habitCompletions.forEach((c) => {
-    const dKey = (c.completion_date || '').split('T')[0];
+    const dKey = (c.completion_date || (c as any).completed_on || (c as any).date || '').split('T')[0];
     if (dKey) historyMap[dKey] = true;
   });
 
@@ -373,7 +375,7 @@ export function calculatePlantStreak(
   );
 
   const completionSet = new Set(
-    completions.map((c) => `${c.habit_id}_${c.completion_date}`)
+    completions.map((c) => `${c.habit_id}_${(c.completion_date || (c as any).completed_on || '').split('T')[0]}`)
   );
 
   if (activeHabits.length === 0) {

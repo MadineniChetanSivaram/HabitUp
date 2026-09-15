@@ -252,7 +252,7 @@ function deduplicateCompletions(list: HabitCompletion[]): HabitCompletion[] {
   const result: HabitCompletion[] = [];
   for (const c of list) {
     if (!c || !c.habit_id) continue;
-    const dateKey = (c.completion_date || '').split('T')[0];
+    const dateKey = (c.completion_date || (c as any).completed_on || (c as any).date || '').split('T')[0];
     if (!dateKey) continue;
     const key = `${c.habit_id}_${dateKey}`;
     if (!seen.has(key)) {
@@ -1340,34 +1340,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               }
             }
 
-            // Reconstruct streak completion dates if any active streak is missing local dates
-            const today = new Date();
-            for (const h of cleanHabits) {
-              const streak = (h as any).streak || 0;
-              if (streak > 0) {
-                for (let i = 0; i < streak; i++) {
-                  const d = new Date(today);
-                  d.setDate(today.getDate() - i);
-                  const dateKey = formatDateKey(d);
-                  const already = cleanCompletions.some(
-                    (c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === dateKey
-                  );
-                  if (!already) {
-                    cleanCompletions.push({
-                      id: `comp-streak-${h.id}-${dateKey}`,
-                      habit_id: h.id,
-                      user_id: currentUid,
-                      completion_date: dateKey,
-                      completed_at: `${dateKey}T12:00:00.000Z`,
-                    });
-                  }
-                }
-              }
-            }
-
             cleanCompletions = deduplicateCompletions(cleanCompletions);
             setCompletions(cleanCompletions);
             localApi.saveCompletions(cleanCompletions, currentUid);
+            if (activeUser?.email) {
+              const emailUid = getUserIdFromEmail(activeUser.email);
+              localApi.saveCompletions(cleanCompletions, emailUid);
+            }
           } catch (e) {
             // Offline fallback: keep cached session and habits intact without throwing back to login
             console.log('Online habit sync skipped (offline or network delay):', e);
@@ -2117,31 +2096,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // offline fallback
     }
 
-    // Reconstruct streak completion dates if any active streak is missing local dates
-    const today = new Date();
-    for (const h of cleanHabits) {
-      const streak = (h as any).streak || 0;
-      if (streak > 0) {
-        for (let i = 0; i < streak; i++) {
-          const d = new Date(today);
-          d.setDate(today.getDate() - i);
-          const dateKey = formatDateKey(d);
-          const already = cleanCompletions.some(
-            (c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === dateKey
-          );
-          if (!already) {
-            cleanCompletions.push({
-              id: `comp-streak-${h.id}-${dateKey}`,
-              habit_id: h.id,
-              user_id: uid,
-              completion_date: dateKey,
-              completed_at: `${dateKey}T12:00:00.000Z`,
-            });
-          }
-        }
-      }
-    }
-
     cleanHabits = deduplicateHabits(cleanHabits);
     cleanCompletions = deduplicateCompletions(cleanCompletions);
 
@@ -2492,6 +2446,17 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const updated = prev.filter(
             (c) => !(c.habit_id === habitId && (c.completion_date || '').split('T')[0] === targetDate)
           );
+          const uid = user?.id || 'usr_default';
+          localApi.saveCompletions(updated, uid);
+          if (user?.email) {
+            const emailUid = getUserIdFromEmail(user.email);
+            localApi.saveCompletions(updated, emailUid);
+          }
+          AsyncStorage.setItem(`habitup_completions_${uid}`, JSON.stringify(updated)).catch(() => {});
+          if (uid === 'usr_default') {
+            AsyncStorage.setItem('habitup_completions_usr_default', JSON.stringify(updated)).catch(() => {});
+          }
+
           if (isOffline) {
             addMutationToQueue(`/habits/${habitId}/completions/${targetDate}`, 'DELETE', null);
           } else {
@@ -2520,6 +2485,17 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             completed_at: new Date().toISOString(),
           };
           const updated = deduplicateCompletions([...prev, newCompletion]);
+          const uid = user?.id || 'usr_default';
+          localApi.saveCompletions(updated, uid);
+          if (user?.email) {
+            const emailUid = getUserIdFromEmail(user.email);
+            localApi.saveCompletions(updated, emailUid);
+          }
+          AsyncStorage.setItem(`habitup_completions_${uid}`, JSON.stringify(updated)).catch(() => {});
+          if (uid === 'usr_default') {
+            AsyncStorage.setItem('habitup_completions_usr_default', JSON.stringify(updated)).catch(() => {});
+          }
+
           triggerCelebration();
           if (isOffline) {
             addMutationToQueue(`/habits/${habitId}/completions`, 'POST', { completion_date: targetDate });

@@ -8,6 +8,7 @@ import {
   SyncMutation,
 } from '../types';
 import { getDetectedTimezone } from '../constants/timezones';
+import { formatDateKey } from '../utils/streakCalculator';
 
 export const BACKEND_BASE_URL = 'https://habitup-backend-v2-production.up.railway.app';
 
@@ -905,19 +906,20 @@ class ApiClient {
   // --- COMPLETIONS SERVER INTEGRATION ---
 
   async addCompletion(habitId: string, dateStr?: string): Promise<{ completion?: HabitCompletion; streak?: number }> {
-    const targetDate = (dateStr || new Date().toISOString().split('T')[0]).split('T')[0];
+    const targetDate = (dateStr || formatDateKey(new Date())).split('T')[0];
     const payload = { completion_date: targetDate };
     const res = await this.request<{ completion: any; streak: number }>(`/habits/${habitId}/completions`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
     if (res.ok && res.data?.completion) {
+      const serverDate = (res.data.completion.completion_date || res.data.completion.completed_on || targetDate).split('T')[0];
       return {
         completion: {
-          id: res.data.completion.id,
+          id: res.data.completion.id || `comp-${habitId}-${targetDate}`,
           habit_id: res.data.completion.habit_id || habitId,
           user_id: res.data.completion.user_id || this.currentUserId,
-          completion_date: targetDate,
+          completion_date: serverDate || targetDate,
           completed_at: res.data.completion.completed_at || new Date().toISOString(),
         },
         streak: res.data.streak,
@@ -940,13 +942,11 @@ class ApiClient {
     try {
       await Promise.all(
         habits.map(async (habit) => {
-          let hasFetchedDirect = false;
           try {
             const res = await this.request<{ completions?: any[]; data?: any[] }>(`/habits/${habit.id}/completions`);
             if (res.ok && res.data) {
               const list = Array.isArray(res.data) ? res.data : (res.data.completions || res.data.data || []);
               if (Array.isArray(list) && list.length > 0) {
-                hasFetchedDirect = true;
                 list.forEach((c) => {
                   const dateKey = (c.completed_on || c.completion_date || c.date || '').split('T')[0];
                   if (dateKey) {
@@ -963,29 +963,6 @@ class ApiClient {
             }
           } catch {
             // ignore per habit
-          }
-
-          // If direct endpoint didn't return completions, reconstruct from active streak
-          if (!hasFetchedDirect) {
-            const streak = (habit as any).streak || (habit as any).current_streak || 0;
-            if (streak > 0) {
-              const today = new Date();
-              for (let i = 0; i < streak; i++) {
-                const d = new Date(today);
-                d.setDate(today.getDate() - i);
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const dateKey = `${y}-${m}-${day}`;
-                allCompletions.push({
-                  id: `comp-streak-${habit.id}-${dateKey}`,
-                  habit_id: habit.id,
-                  user_id: this.currentUserId,
-                  completion_date: dateKey,
-                  completed_at: `${dateKey}T12:00:00.000Z`,
-                });
-              }
-            }
           }
         })
       );
@@ -1347,10 +1324,12 @@ class ApiClient {
     const seen = new Set<string>();
     return combined.filter((c) => {
       if (!c || !c.habit_id) return false;
-      const dateKey = (c.completion_date || '').split('T')[0];
+      const dateKey = (c.completion_date || (c as any).completed_on || (c as any).date || '').split('T')[0];
+      if (!dateKey) return false;
       const key = `${c.habit_id}_${dateKey}`;
       if (seen.has(key)) return false;
       seen.add(key);
+      c.completion_date = dateKey;
       return true;
     });
   }

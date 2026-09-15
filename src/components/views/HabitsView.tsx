@@ -640,7 +640,7 @@ export const HabitsView: React.FC = () => {
 
                     const isScheduled = isHabitScheduledOnDate(currentHabit, item.date);
                     const isDone = completions.some(
-                      (c) => c.habit_id === currentHabit.id && c.completion_date === item.key
+                      (c) => c.habit_id === currentHabit.id && (c.completion_date || '').split('T')[0] === item.key
                     );
                     const isCurrentToday = item.key === todayKey;
                     const isPast = item.key < todayKey;
