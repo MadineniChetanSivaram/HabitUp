@@ -1,4 +1,4 @@
-﻿name: Build Android APK
+name: Build Android APK
 
 on:
   workflow_dispatch:
@@ -45,6 +45,28 @@ jobs:
 
       - name: ⚙️ Expo Prebuild (Generate Native Android Project)
         run: npx expo prebuild --platform android --clean --no-install
+
+      - name: 🔑 Configure Release Keystore
+        working-directory: android
+        run: |
+          cat << 'EOF' >> app/build.gradle
+
+          android {
+              signingConfigs {
+                  release {
+                      storeFile file('debug.keystore')
+                      storePassword 'android'
+                      keyAlias 'androiddebugkey'
+                      keyPassword 'android'
+                  }
+              }
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                  }
+              }
+          }
+          EOF
 
       - name: 🚀 Configure High Performance Gradle
         run: |
