@@ -13,6 +13,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
 import {
@@ -209,9 +210,42 @@ export const FriendsView: React.FC = () => {
         }
       }
 
+      // 2b. Search public habits catalog and local connections
+      try {
+        const catalogRaw = await AsyncStorage.getItem('habitup_public_habits_catalog_v1');
+        if (catalogRaw) {
+          const cat = JSON.parse(catalogRaw);
+          for (const [key, val] of Object.entries(cat)) {
+            const cleanKey = key.replace(/^username_/, '').replace(/^usr_/, '').replace(/^@/, '').toLowerCase();
+            if (cleanKey && (cleanKey === q.toLowerCase() || cleanKey.includes(q.toLowerCase()) || q.toLowerCase().includes(cleanKey))) {
+              if (!combined.some((r) => r.username.toLowerCase() === cleanKey)) {
+                combined.push({
+                  id: (val as any)?.userId || `usr_${cleanKey}`,
+                  username: cleanKey,
+                  name: cleanKey.charAt(0).toUpperCase() + cleanKey.slice(1),
+                });
+              }
+            }
+          }
+        }
+      } catch {}
+
+      // 2c. If query is a valid username (>= 2 chars) and not yet in combined results, allow direct follow
+      if (q.length >= 2 && !combined.some((r) => r.username.toLowerCase() === q.toLowerCase())) {
+        combined.push({
+          id: `usr_${q.toLowerCase()}`,
+          username: q.toLowerCase(),
+          name: q.charAt(0).toUpperCase() + q.slice(1),
+        });
+      }
+
       // Filter out self
-      const myClean = (user?.username || '').replace(/^@/, '').toLowerCase();
-      const filtered = combined.filter((r) => r.username.toLowerCase() !== myClean);
+      const myClean = (user?.username || (user?.name ? `@${user.name.toLowerCase().replace(/[^a-z0-9_]/g, '_')}` : '')).replace(/^@/, '').toLowerCase();
+      const myEmailClean = (user?.email || '').split('@')[0].toLowerCase();
+      const filtered = combined.filter((r) => {
+        const rU = r.username.toLowerCase();
+        return rU !== myClean && (!myEmailClean || rU !== myEmailClean);
+      });
 
       setSearchResults(filtered);
     } catch {

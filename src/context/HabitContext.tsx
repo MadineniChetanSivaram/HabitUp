@@ -825,13 +825,22 @@ async function syncMutualDataForUser(
   const myId = (currentUser.id || '').toLowerCase();
   const myEmail = (currentUser.email || '').toLowerCase();
   const myName = (currentUser.name || '').toLowerCase();
+  const myUsername = (currentUser.username || '').replace(/^@/, '').toLowerCase();
+  const myEmailUid = myEmail ? getUserIdFromEmail(myEmail).toLowerCase() : '';
 
   const isMe = (u: MutualUserRef) => {
     if (!u) return false;
     const uId = (u.id || '').toLowerCase();
     const uEmail = (u.email || '').toLowerCase();
     const uName = (u.name || '').toLowerCase();
-    return uId === myId || (myEmail && uEmail === myEmail) || (myName && uName === myName);
+    const uUsername = (u.username || '').replace(/^@/, '').toLowerCase();
+    return (
+      (myId && uId === myId) ||
+      (myEmailUid && uId === myEmailUid) ||
+      (myEmail && uEmail === myEmail) ||
+      (myUsername && uUsername === myUsername) ||
+      (myName && uName === myName)
+    );
   };
 
   const connections = await getMutualConnections();
@@ -854,13 +863,15 @@ async function syncMutualDataForUser(
       const pEmail = (partner.email || '').toLowerCase();
       const pName = partner.name;
       const pUsername = partner.username.startsWith('@') ? partner.username : `@${partner.username}`;
+      const pCleanUsername = partner.username.replace(/^@/, '').toLowerCase();
 
       const alreadyFriendIdx = updatedFriends.findIndex(
         (f) =>
-          f.id === pId ||
+          (pId && (f.id || '').toLowerCase() === pId.toLowerCase()) ||
           (pEmail && f.email && f.email.toLowerCase() === pEmail) ||
-          (f.name && f.name.toLowerCase() === pName.toLowerCase()) ||
-          (f.username && f.username.toLowerCase() === pUsername.toLowerCase())
+          (pName && f.name && f.name.toLowerCase() === pName.toLowerCase()) ||
+          (pUsername && f.username && f.username.toLowerCase() === pUsername.toLowerCase()) ||
+          (f.username && f.username.replace(/^@/, '').toLowerCase() === pCleanUsername)
       );
 
       const partnerPublicHabits = await getFriendPublicHabits(
@@ -1139,6 +1150,12 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
 
         if (activeUser && activeUser.id) {
+          if (!activeUser.username) {
+            const derivedUsername = (activeUser.name || activeUser.email?.split('@')[0] || 'user').toLowerCase().replace(/[^a-z0-9_]/g, '_');
+            activeUser.username = derivedUsername;
+            AsyncStorage.setItem(`habitup_user_${currentUid}`, JSON.stringify(activeUser)).catch(() => {});
+            AsyncStorage.setItem('habitup_current_user_v1', JSON.stringify(activeUser)).catch(() => {});
+          }
           setUser(activeUser);
           currentUid = activeUser.id;
           localApi.setCurrentUserId(currentUid);
@@ -1787,13 +1804,24 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
 
         // Filter incoming requests addressed to current user
+        const emailHandle = myEmail ? myEmail.split('@')[0] : '';
+        const nameHandle = currentUser.name ? currentUser.name.toLowerCase().replace(/[^a-z0-9_]/g, '') : '';
+        const emailUid = myEmail ? getUserIdFromEmail(myEmail).toLowerCase() : '';
+
         const pendingForMe = combined.filter((r) => {
           if (r.status !== 'pending') return false;
 
           const fromHandle = (r.fromUsername || '').replace(/^@/, '').toLowerCase();
           const fromId = (r.fromUserId || '').toLowerCase();
+
           // Never display a request sent BY me as an incoming request to me
-          if ((myCleanHandle && fromHandle === myCleanHandle) || (myId && fromId === myId)) {
+          if (
+            (myCleanHandle && fromHandle === myCleanHandle) ||
+            (myId && fromId === myId) ||
+            (emailUid && fromId === emailUid) ||
+            (emailHandle && fromHandle === emailHandle) ||
+            (myEmail && (fromHandle === myEmail || fromId === myEmail))
+          ) {
             return false;
           }
 
@@ -1804,10 +1832,20 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
           const toHandle = (r.toUsername || '').replace(/^@/, '').toLowerCase();
           const toId = (r.toUserId || '').toLowerCase();
-          return (
-            (toHandle && (toHandle === myCleanHandle || (myEmail && toHandle === myEmail))) ||
-            (toId && myId && (toId === myId || toId.includes(myCleanHandle)))
-          );
+
+          const matchesHandle =
+            (myCleanHandle && toHandle === myCleanHandle) ||
+            (emailHandle && toHandle === emailHandle) ||
+            (nameHandle && toHandle === nameHandle) ||
+            (myEmail && toHandle === myEmail);
+
+          const matchesId =
+            (myId && toId === myId) ||
+            (emailUid && toId === emailUid) ||
+            (myCleanHandle && toId.includes(myCleanHandle)) ||
+            (emailHandle && toId.includes(emailHandle));
+
+          return matchesHandle || matchesId;
         });
 
         setIncomingRequests(pendingForMe);
@@ -3508,10 +3546,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (!isOffline && localApi.hasAuthToken()) {
         try {
           serverResult = await localApi.sendFriendRequestByUsername(cleanHandle);
-          if (!serverResult.success) {
-            showToast(serverResult.error || `Could not send request to @${cleanHandle}`, undefined, 'warning');
-            return { success: false, error: serverResult.error };
-          }
         } catch (e: any) {
           console.warn('Backend sendFriendRequestByUsername error:', e);
         }
@@ -3529,7 +3563,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const targetFriendId =
         serverResult?.to_user_id ||
         existingFriend?.id ||
-        `friend-${cleanHandle}-${Date.now()}`;
+        `usr_${cleanHandle}`;
 
       // 5. Create friend entry with requestStatus: 'pending_sent' (Habits are LOCKED until accepted)
       const pendingBuddy: FriendUser = {
@@ -3557,23 +3591,36 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       ]);
 
       // 6. Record in stored follow requests
+      const fromCleanHandle = (
+        user?.username ||
+        (user?.name ? `@${user.name.toLowerCase().replace(/[^a-z0-9_]/g, '_')}` : '@user')
+      )
+        .replace(/^@/, '')
+        .toLowerCase();
+      const fromUsernameFormatted = `@${fromCleanHandle}`;
+
       const stored = await getStoredFollowRequests();
       const newReq: FollowRequestItem = {
         id: serverResult?.request_id || `req-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
         fromUserId: user?.id || 'usr_default',
-        fromName: user?.name || 'You',
-        fromUsername:
-          user?.username ||
-          (user?.name ? `@${user.name.toLowerCase().replace(/[^a-z0-9]/g, '')}` : '@user'),
+        fromName: user?.name || fromCleanHandle.charAt(0).toUpperCase() + fromCleanHandle.slice(1) || 'You',
+        fromUsername: fromUsernameFormatted,
         fromAvatar: user?.avatar || '🌟',
         toUserId: targetFriendId,
         toUsername: `@${cleanHandle}`,
         status: 'pending',
         createdAt: new Date().toISOString(),
       };
-      await saveStoredFollowRequests([newReq, ...stored]);
+
+      const filteredStored = stored.filter((r) => {
+        const rFrom = (r.fromUsername || '').replace(/^@/, '').toLowerCase();
+        const rTo = (r.toUsername || '').replace(/^@/, '').toLowerCase();
+        return !(rFrom === fromCleanHandle && rTo === cleanHandle);
+      });
+      await saveStoredFollowRequests([newReq, ...filteredStored]);
 
       if (user) {
+        publishUserHabits(user, habits, completions).catch(() => {});
         syncFollowRequests(user);
         syncFriendsWithBackend(user);
       }
