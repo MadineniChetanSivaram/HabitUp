@@ -17,15 +17,16 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
     setIsOffline,
     setActiveTab,
     showToast,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
 
   const getGreetingTime = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('home.greeting_morning', 'Good morning');
+    if (hour < 18) return t('home.greeting_afternoon', 'Good afternoon');
+    return t('home.greeting_evening', 'Good evening');
   };
 
   return (
@@ -41,7 +42,11 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
             <TouchableOpacity
               onPress={() => {
                 setIsOffline(false);
-                showToast('Back Online! Synchronized with storage', undefined, 'success');
+                showToast(
+                  t('home.online_mode_active', 'Back Online! Synchronized with storage'),
+                  undefined,
+                  'success'
+                );
               }}
               style={styles.offlineBtn}
             >
@@ -70,8 +75,7 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
       <View style={styles.bodyRow}>
         <View style={styles.headlineCol}>
           <Text style={[styles.headline, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            Let's <Text style={{ color: isDark ? '#22D3A8' : '#7C5CFF' }}>crush</Text>
-            {'\n'}today!
+            {t('home.tagline', "Let's crush today!")}
           </Text>
         </View>
 

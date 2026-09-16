@@ -27,7 +27,7 @@ import {
   SocialFeedActivity,
   SupportedLanguage,
 } from '../types';
-import { getTranslation } from '../i18n/translations';
+import { translate } from '../i18n/translations';
 import { INITIAL_FRIENDS, INITIAL_FEED } from '../constants/socialData';
 import { getDetectedTimezone } from '../constants/timezones';
 import { localApi, getUserIdFromEmail, createDefaultUserProfile } from '../services/apiService';
@@ -77,7 +77,7 @@ interface HabitContextType {
   setHapticsEnabled: (enabled: boolean) => void;
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => Promise<void>;
-  t: (key: string, fallback?: string) => string;
+  t: (key: string, fallback?: string, params?: Record<string, string | number>) => string;
   isOffline: boolean;
   setIsOffline: (offline: boolean) => void;
   syncQueue: SyncMutation[];
@@ -1046,13 +1046,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setLanguageState(newLang);
     try {
       await AsyncStorage.setItem('habitup_language_v1', newLang);
+      await AsyncStorage.setItem('habitup_app_language_v1', newLang);
     } catch (e) {
       console.warn('Failed to persist language setting:', e);
     }
   }, []);
 
-  const t = useCallback((key: string, fallback?: string) => {
-    return getTranslation(language, key, fallback);
+  const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>) => {
+    return translate(language, key, fallback, params);
   }, [language]);
 
   const [isOffline, setIsOffline] = useState<boolean>(false);

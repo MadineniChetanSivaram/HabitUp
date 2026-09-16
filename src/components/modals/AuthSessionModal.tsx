@@ -85,6 +85,7 @@ export const AuthSessionModal: React.FC = () => {
     updateUser,
     showToast,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -190,10 +191,10 @@ export const AuthSessionModal: React.FC = () => {
               </View>
               <View>
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  Edit Profile Picture
+                  {t('profile.edit_dp_title', 'Edit Profile Picture')}
                 </Text>
                 <Text style={[styles.headerSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Upload custom photo or pick an avatar
+                  {t('profile.edit_dp_sub', 'Upload custom photo or pick an avatar')}
                 </Text>
               </View>
             </View>
@@ -243,7 +244,7 @@ export const AuthSessionModal: React.FC = () => {
                 onPress={handlePickFromGallery}
               >
                 <Upload size={16} color="#FFFFFF" />
-                <Text style={styles.uploadBtnText}>Upload Photo</Text>
+                <Text style={styles.uploadBtnText}>{t('profile.upload_photo', 'Upload Photo')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -258,7 +259,7 @@ export const AuthSessionModal: React.FC = () => {
               >
                 <Camera size={16} color={isDark ? '#C084FC' : '#7C5CFF'} />
                 <Text style={[styles.cameraBtnText, { color: isDark ? '#C084FC' : '#7C5CFF' }]}>
-                  Camera
+                  {t('profile.take_photo', 'Camera')}
                 </Text>
               </TouchableOpacity>
 
@@ -280,7 +281,7 @@ export const AuthSessionModal: React.FC = () => {
 
             {/* Presets Gallery */}
             <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              OR CHOOSE FROM PRESET AVATARS
+              {t('profile.choose_avatar', 'OR CHOOSE FROM PRESET AVATARS')}
             </Text>
 
             <View style={styles.presetsGrid}>
@@ -313,7 +314,7 @@ export const AuthSessionModal: React.FC = () => {
             <View style={styles.formFields}>
               <View style={styles.fieldGroup}>
                 <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                  Display Name
+                  {t('auth.full_name', 'Display Name')}
                 </Text>
                 <TextInput
                   style={[
@@ -326,7 +327,7 @@ export const AuthSessionModal: React.FC = () => {
                   ]}
                   value={name}
                   onChangeText={setName}
-                  placeholder="Your Name"
+                  placeholder={t('auth.name_placeholder', 'Your Name')}
                   placeholderTextColor="#94A3B8"
                 />
               </View>
@@ -340,7 +341,7 @@ export const AuthSessionModal: React.FC = () => {
               onPress={handleSaveProfile}
             >
               <CheckCircle2 size={18} color="#FFFFFF" />
-              <Text style={styles.saveBtnText}>Save Profile</Text>
+              <Text style={styles.saveBtnText}>{t('profile.save_profile', 'Save Profile')}</Text>
             </TouchableOpacity>
           </View>
         </View>

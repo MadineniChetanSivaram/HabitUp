@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ export const BiometricScanModal: React.FC = () => {
     biometricLogin,
     showToast,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -33,7 +34,7 @@ export const BiometricScanModal: React.FC = () => {
       const completeTimer = setTimeout(() => {
         biometricLogin();
         setIsBiometricModalOpen(false);
-        showToast('Biometric verified. Welcome back!', undefined, 'success');
+        showToast(t('biometric.welcome_toast', 'Biometric verified. Welcome back!'), undefined, 'success');
       }, 700);
       return () => clearTimeout(completeTimer);
     }, 1200);
@@ -68,13 +69,13 @@ export const BiometricScanModal: React.FC = () => {
           </View>
 
           <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            {scanState === 'success' ? 'Authenticated' : 'Touch Biometric Sensor'}
+            {scanState === 'success' ? t('biometric.authenticated', 'Authenticated') : t('biometric.touch_sensor', 'Touch Biometric Sensor')}
           </Text>
 
           <Text style={[styles.subtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
             {scanState === 'success'
-              ? 'Logging in to your account...'
-              : 'Hold your finger on the biometric sensor'}
+              ? t('biometric.logging_in', 'Logging in to your account...')
+              : t('biometric.hold_finger', 'Hold your finger on the biometric sensor')}
           </Text>
 
           <View
@@ -85,7 +86,7 @@ export const BiometricScanModal: React.FC = () => {
           >
             <ShieldCheck size={14} color="#10B981" />
             <Text style={[styles.badgeText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Secure Enclave Protected
+              {t('biometric.secure_enclave', 'Secure Enclave Protected')}
             </Text>
           </View>
         </View>

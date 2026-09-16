@@ -30,10 +30,10 @@ export const StatsView: React.FC = () => {
       (h) => !h.archived_at && !h.deleted_at && !h.paused_at
     );
 
-    let chartTitle = 'Weekly Activity';
-    let donutLabel = 'Weekly Rate';
-    let checkInsLabel = 'Week Check-ins';
-    let streakLabel = 'Active Streak';
+    let chartTitle = t('stats.weekly_activity_daily', 'Weekly Activity (Daily)');
+    let donutLabel = t('stats.week_rate', 'Week Rate');
+    let checkInsLabel = t('stats.week_checkins', 'Week Check-ins');
+    let streakLabel = t('stats.active_streak', 'Active Streak');
     let bars: {
       label: string;
       subLabel?: string;
@@ -56,17 +56,25 @@ export const StatsView: React.FC = () => {
     });
 
     if (timeRange === 'week') {
-      chartTitle = 'Weekly Activity (Daily)';
-      donutLabel = 'Week Rate';
-      checkInsLabel = 'Week Check-ins';
-      streakLabel = 'Active Streak';
+      chartTitle = t('stats.weekly_activity_daily', 'Weekly Activity (Daily)');
+      donutLabel = t('stats.week_rate', 'Week Rate');
+      checkInsLabel = t('stats.week_checkins', 'Week Check-ins');
+      streakLabel = t('stats.active_streak', 'Active Streak');
 
       const dayOfWeek = (now.getDay() + 6) % 7; // 0=Mon..6=Sun
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - dayOfWeek);
       startOfWeek.setHours(0, 0, 0, 0);
 
-      const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const dayLabels = [
+        t('days.m', 'Mon'),
+        t('days.t', 'Tue'),
+        t('days.w', 'Wed'),
+        t('days.th', 'Thu'),
+        t('days.f', 'Fri'),
+        t('days.s', 'Sat'),
+        t('days.su', 'Sun'),
+      ];
 
       for (let i = 0; i < 7; i++) {
         const d = new Date(startOfWeek);
@@ -107,23 +115,23 @@ export const StatsView: React.FC = () => {
       periodBestStreak = overallStats.currentBestStreak || 0;
     } else if (timeRange === 'month') {
       const monthNames = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
+        t('months.january', 'January'),
+        t('months.february', 'February'),
+        t('months.march', 'March'),
+        t('months.april', 'April'),
+        t('months.may', 'May'),
+        t('months.june', 'June'),
+        t('months.july', 'July'),
+        t('months.august', 'August'),
+        t('months.september', 'September'),
+        t('months.october', 'October'),
+        t('months.november', 'November'),
+        t('months.december', 'December'),
       ];
-      chartTitle = `${monthNames[currentMonth]} Activity (Weeks)`;
-      donutLabel = 'Month Rate';
-      checkInsLabel = 'Month Check-ins';
-      streakLabel = 'Best Streak';
+      chartTitle = t('stats.month_activity_weeks', '{month} Activity (Weeks)', { month: monthNames[currentMonth] });
+      donutLabel = t('stats.month_rate', 'Month Rate');
+      checkInsLabel = t('stats.month_checkins', 'Month Check-ins');
+      streakLabel = t('stats.best_streak', 'Best Streak');
 
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
@@ -178,24 +186,24 @@ export const StatsView: React.FC = () => {
 
       periodBestStreak = overallStats.currentBestStreak || 0;
     } else if (timeRange === 'year') {
-      chartTitle = `${currentYear} Yearly Activity (Months)`;
-      donutLabel = 'Year Rate';
-      checkInsLabel = 'Year Check-ins';
-      streakLabel = 'All-Time Best';
+      chartTitle = t('stats.yearly_activity_months', '{year} Yearly Activity (Months)', { year: currentYear });
+      donutLabel = t('stats.year_rate', 'Year Rate');
+      checkInsLabel = t('stats.year_checkins', 'Year Check-ins');
+      streakLabel = t('stats.all_time_best', 'All-Time Best');
 
       const monthShortNames = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        t('months.short.jan', 'Jan'),
+        t('months.short.feb', 'Feb'),
+        t('months.short.mar', 'Mar'),
+        t('months.short.apr', 'Apr'),
+        t('months.short.may', 'May'),
+        t('months.short.jun', 'Jun'),
+        t('months.short.jul', 'Jul'),
+        t('months.short.aug', 'Aug'),
+        t('months.short.sep', 'Sep'),
+        t('months.short.oct', 'Oct'),
+        t('months.short.nov', 'Nov'),
+        t('months.short.dec', 'Dec'),
       ];
 
       for (let m = 0; m < 12; m++) {
@@ -312,7 +320,7 @@ export const StatsView: React.FC = () => {
       overallSuccessRate,
       habitBreakdown,
     };
-  }, [habits, completions, timeRange, overallStats, getHabitStats]);
+  }, [habits, completions, timeRange, overallStats, getHabitStats, t, currentMonth, currentYear]);
 
   // Donut Gauge math
   const radius = 48;
@@ -465,7 +473,9 @@ export const StatsView: React.FC = () => {
                   style={[styles.metricValue, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
                 >
                   {analytics.periodBestStreak}{' '}
-                  <Text style={{ fontSize: 13, fontWeight: '700', color: isDark ? '#94A3B8' : '#64748B' }}>days</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '700', color: isDark ? '#94A3B8' : '#64748B' }}>
+                    {t('common.days', 'days')}
+                  </Text>
                 </Text>
               </View>
             </View>
@@ -540,7 +550,9 @@ export const StatsView: React.FC = () => {
       {/* Individual Habits Performance */}
       <View style={styles.habitsSection}>
         <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Habits Breakdown ({timeRange.toUpperCase()})
+          {t('stats.habits_breakdown', 'Habits Breakdown ({period})', {
+            period: timeRange === 'week' ? t('stats.week', 'Week') : timeRange === 'month' ? t('stats.month', 'Month') : t('stats.year', 'Year')
+          })}
         </Text>
 
         {analytics.habitBreakdown.map((item) => (

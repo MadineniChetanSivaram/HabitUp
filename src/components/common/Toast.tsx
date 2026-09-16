@@ -4,7 +4,7 @@ import { useHabit } from '../../context/HabitContext';
 import { RotateCcw, X, CheckCircle2, AlertCircle, Info } from 'lucide-react-native';
 
 export const Toast: React.FC = () => {
-  const { toast, clearToast } = useHabit();
+  const { toast, clearToast, t } = useHabit();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
 
@@ -65,7 +65,7 @@ export const Toast: React.FC = () => {
             }}
           >
             <RotateCcw size={12} color="#FCD34D" />
-            <Text style={styles.undoText}>Undo</Text>
+            <Text style={styles.undoText}>{t('common.undo', 'Undo')}</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity style={styles.closeButton} onPress={clearToast}>

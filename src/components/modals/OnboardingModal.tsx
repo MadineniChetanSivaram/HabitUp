@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,7 @@ export const OnboardingModal: React.FC = () => {
     showToast,
     triggerCelebration,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -84,10 +85,10 @@ export const OnboardingModal: React.FC = () => {
 
             <HabitUpLogo size="sm" />
             <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-              Quick-Start Habits
+              {t('onboarding.title', 'Quick-Start Habits')}
             </Text>
             <Text style={[styles.subtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Pick from proven foundational habits to build momentum:
+              {t('onboarding.subtitle', 'Pick from proven foundational habits to build momentum:')}
             </Text>
           </View>
 
@@ -150,7 +151,7 @@ export const OnboardingModal: React.FC = () => {
               disabled={selectedTemplateIds.length === 0}
             >
               <Text style={styles.startBtnText}>
-                Add {selectedTemplateIds.length} Habits & Start
+                {t('onboarding.add_and_start', `Add ${selectedTemplateIds.length} Habits & Start`, { count: selectedTemplateIds.length })}
               </Text>
               <ArrowRight size={18} color="#FFFFFF" />
             </TouchableOpacity>

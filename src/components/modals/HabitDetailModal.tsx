@@ -48,31 +48,38 @@ export const HabitDetailModal: React.FC = () => {
     updateHabit,
     nudgeFriend,
     theme,
+    language,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
-  const [calendarDate, setCalendarDate] = useState<Date>(new Date());
-  const [isEditing, setIsEditing] = useState(false);
-  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const habit = selectedHabitForDetail;
 
-  // Edit fields
+  const [calendarDate, setCalendarDate] = useState<Date>(new Date());
+  const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
 
-  if (!selectedHabitForDetail) return null;
+  if (!habit) return null;
 
-  const habit = selectedHabitForDetail;
   const stats = getHabitStats(habit.id);
   const isPaused = Boolean(habit.paused_at);
+  const isArchived = Boolean(habit.archived_at);
 
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
   const daysInMonth = getMonthCalendarDays(year, month);
 
-  const monthName = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric',
-  }).format(calendarDate);
+  const monthName =
+    t(
+      `calendar.month_${month}`,
+      new Intl.DateTimeFormat(language === 'en' ? 'en-US' : language, {
+        month: 'long',
+      }).format(calendarDate)
+    ) +
+    ' ' +
+    year;
 
   const changeMonth = (offset: number) => {
     setCalendarDate(new Date(year, month + offset, 1));
@@ -123,7 +130,7 @@ export const HabitDetailModal: React.FC = () => {
               <X size={18} color={isDark ? '#FFFFFF' : '#0F172A'} strokeWidth={2.5} />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-              Habit Overview
+              {t('habits.overview', 'Habit Overview')}
             </Text>
             <TouchableOpacity
               onPress={() => setShowOptionsMenu(true)}
@@ -158,7 +165,7 @@ export const HabitDetailModal: React.FC = () => {
                   {habit.name}
                 </Text>
                 <Text style={[styles.habitSubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  {habit.description || 'Daily consistent habit'}
+                  {habit.description || t('common.daily', 'Daily consistent habit')}
                 </Text>
               </View>
             </View>
@@ -171,7 +178,7 @@ export const HabitDetailModal: React.FC = () => {
                   {stats.currentStreak}
                 </Text>
                 <Text style={[styles.statLbl, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Current
+                  {t('habits.streak', 'Current')}
                 </Text>
               </View>
 
@@ -181,7 +188,7 @@ export const HabitDetailModal: React.FC = () => {
                   {stats.longestStreak}
                 </Text>
                 <Text style={[styles.statLbl, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Best
+                  {t('habits.best_streak', 'Best')}
                 </Text>
               </View>
 
@@ -191,7 +198,7 @@ export const HabitDetailModal: React.FC = () => {
                   {stats.completionRate}%
                 </Text>
                 <Text style={[styles.statLbl, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Rate
+                  {t('habits.completion_rate', 'Rate')}
                 </Text>
               </View>
             </View>
@@ -219,7 +226,7 @@ export const HabitDetailModal: React.FC = () => {
                           { color: isDark ? '#FFFFFF' : '#0F172A' },
                         ]}
                       >
-                        Habit Buddy: {habit.buddy_name || 'Friend'}
+                        {t('friends.habit_buddies', 'Habit Buddy')}: {habit.buddy_name || t('friends.together', 'Friend')}
                       </Text>
                       <Text
                         style={[
@@ -227,14 +234,14 @@ export const HabitDetailModal: React.FC = () => {
                           { color: isDark ? '#94A3B8' : '#64748B' },
                         ]}
                       >
-                        Shared routine • Mutual progress active
+                        {t('friends.shared_routines', 'Shared routine • Mutual progress active')}
                       </Text>
                     </View>
                   </View>
                   <View style={styles.buddyDetailStreak}>
                     <Flame size={12} color="#F59E0B" fill="#F59E0B" />
                     <Text style={styles.buddyDetailStreakText}>
-                      {stats.currentStreak}d Streak
+                      {stats.currentStreak}d {t('habits.streak', 'Streak')}
                     </Text>
                   </View>
                 </View>
@@ -245,7 +252,7 @@ export const HabitDetailModal: React.FC = () => {
                 >
                   <Bell size={13} color="#F59E0B" />
                   <Text style={styles.buddyNudgeBtnText}>
-                    👋 Send a Friendly Reminder / Cheer
+                    {t('friends.nudge', '👋 Send a Friendly Reminder / Cheer')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -353,13 +360,13 @@ export const HabitDetailModal: React.FC = () => {
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#10B981' }]} />
                   <Text style={[styles.legendText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                    Completed (100%)
+                    {t('calendar.all_done', 'Completed (100%)')}
                   </Text>
                 </View>
                 <View style={styles.legendItem}>
                   <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
                   <Text style={[styles.legendText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                    Not Completed
+                    {t('calendar.missed', 'Not Completed')}
                   </Text>
                 </View>
               </View>
@@ -377,7 +384,7 @@ export const HabitDetailModal: React.FC = () => {
                 <TouchableOpacity style={styles.menuItem} onPress={handleStartEdit}>
                   <Edit3 size={18} color="#38BDF8" />
                   <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                    Edit Habit
+                    {t('habits.edit_habit', 'Edit Habit')}
                   </Text>
                 </TouchableOpacity>
 
@@ -391,7 +398,7 @@ export const HabitDetailModal: React.FC = () => {
                 >
                   {isPaused ? <Play size={18} color="#34D399" /> : <Pause size={18} color="#FBBF24" />}
                   <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                    {isPaused ? 'Resume Habit' : 'Pause Habit'}
+                    {isPaused ? t('habits.resume', 'Resume Habit') : t('habits.pause', 'Pause Habit')}
                   </Text>
                 </TouchableOpacity>
 
@@ -405,7 +412,7 @@ export const HabitDetailModal: React.FC = () => {
                 >
                   <Archive size={18} color="#C084FC" />
                   <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                    Archive Habit
+                    {t('habits.archive', 'Archive Habit')}
                   </Text>
                 </TouchableOpacity>
 
@@ -419,7 +426,7 @@ export const HabitDetailModal: React.FC = () => {
                 >
                   <Trash2 size={18} color="#F43F5E" />
                   <Text style={[styles.menuItemText, { color: '#F43F5E' }]}>
-                    Delete Habit
+                    {t('habits.delete_habit', 'Delete Habit')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -432,7 +439,7 @@ export const HabitDetailModal: React.FC = () => {
               <View style={[styles.editBox, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
                 <View style={styles.editHeader}>
                   <Text style={[styles.editTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                    Edit Habit
+                    {t('habits.edit_habit', 'Edit Habit')}
                   </Text>
                   <TouchableOpacity onPress={() => setIsEditing(false)}>
                     <X size={20} color={isDark ? '#94A3B8' : '#64748B'} />
@@ -450,7 +457,7 @@ export const HabitDetailModal: React.FC = () => {
                   ]}
                   value={editName}
                   onChangeText={setEditName}
-                  placeholder="Habit Name"
+                  placeholder={t('create_habit.habit_name', 'Habit Name')}
                 />
 
                 <TextInput
@@ -464,11 +471,11 @@ export const HabitDetailModal: React.FC = () => {
                   ]}
                   value={editDesc}
                   onChangeText={setEditDesc}
-                  placeholder="Description"
+                  placeholder={t('create_habit.description_label', 'Description')}
                 />
 
                 <TouchableOpacity style={styles.saveBtn} onPress={handleSaveEdit}>
-                  <Text style={styles.saveBtnText}>Save</Text>
+                  <Text style={styles.saveBtnText}>{t('common.save', 'Save')}</Text>
                 </TouchableOpacity>
               </View>
             </View>

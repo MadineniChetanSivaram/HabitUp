@@ -11,6 +11,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { HabitUpLogo } from './HabitUpLogo';
 import { AlertCircle, RotateCcw, Trash2, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { translate, SupportedLanguage } from '../../i18n/translations';
 
 interface Props {
   children: ReactNode;
@@ -22,6 +23,7 @@ interface State {
   error: Error | null;
   errorInfo: ErrorInfo | null;
   showDetails: boolean;
+  lang: SupportedLanguage;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -32,7 +34,19 @@ export class ErrorBoundary extends Component<Props, State> {
       error: null,
       errorInfo: null,
       showDetails: false,
+      lang: 'en',
     };
+  }
+
+  async componentDidMount() {
+    try {
+      const savedLang = (await AsyncStorage.getItem('habitup_app_language_v1')) as SupportedLanguage | null;
+      if (savedLang) {
+        this.setState({ lang: savedLang });
+      }
+    } catch (e) {
+      // Ignore
+    }
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -74,6 +88,7 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
+      const { lang } = this.state;
       const errorMessage = this.state.error?.message || 'An unexpected error occurred.';
       const componentStack = this.state.errorInfo?.componentStack || '';
 
@@ -92,9 +107,9 @@ export class ErrorBoundary extends Component<Props, State> {
                 <AlertCircle size={36} color="#EF4444" />
               </View>
 
-              <Text style={styles.title}>Oops! Something went wrong</Text>
+              <Text style={styles.title}>{translate(lang, 'error.oops', 'Oops! Something went wrong')}</Text>
               <Text style={styles.subtitle}>
-                HabitUp encountered an unexpected error while rendering. Your data is safe.
+                {translate(lang, 'error.subtitle', 'HabitUp encountered an unexpected error while rendering. Your data is safe.')}
               </Text>
 
               <View style={styles.actions}>
@@ -104,7 +119,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   activeOpacity={0.8}
                 >
                   <RotateCcw size={18} color="#FFFFFF" />
-                  <Text style={styles.primaryBtnText}>Reload HabitUp</Text>
+                  <Text style={styles.primaryBtnText}>{translate(lang, 'error.try_again', 'Try Again')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -113,7 +128,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   activeOpacity={0.8}
                 >
                   <Trash2 size={16} color="#94A3B8" />
-                  <Text style={styles.secondaryBtnText}>Clear Cache & Restart</Text>
+                  <Text style={styles.secondaryBtnText}>{translate(lang, 'error.clear_cache', 'Clear Cache & Reset')}</Text>
                 </TouchableOpacity>
               </View>
 
@@ -124,7 +139,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 activeOpacity={0.7}
               >
                 <Text style={styles.detailsToggleText}>
-                  {this.state.showDetails ? 'Hide technical details' : 'Show technical details'}
+                  {translate(lang, 'error.error_details', 'Technical Details')}
                 </Text>
                 {this.state.showDetails ? (
                   <ChevronUp size={16} color="#818CF8" />

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ export const ArchitectureInspectorModal: React.FC<ArchitectureInspectorModalProp
   visible = false,
   onClose,
 }) => {
-  const { theme } = useHabit();
+  const { theme, t } = useHabit();
   const isDark = theme === 'dark';
 
   if (!visible) return null;
@@ -41,10 +41,10 @@ export const ArchitectureInspectorModal: React.FC<ArchitectureInspectorModalProp
               </View>
               <View>
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  System Architecture
+                  {t('arch.title', 'System Architecture')}
                 </Text>
                 <Text style={[styles.headerSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  React Native & Expo Architecture
+                  {t('arch.subtitle', 'React Native & Expo Architecture')}
                 </Text>
               </View>
             </View>
@@ -64,14 +64,14 @@ export const ArchitectureInspectorModal: React.FC<ArchitectureInspectorModalProp
               ]}
             >
               <Text style={[styles.cardHeading, { color: isDark ? '#38BDF8' : '#0284C7' }]}>
-                📱 Mobile Native Architecture
+                {t('arch.mobile_native_arch', '📱 Mobile Native Architecture')}
               </Text>
               <Text style={[styles.cardText, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                • Expo SDK 52 + React Native 0.76{'\n'}
-                • AsyncStorage offline local-first cache{'\n'}
-                • Expo Notifications local scheduling{'\n'}
-                • Expo Haptics tactile feedback{'\n'}
-                • React Native SVG high-performance vector rendering
+                {t('arch.bullet_1', '• Expo SDK 52 + React Native 0.76')}{'\n'}
+                {t('arch.bullet_2', '• AsyncStorage offline local-first cache')}{'\n'}
+                {t('arch.bullet_3', '• Expo Notifications local scheduling')}{'\n'}
+                {t('arch.bullet_4', '• Expo Haptics tactile feedback')}{'\n'}
+                {t('arch.bullet_5', '• React Native SVG high-performance vector rendering')}
               </Text>
             </View>
           </ScrollView>

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ export const AuthManagementModal: React.FC = () => {
     revokeSession,
     revokeAllOtherSessions,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -60,10 +61,10 @@ export const AuthManagementModal: React.FC = () => {
               </View>
               <View>
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  Active Device Sessions
+                  {t('sessions.title', 'Active Device Sessions')}
                 </Text>
                 <Text style={[styles.headerSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  PRD Hardware Keychains & Auth
+                  {t('sessions.subtitle', 'Hardware Keychains & Security')}
                 </Text>
               </View>
             </View>
@@ -79,10 +80,10 @@ export const AuthManagementModal: React.FC = () => {
             {/* Header Action */}
             <View style={styles.actionHeader}>
               <Text style={[styles.sessionSectionTitle, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                AUTHORIZED DEVICES ({sessions.length})
+                {t('sessions.authorized_devices', `AUTHORIZED DEVICES (${sessions.length})`, { count: sessions.length })}
               </Text>
               <TouchableOpacity onPress={revokeAllOtherSessions}>
-                <Text style={styles.revokeAllText}>Revoke Others</Text>
+                <Text style={styles.revokeAllText}>{t('sessions.revoke_others', 'Revoke Others')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -117,7 +118,7 @@ export const AuthManagementModal: React.FC = () => {
                         </Text>
                         {sess.is_current && (
                           <View style={styles.currentBadge}>
-                            <Text style={styles.currentBadgeText}>THIS DEVICE</Text>
+                            <Text style={styles.currentBadgeText}>{t('sessions.this_device', 'THIS DEVICE')}</Text>
                           </View>
                         )}
                       </View>
@@ -134,7 +135,7 @@ export const AuthManagementModal: React.FC = () => {
                         style={styles.revokeBtn}
                         onPress={() => revokeSession(sess.id)}
                       >
-                        <Text style={styles.revokeBtnText}>Revoke</Text>
+                        <Text style={styles.revokeBtnText}>{t('sessions.revoke', 'Revoke')}</Text>
                       </TouchableOpacity>
                     )}
                   </View>

@@ -22,6 +22,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
     archiveHabit,
     deleteHabit,
     theme,
+    t,
   } = useHabit();
 
   const [showMenu, setShowMenu] = useState(false);
@@ -44,11 +45,11 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
     if (habit.description) {
       parts.push(habit.description);
     } else {
-      if (habit.frequency_type === 'daily') parts.push('Daily');
+      if (habit.frequency_type === 'daily') parts.push(t('common.daily', 'Daily'));
       else if (habit.frequency_type === 'custom_days') {
         const days = habit.scheduled_days || [];
-        if (days.length === 5 && days.includes(0) && days.includes(4)) parts.push('Weekdays');
-        else parts.push(`${days.length} days/wk`);
+        if (days.length === 5 && days.includes(0) && days.includes(4)) parts.push(t('common.weekdays', 'Weekdays'));
+        else parts.push(`${days.length} ${t('common.days_per_week', 'days/wk')}`);
       }
     }
     if (habit.reminder_enabled && habit.reminder_time) {
@@ -124,18 +125,18 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             )}
             {isPaused && (
               <View style={styles.badgePaused}>
-                <Text style={styles.badgePausedText}>PAUSED</Text>
+                <Text style={styles.badgePausedText}>{t('habits.paused_badge', 'PAUSED')}</Text>
               </View>
             )}
             {isArchived && (
               <View style={styles.badgeArchived}>
-                <Text style={styles.badgeArchivedText}>ARCHIVED</Text>
+                <Text style={styles.badgeArchivedText}>{t('habits.archived_badge', 'ARCHIVED')}</Text>
               </View>
             )}
             {habit.is_shared && (
               <View style={styles.badgeBuddy}>
                 <Text style={styles.badgeBuddyText}>
-                  {habit.buddy_avatar || '🤝'} {habit.buddy_name || 'Buddy'}
+                  {habit.buddy_avatar || '🤝'} {habit.buddy_name || t('friends.together', 'Buddy')}
                 </Text>
               </View>
             )}
@@ -203,7 +204,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             >
               <Calendar size={16} color="#38BDF8" />
               <Text style={[styles.menuText, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>
-                View Details & Stats
+                {t('habits.view_details_stats', 'View Details & Stats')}
               </Text>
             </TouchableOpacity>
 
@@ -217,7 +218,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             >
               {isPaused ? <Play size={16} color="#34D399" /> : <Pause size={16} color="#FBBF24" />}
               <Text style={[styles.menuText, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>
-                {isPaused ? 'Resume Habit' : 'Pause Habit'}
+                {isPaused ? t('habits.resume', 'Resume Habit') : t('habits.pause', 'Pause Habit')}
               </Text>
             </TouchableOpacity>
 
@@ -230,7 +231,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             >
               <Archive size={16} color="#C084FC" />
               <Text style={[styles.menuText, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>
-                Archive Habit
+                {t('habits.archive', 'Archive Habit')}
               </Text>
             </TouchableOpacity>
 
@@ -242,7 +243,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
               }}
             >
               <Trash2 size={16} color="#F43F5E" />
-              <Text style={[styles.menuText, { color: '#F43F5E' }]}>Delete</Text>
+              <Text style={[styles.menuText, { color: '#F43F5E' }]}>{t('common.delete', 'Delete')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

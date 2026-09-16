@@ -33,6 +33,7 @@ export const NotificationCenterModal: React.FC = () => {
     soundEnabled,
     setSoundEnabled,
     showToast,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -57,7 +58,7 @@ export const NotificationCenterModal: React.FC = () => {
 
   const handleAllowNotifications = async () => {
     setNotificationsEnabled(true);
-    showToast('Notifications enabled!', undefined, 'success');
+    showToast(t('notifications.enabled_toast', 'Notifications enabled!'), undefined, 'success');
     try {
       await notificationService.requestPermission();
     } catch {}
@@ -80,10 +81,10 @@ export const NotificationCenterModal: React.FC = () => {
               </View>
               <View>
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  Notification Center
+                  {t('notifications.title', 'Notification Center')}
                 </Text>
                 <Text style={[styles.headerSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Habit reminders & alerts
+                  {t('notifications.subtitle', 'Habit reminders & alerts')}
                 </Text>
               </View>
             </View>
@@ -119,10 +120,10 @@ export const NotificationCenterModal: React.FC = () => {
               <View style={styles.preferenceRow}>
                 <View>
                   <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                    Habit Reminders
+                    {t('settings.habit_reminders', 'Habit Reminders')}
                   </Text>
                   <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                    Send alerts at scheduled times
+                    {t('settings.habit_reminders_desc', 'Send alerts at scheduled times')}
                   </Text>
                 </View>
                 <Switch
@@ -146,10 +147,10 @@ export const NotificationCenterModal: React.FC = () => {
                   <Volume2 size={18} color="#10B981" />
                   <View>
                     <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                      Notification Sound
+                      {t('settings.notification_sound', 'Notification Sound')}
                     </Text>
                     <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                      Play melodic chime on reminder
+                      {t('notifications.sound_desc', 'Play melodic chime on reminder')}
                     </Text>
                   </View>
                 </View>
@@ -164,7 +165,7 @@ export const NotificationCenterModal: React.FC = () => {
 
             {/* Section: TODAY'S HABIT TIMES */}
             <Text style={[styles.sectionHeading, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              TODAY'S HABIT TIMES ({todayHabits.length})
+              {t('notifications.todays_times', "TODAY'S HABIT TIMES")} ({todayHabits.length})
             </Text>
 
             <View style={styles.habitsTimesList}>
@@ -204,7 +205,7 @@ export const NotificationCenterModal: React.FC = () => {
                         {isDone && (
                           <View style={styles.doneBadge}>
                             <CheckCircle2 size={12} color="#10B981" />
-                            <Text style={styles.doneBadgeText}>Done</Text>
+                            <Text style={styles.doneBadgeText}>{t('common.done', 'Done')}</Text>
                           </View>
                         )}
                       </View>
@@ -212,7 +213,10 @@ export const NotificationCenterModal: React.FC = () => {
                       <View style={styles.timeRow}>
                         <Clock size={12} color="#C084FC" />
                         <Text style={styles.timeRowText}>
-                          {h.name} Time: {formatTo12Hour(habitTime)}
+                          {t('notifications.habit_time', '{name} Time: {time}', {
+                            name: h.name,
+                            time: formatTo12Hour(habitTime),
+                          })}
                         </Text>
                       </View>
                     </View>
@@ -223,7 +227,7 @@ export const NotificationCenterModal: React.FC = () => {
               {todayHabits.length === 0 && (
                 <View style={styles.emptyCard}>
                   <Text style={[styles.emptyText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                    No habits configured for today yet.
+                    {t('notifications.no_habits_today', 'No habits configured for today yet.')}
                   </Text>
                 </View>
               )}

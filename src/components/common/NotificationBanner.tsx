@@ -7,7 +7,7 @@ import { IconRenderer } from './IconRenderer';
 import { formatTo12Hour } from '../../utils/streakCalculator';
 
 export const NotificationBanner: React.FC = () => {
-  const { toggleCompletion, theme } = useHabit();
+  const { toggleCompletion, theme, t } = useHabit();
   const [currentNotification, setCurrentNotification] = useState<InAppNotification | null>(null);
   const isDark = theme === 'dark';
   const translateY = useRef(new Animated.Value(-80)).current;
@@ -136,7 +136,7 @@ export const NotificationBanner: React.FC = () => {
           ) : (
             <View style={styles.timeTag}>
               <Clock size={11} color="#C084FC" />
-              <Text style={styles.timeText}>Just now</Text>
+              <Text style={styles.timeText}>{t('common.just_now', 'Just now')}</Text>
             </View>
           )}
 

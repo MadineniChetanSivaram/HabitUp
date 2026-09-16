@@ -6,7 +6,7 @@ import { getWeekDays, formatDateKey } from '../../utils/streakCalculator';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 
 export const DateStrip: React.FC = () => {
-  const { selectedDate, setSelectedDate, completions, habits, theme } = useHabit();
+  const { selectedDate, setSelectedDate, completions, habits, theme, t } = useHabit();
   const isDark = theme === 'dark';
 
   const selectedDateTime = new Date(selectedDate + 'T12:00:00');
@@ -41,7 +41,7 @@ export const DateStrip: React.FC = () => {
           </Text>
           {selectedDate !== todayKey && (
             <TouchableOpacity onPress={jumpToToday} style={styles.todayPill} activeOpacity={0.7}>
-              <Text style={styles.todayPillText}>Back to Today</Text>
+              <Text style={styles.todayPillText}>{t('home.back_to_today', 'Back to Today')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -88,6 +88,8 @@ export const DateStrip: React.FC = () => {
               )
             );
 
+          const localizedDayName = t(`days.${item.dayName.toLowerCase()}`, item.dayName);
+
           return (
             <TouchableOpacity
               key={item.key}
@@ -122,7 +124,7 @@ export const DateStrip: React.FC = () => {
                   { color: isSelected ? '#E0E7FF' : isDark ? '#94A3B8' : '#64748B' },
                 ]}
               >
-                {item.dayName}
+                {localizedDayName}
               </Text>
               <Text
                 style={[

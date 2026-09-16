@@ -486,7 +486,7 @@ export const FriendsView: React.FC = () => {
                   color: isDark ? '#FFFFFF' : '#0F172A',
                 },
               ]}
-              placeholder="Search by @username..."
+              placeholder={t('friends.search_username_placeholder', 'Search by @username...')}
               placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
               value={searchQuery}
               onChangeText={(txt) => {
@@ -529,7 +529,7 @@ export const FriendsView: React.FC = () => {
             ) : (
               <>
                 <Search size={15} color="#FFFFFF" strokeWidth={2.5} />
-                <Text style={styles.searchActionBtnText}>Search</Text>
+                <Text style={styles.searchActionBtnText}>{t('friends.search', 'Search')}</Text>
               </>
             )}
           </TouchableOpacity>
@@ -539,7 +539,7 @@ export const FriendsView: React.FC = () => {
         {searchResults.length > 0 && (
           <View style={styles.searchResultsWrapper}>
             <Text style={[styles.searchResultsTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              SEARCH RESULTS ({searchResults.length})
+              {t('friends.search_results', 'SEARCH RESULTS')} ({searchResults.length})
             </Text>
             {searchResults.map((item) => {
               const status = getFollowStatusForUser(item.username);
@@ -577,12 +577,12 @@ export const FriendsView: React.FC = () => {
                   {status === 'following' ? (
                     <View style={styles.followingPill}>
                       <UserCheck size={13} color="#10B981" />
-                      <Text style={styles.followingPillText}>Following</Text>
+                      <Text style={styles.followingPillText}>{t('friends.following', 'Following')}</Text>
                     </View>
                   ) : status === 'requested' ? (
                     <View style={styles.requestedPill}>
                       <Clock size={13} color="#F59E0B" />
-                      <Text style={styles.requestedPillText}>Requested</Text>
+                      <Text style={styles.requestedPillText}>{t('friends.requested', 'Requested')}</Text>
                     </View>
                   ) : (
                     <TouchableOpacity
@@ -599,7 +599,7 @@ export const FriendsView: React.FC = () => {
                       ) : (
                         <>
                           <UserPlus size={13} color="#FFFFFF" strokeWidth={2.5} />
-                          <Text style={styles.followResultBtnText}>Follow</Text>
+                          <Text style={styles.followResultBtnText}>{t('friends.follow', 'Follow')}</Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -626,13 +626,13 @@ export const FriendsView: React.FC = () => {
             <View style={{ flex: 1 }}>
               <Text style={[styles.noResultsTitle, { color: isDark ? '#FCA5A5' : '#DC2626' }]}>
                 {searchQuery.trim().replace(/^@/, '').toLowerCase() === (user?.username || '').replace(/^@/, '').toLowerCase()
-                  ? 'This is your own username'
-                  : "Username doesn't exist"}
+                  ? t('friends.self_username_error', 'This is your own username. You cannot follow yourself.')
+                  : t('friends.username_not_found', "Username doesn't exist")}
               </Text>
               <Text style={[styles.noResultsSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
                 {searchQuery.trim().replace(/^@/, '').toLowerCase() === (user?.username || '').replace(/^@/, '').toLowerCase()
-                  ? 'You cannot follow your own profile.'
-                  : `No HabitUp account found for @${searchQuery.trim().replace(/^@/, '')}. Please check the spelling.`}
+                  ? t('friends.self_username_error', 'You cannot follow your own profile.')
+                  : `No HabitUp account found for @${searchQuery.trim().replace(/^@/, '')}.`}
               </Text>
             </View>
           </View>
@@ -654,11 +654,11 @@ export const FriendsView: React.FC = () => {
             <View style={styles.incomingBadge}>
               <UserCheck size={14} color="#10B981" />
               <Text style={styles.incomingBadgeText}>
-                INCOMING FOLLOW REQUESTS ({incomingRequests.length})
+                {t('friends.incoming_requests', 'INCOMING FOLLOW REQUESTS')} ({incomingRequests.length})
               </Text>
             </View>
             <Text style={[styles.incomingNoticeSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Accept to unlock each other's habits
+              {t('friends.accept_to_unlock', "Accept to unlock each other's habits")}
             </Text>
           </View>
 
@@ -693,7 +693,7 @@ export const FriendsView: React.FC = () => {
                         style={[styles.incomingUsername, { color: '#10B981' }]}
                         numberOfLines={1}
                       >
-                        {reqHandle} • Wants to follow you
+                        {reqHandle} • {t('friends.wants_to_follow', 'Wants to follow you')}
                       </Text>
                     </View>
                   </View>
@@ -705,7 +705,7 @@ export const FriendsView: React.FC = () => {
                       activeOpacity={0.8}
                     >
                       <Check size={14} color="#FFFFFF" strokeWidth={3} />
-                      <Text style={styles.acceptBtnText}>Accept</Text>
+                      <Text style={styles.acceptBtnText}>{t('friends.accept', 'Accept')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -729,7 +729,7 @@ export const FriendsView: React.FC = () => {
       {/* 4. Friends List Heading */}
       <View style={styles.listHeaderRow}>
         <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          HABIT BUDDIES ({connectedFriends.length})
+          {t('friends.habit_buddies', 'HABIT BUDDIES')} ({connectedFriends.length})
         </Text>
       </View>
 
@@ -813,7 +813,7 @@ export const FriendsView: React.FC = () => {
                     {isPendingSent ? (
                       <View style={styles.pendingBadge}>
                         <Clock size={11} color="#F59E0B" />
-                        <Text style={styles.pendingBadgeText}>Requested ⏳</Text>
+                        <Text style={styles.pendingBadgeText}>{t('friends.requested', 'Requested')} ⏳</Text>
                       </View>
                     ) : (
                       <View style={styles.streakFlameBadge}>
@@ -843,7 +843,7 @@ export const FriendsView: React.FC = () => {
                     activeOpacity={0.7}
                   >
                     <Plus size={12} color="#7C5CFF" strokeWidth={3} />
-                    <Text style={styles.buddyTogetherBtnText}>Together</Text>
+                    <Text style={styles.buddyTogetherBtnText}>{t('friends.together', 'Together')}</Text>
                   </TouchableOpacity>
                 )}
 
@@ -861,7 +861,7 @@ export const FriendsView: React.FC = () => {
                 >
                   <UserMinus size={11} color="#EF4444" strokeWidth={2.5} />
                   <Text style={styles.removeFriendBtnText}>
-                    {isPendingSent ? 'Cancel' : 'Unfollow'}
+                    {isPendingSent ? t('common.cancel', 'Cancel') : t('friends.unfollow', 'Unfollow')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -895,7 +895,7 @@ export const FriendsView: React.FC = () => {
                       { color: isDark ? '#FDE68A' : '#92400E' },
                     ]}
                   >
-                    Waiting for {friendDisplayName} to accept
+                    {t('friends.waiting_for_accept', `Waiting for ${friendDisplayName} to accept`, { name: friendDisplayName })}
                   </Text>
                   <Text
                     style={[
@@ -903,7 +903,7 @@ export const FriendsView: React.FC = () => {
                       { color: isDark ? '#94A3B8' : '#78716C' },
                     ]}
                   >
-                    Habits and streak tracking will unlock automatically.
+                    {t('friends.habits_unlock_auto', 'Habits and streak tracking will unlock automatically.')}
                   </Text>
                 </View>
               </View>
@@ -915,10 +915,10 @@ export const FriendsView: React.FC = () => {
               <View style={styles.habitsWrapper}>
                 <View style={styles.habitsHeaderRow}>
                   <Text style={[styles.habitsSubHeading, { color: '#10B981' }]}>
-                    MUTUAL HABITS ({sharedHabits.length} SHARED)
+                    {t('friends.mutual_habits', 'MUTUAL HABITS')} ({sharedHabits.length} {t('common.shared', 'SHARED').toUpperCase()})
                   </Text>
                   <Text style={[styles.habitsSubExplainer, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                    Active routines
+                    {t('friends.active_routines', 'Active routines')}
                   </Text>
                 </View>
 
@@ -970,7 +970,7 @@ export const FriendsView: React.FC = () => {
                                 <Text style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 10 }}>•</Text>
                                 <Flame size={11} color="#F59E0B" fill="#F59E0B" />
                                 <Text style={{ color: '#F59E0B', fontSize: 11, fontWeight: '800' }}>
-                                  {friendHabit.currentStreak}d streak
+                                  {friendHabit.currentStreak}d {t('habits.streak', 'streak')}
                                 </Text>
                               </>
                             )}
@@ -991,7 +991,7 @@ export const FriendsView: React.FC = () => {
                         activeOpacity={0.7}
                       >
                         <Calendar size={13} color="#6366F1" />
-                        <Text style={styles.viewProgressBtnText}>View Progress</Text>
+                        <Text style={styles.viewProgressBtnText}>{t('friends.view_progress', 'View Progress')}</Text>
                       </TouchableOpacity>
                     </TouchableOpacity>
                   );
@@ -1005,11 +1005,11 @@ export const FriendsView: React.FC = () => {
                 <View style={styles.habitsHeaderRow}>
                   <Text style={[styles.habitsSubHeading, { color: isDark ? '#94A3B8' : '#64748B' }]}>
                     {sharedHabits.length > 0
-                      ? `MORE HABITS FROM ${friendDisplayName.toUpperCase()} (${unadoptedHabits.length})`
-                      : `HABITS FROM ${friendDisplayName.toUpperCase()} (${unadoptedHabits.length})`}
+                      ? t('friends.more_habits_from', `MORE HABITS FROM ${friendDisplayName.toUpperCase()}`, { name: friendDisplayName.toUpperCase() }) + ` (${unadoptedHabits.length})`
+                      : t('friends.more_habits_from', `HABITS FROM ${friendDisplayName.toUpperCase()}`, { name: friendDisplayName.toUpperCase() }) + ` (${unadoptedHabits.length})`}
                   </Text>
                   <Text style={[styles.habitsSubExplainer, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                    Follow to join
+                    {t('friends.follow_to_join', 'Follow to join')}
                   </Text>
                 </View>
 
@@ -1061,7 +1061,7 @@ export const FriendsView: React.FC = () => {
                       activeOpacity={0.8}
                     >
                       <Plus size={14} color="#FFFFFF" strokeWidth={2.5} />
-                      <Text style={styles.followHabitBtnText}>Follow Habit</Text>
+                      <Text style={styles.followHabitBtnText}>{t('friends.follow_habit', 'Follow Habit')}</Text>
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -1076,7 +1076,7 @@ export const FriendsView: React.FC = () => {
                 ]}
               >
                 <Text style={[styles.noHabitsPromptText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  No active routines to follow yet.
+                  {t('friends.no_routines_prompt', 'No active routines to follow yet.')}
                 </Text>
                 <TouchableOpacity
                   style={styles.noHabitsTogetherBtn}
@@ -1084,7 +1084,7 @@ export const FriendsView: React.FC = () => {
                   activeOpacity={0.8}
                 >
                   <Plus size={13} color="#7C5CFF" strokeWidth={3} />
-                  <Text style={styles.noHabitsTogetherBtnText}>Start a Habit Together</Text>
+                  <Text style={styles.noHabitsTogetherBtnText}>{t('friends.start_habit_together', 'Start a Habit Together')}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -1098,10 +1098,10 @@ export const FriendsView: React.FC = () => {
         <View style={styles.emptyCard}>
           <Users size={32} color="#7C5CFF" />
           <Text style={[styles.emptyTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            No friends followed yet
+            {t('friends.no_friends_yet', 'No friends followed yet')}
           </Text>
           <Text style={[styles.emptySub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Enter an @username above to send a follow request and share habit routines!
+            {t('friends.no_friends_desc', 'Enter an @username above to send a follow request and share habit routines!')}
           </Text>
         </View>
       )}
@@ -1117,7 +1117,7 @@ export const FriendsView: React.FC = () => {
           >
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Start a Habit Together 🤝
+                {t('friends.start_habit_together', 'Start a Habit Together')} 🤝
               </Text>
               <TouchableOpacity onPress={() => setIsTogetherModalOpen(false)}>
                 <X size={20} color={isDark ? '#94A3B8' : '#64748B'} />
@@ -1125,12 +1125,12 @@ export const FriendsView: React.FC = () => {
             </View>
 
             <Text style={[styles.modalSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Create a shared habit that both you and your friend follow and see each other's progress on.
+              {t('friends.together_modal_sub', "Create a shared habit that both you and your friend follow and see each other's progress on.")}
             </Text>
 
             {/* Pick Friend */}
             <Text style={[styles.fieldLabel, { color: isDark ? '#E2E8F0' : '#334155' }]}>
-              DO THIS HABIT WITH:
+              {t('friends.do_habit_with', 'DO THIS HABIT WITH:')}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.friendPillsRow}>
               {connectedFriends
@@ -1171,7 +1171,7 @@ export const FriendsView: React.FC = () => {
 
             {/* Quick Presets */}
             <Text style={[styles.fieldLabel, { color: isDark ? '#E2E8F0' : '#334155', marginTop: 12 }]}>
-              QUICK HABIT IDEAS:
+              {t('friends.quick_habit_ideas', 'QUICK HABIT IDEAS:')}
             </Text>
             <View style={styles.presetsGrid}>
               {QUICK_HABIT_PRESETS.map((p) => (
@@ -1205,7 +1205,7 @@ export const FriendsView: React.FC = () => {
 
             {/* Custom Habit Name Input */}
             <Text style={[styles.fieldLabel, { color: isDark ? '#E2E8F0' : '#334155', marginTop: 12 }]}>
-              HABIT NAME:
+              {t('friends.habit_name_label', 'HABIT NAME:')}
             </Text>
             <TextInput
               style={[
@@ -1216,7 +1216,7 @@ export const FriendsView: React.FC = () => {
                   color: isDark ? '#FFFFFF' : '#0F172A',
                 },
               ]}
-              placeholder="e.g. Read 20 Pages, Morning Run..."
+              placeholder={t('friends.habit_name_placeholder', 'e.g. Read 20 Pages, Morning Run...')}
               placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
               value={togetherHabitName}
               onChangeText={setTogetherHabitName}
@@ -1236,7 +1236,7 @@ export const FriendsView: React.FC = () => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Clock size={16} color="#7C5CFF" />
                   <Text style={[styles.togetherTimeTitle, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Daily Reminder Time
+                    {t('friends.daily_reminder_time', 'Daily Reminder Time')}
                   </Text>
                 </View>
                 <View
@@ -1255,7 +1255,7 @@ export const FriendsView: React.FC = () => {
                 {/* Hour Input */}
                 <View style={styles.timeUnitBox}>
                   <Text style={[styles.timeUnitLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                    Hour
+                    {t('friends.hour', 'Hour')}
                   </Text>
                   <TextInput
                     style={[
@@ -1290,7 +1290,7 @@ export const FriendsView: React.FC = () => {
                 {/* Minute Input */}
                 <View style={styles.timeUnitBox}>
                   <Text style={[styles.timeUnitLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                    Min
+                    {t('friends.min', 'Min')}
                   </Text>
                   <TextInput
                     style={[
@@ -1340,7 +1340,7 @@ export const FriendsView: React.FC = () => {
                         { color: togetherPeriod === 'AM' ? '#FFFFFF' : isDark ? '#CBD5E1' : '#475569' },
                       ]}
                     >
-                      AM
+                      {t('common.am', 'AM')}
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -1361,7 +1361,7 @@ export const FriendsView: React.FC = () => {
                         { color: togetherPeriod === 'PM' ? '#FFFFFF' : isDark ? '#CBD5E1' : '#475569' },
                       ]}
                     >
-                      PM
+                      {t('common.pm', 'PM')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -1375,7 +1375,7 @@ export const FriendsView: React.FC = () => {
               activeOpacity={0.85}
             >
               <Zap size={16} color="#FFFFFF" strokeWidth={2.5} />
-              <Text style={styles.modalCreateBtnText}>Create for Both of Us</Text>
+              <Text style={styles.modalCreateBtnText}>{t('friends.create_for_both', 'Create for Both of Us')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1440,7 +1440,7 @@ export const FriendsView: React.FC = () => {
                         ]}
                         numberOfLines={1}
                       >
-                        {formatTo12Hour(liveFriendHabit.reminder_time || '08:00')} • Shared with {friendDisplayName}
+                        {formatTo12Hour(liveFriendHabit.reminder_time || '08:00')} • {t('friends.shared_with', 'Shared with {name}', { name: friendDisplayName })}
                       </Text>
                     </View>
                   </View>
@@ -1482,7 +1482,7 @@ export const FriendsView: React.FC = () => {
                           ]}
                           numberOfLines={1}
                         >
-                          You
+                          {t('friends.you', 'You')}
                         </Text>
                       </View>
                       <View
@@ -1551,12 +1551,12 @@ export const FriendsView: React.FC = () => {
                     ]}
                   >
                     {bothModalDone
-                      ? '🎉 Both completed today! Shared streak secured!'
+                      ? t('friends.both_completed_today', '🎉 Both completed today! Shared streak secured!')
                       : myModalDone && !friendModalDone
-                      ? `⚡ You're done! Remind ${friendShortName} to check in.`
+                      ? t('friends.you_done_remind', "⚡ You're done! Remind {name} to check in.", { name: friendShortName })
                       : !myModalDone && friendModalDone
-                      ? `⏳ ${friendShortName} completed today! Your turn to check in.`
-                      : '⏳ Both pending today. Keep each other accountable!'}
+                      ? t('friends.friend_done_your_turn', '⏳ {name} completed today! Your turn to check in.', { name: friendShortName })
+                      : t('friends.both_pending_today', '⏳ Both pending today. Keep each other accountable!')}
                   </Text>
                 </View>
 
@@ -1586,7 +1586,7 @@ export const FriendsView: React.FC = () => {
                         { color: isDark ? '#94A3B8' : '#64748B' },
                       ]}
                     >
-                      Current Streak
+                      {t('habits.streak', 'Current Streak')}
                     </Text>
                   </View>
 
@@ -1609,7 +1609,7 @@ export const FriendsView: React.FC = () => {
                         { color: isDark ? '#94A3B8' : '#64748B' },
                       ]}
                     >
-                      You this week
+                      {t('friends.you_this_week', 'You this week')}
                     </Text>
                   </View>
 
@@ -1632,7 +1632,7 @@ export const FriendsView: React.FC = () => {
                         { color: isDark ? '#94A3B8' : '#64748B' },
                       ]}
                     >
-                      {friendShortName} this week
+                      {t('friends.friend_this_week', '{name} this week', { name: friendShortName })}
                     </Text>
                   </View>
                 </View>
@@ -1653,7 +1653,7 @@ export const FriendsView: React.FC = () => {
                       { color: isDark ? '#94A3B8' : '#64748B' },
                     ]}
                   >
-                    WEEKLY CALENDAR PROGRESS
+                    {t('friends.weekly_calendar_progress', 'WEEKLY CALENDAR PROGRESS')}
                   </Text>
 
                   {/* Day & Date Headers */}
@@ -1712,7 +1712,7 @@ export const FriendsView: React.FC = () => {
                         ]}
                         numberOfLines={1}
                       >
-                        You
+                        {t('friends.you', 'You')}
                       </Text>
                     </View>
                     <View style={styles.matrixGridCols}>
@@ -1776,7 +1776,7 @@ export const FriendsView: React.FC = () => {
                   >
                     <Bell size={13} color="#F59E0B" />
                     <Text style={styles.nudgeBtnText}>
-                      Nudge {friendShortName}
+                      {t('friends.nudge_friend', 'Nudge {name}', { name: friendShortName })}
                     </Text>
                   </TouchableOpacity>
 
@@ -1801,7 +1801,7 @@ export const FriendsView: React.FC = () => {
                         { color: isDark ? '#94A3B8' : '#64748B' },
                       ]}
                     >
-                      Leave Habit
+                      {t('friends.leave_habit', 'Leave Habit')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -1812,7 +1812,7 @@ export const FriendsView: React.FC = () => {
                   onPress={() => setSelectedSharedHabitProgress(null)}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.modalDoneBtnText}>Done</Text>
+                  <Text style={styles.modalDoneBtnText}>{t('common.done', 'Done')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -1840,14 +1840,20 @@ export const FriendsView: React.FC = () => {
 
             <Text style={[styles.confirmTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
               {friendToRemove?.requestStatus === 'pending_sent'
-                ? 'Cancel Follow Request?'
-                : 'Remove Habit Buddy?'}
+                ? t('friends.cancel_request_title', 'Cancel Follow Request?')
+                : t('friends.remove_buddy_title', 'Remove Habit Buddy?')}
             </Text>
 
             <Text style={[styles.confirmMessage, { color: isDark ? '#94A3B8' : '#64748B' }]}>
               {friendToRemove?.requestStatus === 'pending_sent'
-                ? `Cancel your pending follow request to ${friendToRemove ? formatFriendDisplayName(friendToRemove).displayName : 'this user'} (${friendToRemove ? formatFriendDisplayName(friendToRemove).usernameTag : ''})?`
-                : `Are you sure you want to remove ${friendToRemove ? formatFriendDisplayName(friendToRemove).displayName : 'this friend'}${friendToRemove ? ` (${formatFriendDisplayName(friendToRemove).usernameTag})` : ''}? You will no longer track mutual streaks together.`}
+                ? t('friends.cancel_request_confirm', 'Cancel your pending follow request to {name} ({username})?', {
+                    name: friendToRemove ? formatFriendDisplayName(friendToRemove).displayName : '',
+                    username: friendToRemove ? formatFriendDisplayName(friendToRemove).usernameTag : '',
+                  })
+                : t('friends.remove_buddy_confirm', 'Are you sure you want to remove {name} ({username})? You will no longer track mutual streaks together.', {
+                    name: friendToRemove ? formatFriendDisplayName(friendToRemove).displayName : '',
+                    username: friendToRemove ? formatFriendDisplayName(friendToRemove).usernameTag : '',
+                  })}
             </Text>
 
             <View style={styles.confirmBtnRow}>
@@ -1865,7 +1871,7 @@ export const FriendsView: React.FC = () => {
                     { color: isDark ? '#F1F5F9' : '#334155' },
                   ]}
                 >
-                  {friendToRemove?.requestStatus === 'pending_sent' ? 'Keep' : 'Cancel'}
+                  {friendToRemove?.requestStatus === 'pending_sent' ? t('friends.keep', 'Keep') : t('common.cancel', 'Cancel')}
                 </Text>
               </TouchableOpacity>
 
@@ -1887,7 +1893,7 @@ export const FriendsView: React.FC = () => {
               >
                 <UserMinus size={14} color="#FFFFFF" strokeWidth={2.5} />
                 <Text style={styles.confirmDeleteBtnText}>
-                  {friendToRemove?.requestStatus === 'pending_sent' ? 'Cancel Request' : 'Unfollow'}
+                  {friendToRemove?.requestStatus === 'pending_sent' ? t('friends.cancel_request_btn', 'Cancel Request') : t('friends.unfollow_btn', 'Unfollow')}
                 </Text>
               </TouchableOpacity>
             </View>

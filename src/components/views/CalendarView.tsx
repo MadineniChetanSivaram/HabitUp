@@ -29,6 +29,8 @@ export const CalendarView: React.FC = () => {
     completions,
     setActiveTab,
     theme,
+    language,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -48,21 +50,29 @@ export const CalendarView: React.FC = () => {
     weeks.push(daysInMonth.slice(i, i + 7));
   }
 
-  const monthName = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric',
-  }).format(calendarDate);
+  const monthName =
+    t(
+      `calendar.month_${month}`,
+      new Intl.DateTimeFormat(language === 'en' ? 'en-US' : language, {
+        month: 'long',
+      }).format(calendarDate)
+    ) +
+    ' ' +
+    year;
 
   const changeMonth = (offset: number) => {
     setCalendarDate(new Date(year, month + offset, 1));
   };
 
   const selectedDateObj = new Date(selectedCalendarDay + 'T12:00:00');
-  const formattedSelectedHeader = new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  }).format(selectedDateObj);
+  const formattedSelectedHeader = new Intl.DateTimeFormat(
+    language === 'en' ? 'en-US' : language,
+    {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    }
+  ).format(selectedDateObj);
 
   const isSelectedToday = selectedCalendarDay === todayKey;
 
@@ -81,6 +91,8 @@ export const CalendarView: React.FC = () => {
   const completedDayCount = completedHabitsForDay.length;
   const dayProgressPercent =
     totalDayCount > 0 ? Math.round((completedDayCount / totalDayCount) * 100) : 0;
+
+  const dayHeaderKeys = ['days.m', 'days.t', 'days.w', 'days.th', 'days.f', 'days.s', 'days.su'];
 
   return (
     <ScrollView
@@ -104,7 +116,7 @@ export const CalendarView: React.FC = () => {
         </TouchableOpacity>
 
         <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Calendar
+          {t('calendar.title', 'Calendar')}
         </Text>
 
         <View style={{ width: 38 }} />
@@ -150,10 +162,10 @@ export const CalendarView: React.FC = () => {
 
       {/* Days of Week Header */}
       <View style={styles.dayLabelsRow}>
-        {DAY_LABELS.map((d, i) => (
+        {dayHeaderKeys.map((k, i) => (
           <View key={i} style={styles.dayCol}>
             <Text style={[styles.dayLabelText, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-              {d}
+              {t(k, DAY_LABELS[i])}
             </Text>
           </View>
         ))}
@@ -301,7 +313,7 @@ export const CalendarView: React.FC = () => {
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#10B981' }]} />
           <Text style={[styles.legendText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            All Done
+            {t('calendar.all_done', 'All Done')}
           </Text>
         </View>
 
@@ -314,14 +326,14 @@ export const CalendarView: React.FC = () => {
             style={styles.legendDot}
           />
           <Text style={[styles.legendText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Partial
+            {t('calendar.partial', 'Partial')}
           </Text>
         </View>
 
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: '#EF4444' }]} />
           <Text style={[styles.legendText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Missed
+            {t('calendar.missed', 'Missed')}
           </Text>
         </View>
       </View>
@@ -334,15 +346,19 @@ export const CalendarView: React.FC = () => {
           </Text>
           {isSelectedToday && (
             <View style={styles.todayBadge}>
-              <Text style={styles.todayBadgeText}>Today</Text>
+              <Text style={styles.todayBadgeText}>{t('calendar.today', 'Today')}</Text>
             </View>
           )}
         </View>
 
         <Text style={[styles.selectedDaySub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
           {totalDayCount === 0
-            ? 'No habits scheduled for this day'
-            : `${completedDayCount} of ${totalDayCount} completed (${dayProgressPercent}%)`}
+            ? t('calendar.no_habits_scheduled', 'No habits scheduled for this day')
+            : t('calendar.completed_summary', `${completedDayCount} of ${totalDayCount} completed (${dayProgressPercent}%)`, {
+                completed: completedDayCount,
+                total: totalDayCount,
+                percent: dayProgressPercent,
+              })}
         </Text>
 
         {totalDayCount > 0 && (
@@ -390,7 +406,7 @@ export const CalendarView: React.FC = () => {
                       {habit.name}
                     </Text>
                     <Text style={[styles.habitItemFreq, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                      {habit.frequency_type === 'daily' ? 'Daily' : 'Custom Days'}
+                      {habit.frequency_type === 'daily' ? t('common.daily', 'Daily') : t('common.custom_days', 'Custom Days')}
                     </Text>
                   </View>
                 </View>
@@ -398,7 +414,7 @@ export const CalendarView: React.FC = () => {
                 {isHabitDone ? (
                   <View style={styles.doneStatusBadge}>
                     <Check size={12} color="#10B981" strokeWidth={3} />
-                    <Text style={styles.doneStatusText}>Done</Text>
+                    <Text style={styles.doneStatusText}>{t('common.done', 'Done')}</Text>
                   </View>
                 ) : (
                   <View
@@ -408,7 +424,7 @@ export const CalendarView: React.FC = () => {
                     ]}
                   >
                     <Text style={[styles.pendingStatusText, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                      Pending
+                      {t('home.filter_pending', 'Pending')}
                     </Text>
                   </View>
                 )}
@@ -418,7 +434,7 @@ export const CalendarView: React.FC = () => {
         ) : (
           <View style={styles.emptyDayBox}>
             <Text style={[styles.emptyDayText, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-              No habits due on this date.
+              {t('calendar.no_habits_due', 'No habits due on this date.')}
             </Text>
           </View>
         )}

@@ -40,7 +40,7 @@ import { getDetectedTimezone } from '../../constants/timezones';
 import { PasswordStrengthIndicator, getPasswordStrength } from '../common/PasswordStrengthIndicator';
 
 export const AuthView: React.FC = () => {
-  const { login, register, showToast, theme } = useHabit();
+  const { login, register, showToast, theme, t } = useHabit();
   const insets = useSafeAreaInsets();
   const isDark = theme === 'dark';
 
@@ -242,39 +242,39 @@ export const AuthView: React.FC = () => {
   const ONBOARDING_SLIDES = [
     {
       id: 'streaks',
-      badge: 'DAILY CONSISTENCY',
+      badge: t('auth.badge_consistency', 'DAILY CONSISTENCY'),
       badgeColor: '#F59E0B',
       badgeBg: 'rgba(245, 158, 11, 0.15)',
       glowOuter: 'rgba(245, 158, 11, 0.12)',
       glowInner: 'rgba(245, 158, 11, 0.22)',
       borderColor: 'rgba(245, 158, 11, 0.4)',
       iconColor: '#F59E0B',
-      title: 'Build Unbreakable Streaks',
-      subtitle: 'Track daily consistency and never break the chain.',
+      title: t('auth.slide_streak_title', 'Build Unbreakable Streaks'),
+      subtitle: t('auth.slide_streak_sub', 'Track daily consistency and never break the chain.'),
     },
     {
       id: 'social',
-      badge: 'SOCIAL ACCOUNTABILITY',
+      badge: t('auth.badge_social', 'SOCIAL ACCOUNTABILITY'),
       badgeColor: '#818CF8',
       badgeBg: 'rgba(129, 140, 248, 0.15)',
       glowOuter: 'rgba(124, 92, 255, 0.12)',
       glowInner: 'rgba(124, 92, 255, 0.22)',
       borderColor: 'rgba(124, 92, 255, 0.4)',
       iconColor: '#818CF8',
-      title: 'Accountability with Friends',
-      subtitle: 'Share routines, compare streaks, and stay motivated together.',
+      title: t('auth.slide_social_title', 'Accountability with Friends'),
+      subtitle: t('auth.slide_social_sub', 'Share routines, compare streaks, and stay motivated together.'),
     },
     {
       id: 'garden',
-      badge: 'VIRTUAL HABIT GARDEN',
+      badge: t('auth.badge_garden', 'VIRTUAL HABIT GARDEN'),
       badgeColor: '#10B981',
       badgeBg: 'rgba(16, 185, 129, 0.15)',
       glowOuter: 'rgba(16, 185, 129, 0.12)',
       glowInner: 'rgba(16, 185, 129, 0.22)',
       borderColor: 'rgba(16, 185, 129, 0.4)',
       iconColor: '#10B981',
-      title: 'Level Up Your Habit Garden',
-      subtitle: 'Complete daily habits to grow your seedling into a thriving tree.',
+      title: t('auth.slide_garden_title', 'Level Up Your Habit Garden'),
+      subtitle: t('auth.slide_garden_sub', 'Complete daily habits to grow your seedling into a thriving tree.'),
     },
   ];
 
@@ -282,10 +282,19 @@ export const AuthView: React.FC = () => {
 
   const renderSlidePreview = (index: number) => {
     if (index === 0) {
+      const days = [
+        t('days.m', 'M'),
+        t('days.t', 'T'),
+        t('days.w', 'W'),
+        t('days.th', 'T'),
+        t('days.f', 'F'),
+        t('days.s', 'S'),
+        t('days.su', 'S'),
+      ];
       return (
         <View style={styles.previewStreakCard}>
           <View style={styles.previewDaysRow}>
-            {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, idx) => {
+            {days.map((day, idx) => {
               const isDone = idx < 6;
               const isToday = idx === 6;
               return (
@@ -313,7 +322,7 @@ export const AuthView: React.FC = () => {
           <View style={[styles.previewBadgeRow, { backgroundColor: isDark ? 'rgba(245, 158, 11, 0.12)' : '#FEF3C7' }]}>
             <Flame size={14} color="#F59E0B" />
             <Text style={[styles.previewBadgeText, { color: isDark ? '#FDE68A' : '#B45309' }]}>
-              7-Day Streak Active! • Perfect Consistency
+              {t('auth.streak_active_banner', '7-Day Streak Active! • Perfect Consistency')}
             </Text>
           </View>
         </View>
@@ -345,7 +354,7 @@ export const AuthView: React.FC = () => {
           <View style={[styles.previewBadgeRow, { backgroundColor: isDark ? 'rgba(124, 92, 255, 0.12)' : '#EDE9FE' }]}>
             <Sparkles size={13} color="#7C5CFF" />
             <Text style={[styles.previewBadgeText, { color: isDark ? '#C7D2FE' : '#6366F1' }]}>
-              Shared Habit: Morning Run (5km) 🏃‍♂️
+              {t('auth.shared_habit_banner', 'Shared Habit: Morning Run (5km) 🏃‍♂️')}
             </Text>
           </View>
         </View>
@@ -359,9 +368,9 @@ export const AuthView: React.FC = () => {
           <View style={styles.previewGardenInfo}>
             <View style={styles.previewGardenTitleRow}>
               <Text style={[styles.previewGardenLevel, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Stage 4: Flourishing Oak
+                {t('garden.stages.4', 'Stage 4: Flourishing Oak')}
               </Text>
-              <Text style={styles.previewGardenProgress}>14 / 21 Days</Text>
+              <Text style={styles.previewGardenProgress}>14 / 21 {t('common.days', 'Days')}</Text>
             </View>
             <View style={[styles.previewProgressTrack, { backgroundColor: isDark ? '#1E293B' : '#E2E8F0' }]}>
               <View style={[styles.previewProgressFill, { width: '90%' }]} />
@@ -371,7 +380,7 @@ export const AuthView: React.FC = () => {
         <View style={[styles.previewBadgeRow, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.12)' : '#D1FAE5' }]}>
           <Sprout size={13} color="#10B981" />
           <Text style={[styles.previewBadgeText, { color: isDark ? '#A7F3D0' : '#047857' }]}>
-            Next Evolution: Ancient Mystic Forest 🌲
+            {t('auth.next_evolution_banner', 'Next Evolution: Ancient Mystic Forest 🌲')}
           </Text>
         </View>
       </View>
@@ -418,7 +427,7 @@ export const AuthView: React.FC = () => {
                 activeOpacity={0.7}
               >
                 <Text style={[styles.welcomeSkipText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Skip
+                  {t('auth.skip', 'Skip')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -532,7 +541,7 @@ export const AuthView: React.FC = () => {
                 }}
                 activeOpacity={0.85}
               >
-                <Text style={styles.primaryBtnText}>Get Started</Text>
+                <Text style={styles.primaryBtnText}>{t('auth.get_started', 'Get Started')}</Text>
                 <ArrowRight size={18} color="#FFFFFF" />
               </TouchableOpacity>
 
@@ -551,7 +560,7 @@ export const AuthView: React.FC = () => {
                 activeOpacity={0.85}
               >
                 <Text style={[styles.secondaryBtnText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  I already have an account • Log In
+                  {t('auth.already_have_account_login', 'I already have an account • Log In')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -565,7 +574,7 @@ export const AuthView: React.FC = () => {
             <View style={styles.header}>
               <HabitUpLogo size="md" />
               <Text style={[styles.tagline, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Build atomic habits. Master consistency.
+                {t('auth.tagline', 'Build atomic habits. Master consistency.')}
               </Text>
             </View>
 
@@ -591,7 +600,7 @@ export const AuthView: React.FC = () => {
                       { color: authMode === 'signin' ? '#7C5CFF' : isDark ? '#94A3B8' : '#64748B' },
                     ]}
                   >
-                    Sign In
+                    {t('auth.sign_in', 'Sign In')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -613,7 +622,7 @@ export const AuthView: React.FC = () => {
                       { color: authMode === 'signup' ? '#7C5CFF' : isDark ? '#94A3B8' : '#64748B' },
                     ]}
                   >
-                    Create Account
+                    {t('auth.sign_up', 'Create Account')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -642,7 +651,7 @@ export const AuthView: React.FC = () => {
               <View style={styles.formContainer}>
                 <View style={styles.inputGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Email or Username
+                    {t('auth.email_or_username', 'Email or Username')}
                   </Text>
                   <View
                     style={[
@@ -656,7 +665,7 @@ export const AuthView: React.FC = () => {
                     <Mail size={18} color="#94A3B8" />
                     <TextInput
                       style={[styles.input, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
-                      placeholder="user@example.com or @username"
+                      placeholder={t('auth.email_placeholder', 'user@example.com or @username')}
                       placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
                       value={email}
                       onChangeText={setEmail}
@@ -672,10 +681,10 @@ export const AuthView: React.FC = () => {
                 <View style={styles.inputGroup}>
                   <View style={styles.passwordHeaderRow}>
                     <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                      Password
+                      {t('auth.password', 'Password')}
                     </Text>
                     <TouchableOpacity onPress={() => setAuthMode('forgot')}>
-                      <Text style={styles.forgotLink}>Forgot Password?</Text>
+                      <Text style={styles.forgotLink}>{t('auth.forgot_password', 'Forgot Password?')}</Text>
                     </TouchableOpacity>
                   </View>
 
@@ -716,7 +725,7 @@ export const AuthView: React.FC = () => {
                     <ActivityIndicator color="#FFFFFF" />
                   ) : (
                     <>
-                      <Text style={styles.primaryBtnText}>Sign In</Text>
+                      <Text style={styles.primaryBtnText}>{t('auth.sign_in', 'Sign In')}</Text>
                       <ArrowRight size={18} color="#FFFFFF" />
                     </>
                   )}
@@ -729,7 +738,7 @@ export const AuthView: React.FC = () => {
               <View style={styles.formContainer}>
                 <View style={styles.inputGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Full Name
+                    {t('auth.full_name', 'Full Name')}
                   </Text>
                   <View
                     style={[
@@ -743,7 +752,7 @@ export const AuthView: React.FC = () => {
                     <User size={18} color="#94A3B8" />
                     <TextInput
                       style={[styles.input, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
-                      placeholder="Alex Rivera"
+                      placeholder={t('auth.name_placeholder', 'Alex Rivera')}
                       placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
                       value={name}
                       onChangeText={handleNameChange}
@@ -759,7 +768,7 @@ export const AuthView: React.FC = () => {
                 <View style={styles.inputGroup}>
                   <View style={styles.usernameHeaderRow}>
                     <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                      Choose Username
+                      {t('auth.choose_username', 'Choose Username')}
                     </Text>
                     {usernameFeedback ? (
                       <View style={styles.usernameStatusBadge}>
@@ -810,7 +819,7 @@ export const AuthView: React.FC = () => {
                     <AtSign size={18} color={usernameStatus === 'available' ? '#10B981' : '#94A3B8'} />
                     <TextInput
                       style={[styles.input, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
-                      placeholder="alex_rivera"
+                      placeholder={t('auth.username_placeholder', 'alex_rivera')}
                       placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
                       value={username}
                       onChangeText={handleUsernameChange}
@@ -821,13 +830,13 @@ export const AuthView: React.FC = () => {
                     />
                   </View>
                   <Text style={[styles.helperText, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                    Unique handle for friends to find, follow, and compare routines.
+                    {t('auth.username_helper', 'Unique handle for friends to find, follow, and compare routines.')}
                   </Text>
                 </View>
 
                 <View style={styles.inputGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Email Address
+                    {t('auth.email_or_username', 'Email Address')}
                   </Text>
                   <View
                     style={[
@@ -856,7 +865,7 @@ export const AuthView: React.FC = () => {
 
                 <View style={styles.inputGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155', letterSpacing: 0.5, fontWeight: '700' }]}>
-                    CREATE SECURE PASSWORD
+                    {t('auth.create_secure_password', 'CREATE SECURE PASSWORD')}
                   </Text>
                   <View
                     style={[
@@ -900,7 +909,7 @@ export const AuthView: React.FC = () => {
                     <ActivityIndicator color="#FFFFFF" />
                   ) : (
                     <>
-                      <Text style={styles.primaryBtnText}>Create Account</Text>
+                      <Text style={styles.primaryBtnText}>{t('auth.sign_up', 'Create Account')}</Text>
                       <ArrowRight size={18} color="#FFFFFF" />
                     </>
                   )}
@@ -919,17 +928,17 @@ export const AuthView: React.FC = () => {
                   }}
                 >
                   <ArrowLeft size={16} color="#818CF8" />
-                  <Text style={styles.backToSignText}>Back to Sign In</Text>
+                  <Text style={styles.backToSignText}>{t('auth.back_to_signin', 'Back to Sign In')}</Text>
                 </TouchableOpacity>
 
                 <View style={styles.forgotHeader}>
                   <Text style={[styles.forgotTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                    {forgotStep === 'request' ? 'Reset Password' : 'Set New Password'}
+                    {forgotStep === 'request' ? t('auth.reset_password', 'Reset Password') : t('auth.new_password', 'Set New Password')}
                   </Text>
                   <Text style={[styles.forgotSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
                     {forgotStep === 'request'
-                      ? 'Enter the email associated with your account and we will send a password reset code.'
-                      : 'Enter the reset token sent to your email address and your new password.'}
+                      ? t('auth.reset_sub', 'Enter the email associated with your account and we will send a password reset code.')
+                      : t('auth.reset_sub', 'Enter the reset token sent to your email address and your new password.')}
                   </Text>
                 </View>
 
@@ -937,7 +946,7 @@ export const AuthView: React.FC = () => {
                   <>
                     <View style={styles.inputGroup}>
                       <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                        Email Address
+                        {t('auth.email_or_username', 'Email Address')}
                       </Text>
                       <View
                         style={[
@@ -970,7 +979,7 @@ export const AuthView: React.FC = () => {
                         <ActivityIndicator color="#FFFFFF" />
                       ) : (
                         <>
-                          <Text style={styles.primaryBtnText}>Send Reset Code</Text>
+                          <Text style={styles.primaryBtnText}>{t('auth.send_reset_code', 'Send Reset Code')}</Text>
                           <ArrowRight size={18} color="#FFFFFF" />
                         </>
                       )}
@@ -980,14 +989,14 @@ export const AuthView: React.FC = () => {
                       style={styles.haveTokenBtn}
                       onPress={() => setForgotStep('confirm')}
                     >
-                      <Text style={styles.haveTokenText}>Already have a reset token? Enter it here</Text>
+                      <Text style={styles.haveTokenText}>{t('auth.already_have_token', 'Already have a reset token? Enter it here')}</Text>
                     </TouchableOpacity>
                   </>
                 ) : (
                   <>
                     <View style={styles.inputGroup}>
                       <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                        Reset Token / Code
+                        {t('auth.reset_token_label', 'Reset Token / Code')}
                       </Text>
                       <View
                         style={[
@@ -1012,7 +1021,7 @@ export const AuthView: React.FC = () => {
 
                     <View style={styles.inputGroup}>
                       <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155', letterSpacing: 0.5, fontWeight: '700' }]}>
-                        CREATE SECURE PASSWORD
+                        {t('auth.create_secure_password', 'CREATE SECURE PASSWORD')}
                       </Text>
                       <View
                         style={[
@@ -1053,7 +1062,7 @@ export const AuthView: React.FC = () => {
                       ) : (
                         <>
                           <CheckCircle2 size={18} color="#FFFFFF" />
-                          <Text style={styles.primaryBtnText}>Confirm Password Reset</Text>
+                          <Text style={styles.primaryBtnText}>{t('auth.confirm_password_reset', 'Confirm Password Reset')}</Text>
                         </>
                       )}
                     </TouchableOpacity>

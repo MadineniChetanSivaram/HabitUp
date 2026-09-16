@@ -48,6 +48,7 @@ export const HabitsView: React.FC = () => {
     setIsCreateModalOpen,
     setIsOnboardingModalOpen,
     theme,
+    language,
     t,
   } = useHabit();
 
@@ -91,10 +92,15 @@ export const HabitsView: React.FC = () => {
   const month = calendarDate.getMonth();
   const daysInMonth = getMonthCalendarDays(year, month);
 
-  const monthName = new Intl.DateTimeFormat('en-US', {
-    month: 'long',
-    year: 'numeric',
-  }).format(calendarDate);
+  const monthName =
+    t(
+      `calendar.month_${month}`,
+      new Intl.DateTimeFormat(language === 'en' ? 'en-US' : language, {
+        month: 'long',
+      }).format(calendarDate)
+    ) +
+    ' ' +
+    year;
 
   const changeMonth = (offset: number) => {
     setCalendarDate(new Date(year, month + offset, 1));

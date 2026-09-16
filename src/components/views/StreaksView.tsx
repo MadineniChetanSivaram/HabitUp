@@ -13,7 +13,7 @@ import { PlantStreakCard } from '../mobile/PlantStreakCard';
 import { Flame, Trophy, CheckCircle2, Zap, ChevronLeft } from 'lucide-react-native';
 
 export const StreaksView: React.FC = () => {
-  const { overallStats, setActiveTab, theme } = useHabit();
+  const { overallStats, setActiveTab, theme, t } = useHabit();
   const isDark = theme === 'dark';
 
   const plant = overallStats.plantStreak;
@@ -40,7 +40,7 @@ export const StreaksView: React.FC = () => {
         </TouchableOpacity>
 
         <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Streaks & Momentum
+          {t('streaks.title', 'Streaks & Momentum')}
         </Text>
 
         <View style={{ width: 38 }} />
@@ -83,7 +83,7 @@ export const StreaksView: React.FC = () => {
           {currentStreak}
         </Text>
         <Text style={[styles.streakHeroUnit, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          DAY STREAK
+          {t('streaks.day_streak', 'DAY STREAK')}
         </Text>
       </View>
 
@@ -105,10 +105,10 @@ export const StreaksView: React.FC = () => {
             <Trophy size={18} color="#10B981" />
           </View>
           <Text style={[styles.metricLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Longest Streak
+            {t('streaks.longest_streak', 'Longest Streak')}
           </Text>
           <Text style={[styles.metricNumber, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            {bestStreak} <Text style={{ fontSize: 13 }}>days</Text>
+            {bestStreak} <Text style={{ fontSize: 13 }}>{t('streaks.days', 'days')}</Text>
           </Text>
         </View>
 
@@ -125,7 +125,7 @@ export const StreaksView: React.FC = () => {
             <CheckCircle2 size={18} color="#38BDF8" />
           </View>
           <Text style={[styles.metricLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Total Check-ins
+            {t('streaks.total_checkins', 'Total Check-ins')}
           </Text>
           <Text style={[styles.metricNumber, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {totalCompletions}

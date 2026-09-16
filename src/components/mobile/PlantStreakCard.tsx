@@ -10,7 +10,7 @@ interface PlantStreakCardProps {
 }
 
 export const PlantStreakCard: React.FC<PlantStreakCardProps> = ({ compact = false }) => {
-  const { overallStats, setIsPlantGardenModalOpen, theme } = useHabit();
+  const { overallStats, setIsPlantGardenModalOpen, theme, t } = useHabit();
   const plant = overallStats.plantStreak;
   const isDark = theme === 'dark';
 
@@ -69,19 +69,19 @@ export const PlantStreakCard: React.FC<PlantStreakCardProps> = ({ compact = fals
           {isWateredToday ? (
             <View style={styles.wateredTag}>
               <Sparkles size={10} color="#F59E0B" />
-              <Text style={styles.wateredTagText}>Watered!</Text>
+              <Text style={styles.wateredTagText}>{t('streaks.watered', 'Watered!')}</Text>
             </View>
           ) : (
             <View style={styles.needsWaterTag}>
               <Droplets size={10} color="#38BDF8" fill="#38BDF8" />
-              <Text style={styles.needsWaterTagText}>Needs Water</Text>
+              <Text style={styles.needsWaterTagText}>{t('streaks.needs_water', 'Needs Water')}</Text>
             </View>
           )}
         </View>
 
         <View style={styles.gardenLink}>
           <Text style={[styles.gardenLinkText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Realms
+            {t('streaks.realms', 'Realms')}
           </Text>
           <ChevronRight size={14} color={isDark ? '#94A3B8' : '#64748B'} />
         </View>
@@ -95,14 +95,14 @@ export const PlantStreakCard: React.FC<PlantStreakCardProps> = ({ compact = fals
               {currentStreak}
             </Text>
             <Text style={[styles.streakLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Day Overall Streak
+              {t('streaks.day_overall_streak', 'Day Overall Streak')}
             </Text>
           </View>
 
           <Text style={[styles.stageTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {stage.name} •{' '}
             <Text style={{ color: isDark ? '#94A3B8' : '#64748B' }}>
-              Level {stage.level} of 6
+              {t('streaks.level', 'Level')} {stage.level} {t('streaks.of', 'of')} 6
             </Text>
           </Text>
 
@@ -111,8 +111,8 @@ export const PlantStreakCard: React.FC<PlantStreakCardProps> = ({ compact = fals
             numberOfLines={1}
           >
             {isWateredToday
-              ? '✨ Mascot fueled! Keep up momentum!'
-              : `Complete habits today to power up (${waterDropsToday}/${totalWaterDropsNeeded})`}
+              ? t('streaks.mascot_fueled', '✨ Mascot fueled! Keep up momentum!')
+              : `${t('streaks.complete_habits_power', 'Complete habits today to power up')} (${waterDropsToday}/${totalWaterDropsNeeded})`}
           </Text>
         </View>
 

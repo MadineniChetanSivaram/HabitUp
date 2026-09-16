@@ -23,7 +23,7 @@ import { formatTo12Hour } from '../../utils/streakCalculator';
 import { ArrowLeft, Check, X, Bell, Sparkles, Clock } from 'lucide-react-native';
 
 export const CreateHabitModal: React.FC = () => {
-  const { isCreateModalOpen, setIsCreateModalOpen, createHabit, theme } = useHabit();
+  const { isCreateModalOpen, setIsCreateModalOpen, createHabit, theme, t } = useHabit();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -162,7 +162,7 @@ export const CreateHabitModal: React.FC = () => {
               <X size={18} color={isDark ? '#FFFFFF' : '#0F172A'} strokeWidth={2.5} />
             </TouchableOpacity>
             <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-              New Habit
+              {t('create_habit.title', 'Create New Habit')}
             </Text>
             <View style={{ width: 32 }} />
           </View>
@@ -193,7 +193,7 @@ export const CreateHabitModal: React.FC = () => {
                   },
                 ]}
               >
-                Custom Habit
+                {t('create_habit.custom_habit', 'Custom Habit')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -220,7 +220,7 @@ export const CreateHabitModal: React.FC = () => {
                   },
                 ]}
               >
-                ⚡ Quick Templates
+                ⚡ {t('create_habit.quick_templates', 'Quick Templates')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -265,7 +265,7 @@ export const CreateHabitModal: React.FC = () => {
                 {/* Habit Name */}
                 <View style={styles.fieldGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Habit Name
+                    {t('create_habit.habit_name', 'HABIT NAME')}
                   </Text>
                   <TextInput
                     style={[
@@ -276,7 +276,7 @@ export const CreateHabitModal: React.FC = () => {
                         color: isDark ? '#FFFFFF' : '#0F172A',
                       },
                     ]}
-                    placeholder="e.g. Read 10 pages"
+                    placeholder={t('create_habit.habit_name_placeholder', 'e.g. Read 10 pages, 5km Run')}
                     placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
                     value={name}
                     onChangeText={setName}
@@ -286,7 +286,7 @@ export const CreateHabitModal: React.FC = () => {
                 {/* Description */}
                 <View style={styles.fieldGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Description / Motivation
+                    {t('create_habit.description_label', 'DESCRIPTION / MOTIVATION (OPTIONAL)')}
                   </Text>
                   <TextInput
                     style={[
@@ -297,7 +297,7 @@ export const CreateHabitModal: React.FC = () => {
                         color: isDark ? '#FFFFFF' : '#0F172A',
                       },
                     ]}
-                    placeholder="e.g. Expand knowledge before bedtime"
+                    placeholder={t('create_habit.description_label', 'e.g. Expand knowledge before bedtime')}
                     placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
                     value={description}
                     onChangeText={setDescription}
@@ -307,7 +307,7 @@ export const CreateHabitModal: React.FC = () => {
                 {/* Color Palette */}
                 <View style={styles.fieldGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Accent Color
+                    {t('create_habit.color', 'THEME COLOR')}
                   </Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.colorRow}>
                     {HABIT_COLORS.map((c) => {
@@ -332,7 +332,7 @@ export const CreateHabitModal: React.FC = () => {
                 {/* Icon Grid */}
                 <View style={styles.fieldGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Icon
+                    {t('create_habit.icon', 'ICON')}
                   </Text>
                   <View style={styles.iconGrid}>
                     {AVAILABLE_ICONS.slice(0, 16).map((iconName) => {
@@ -365,7 +365,7 @@ export const CreateHabitModal: React.FC = () => {
                 {/* Frequency */}
                 <View style={styles.fieldGroup}>
                   <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                    Frequency
+                    {t('create_habit.frequency', 'FREQUENCY')}
                   </Text>
                   <View style={styles.freqRow}>
                     <TouchableOpacity
@@ -382,7 +382,7 @@ export const CreateHabitModal: React.FC = () => {
                           { color: frequencyType === 'daily' ? '#FFFFFF' : isDark ? '#CBD5E1' : '#334155' },
                         ]}
                       >
-                        Every Day
+                        {t('common.daily', 'Daily')}
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -399,7 +399,7 @@ export const CreateHabitModal: React.FC = () => {
                           { color: frequencyType === 'custom_days' ? '#FFFFFF' : isDark ? '#CBD5E1' : '#334155' },
                         ]}
                       >
-                        Specific Days
+                        {t('common.custom_days', 'Custom Days')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -438,7 +438,7 @@ export const CreateHabitModal: React.FC = () => {
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                     <Bell size={18} color="#7C5CFF" />
                     <Text style={[styles.label, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                      Daily Reminder
+                      {t('create_habit.daily_notification', 'Daily Notification')}
                     </Text>
                   </View>
                   <Switch
@@ -464,7 +464,7 @@ export const CreateHabitModal: React.FC = () => {
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 }}>
                         <Clock size={16} color="#7C5CFF" />
                         <Text style={[styles.timeLabel, { color: isDark ? '#CBD5E1' : '#334155' }]}>
-                          Reminder Time
+                          {t('create_habit.reminder_time', 'REMINDER & TIME')}
                         </Text>
                       </View>
                       <View
@@ -673,7 +673,7 @@ export const CreateHabitModal: React.FC = () => {
                 onPress={handleSave}
                 disabled={!name.trim()}
               >
-                <Text style={styles.saveBtnText}>Create Habit</Text>
+                <Text style={styles.saveBtnText}>{t('create_habit.save_habit', 'Save & Start Streak')}</Text>
               </TouchableOpacity>
             </View>
           )}

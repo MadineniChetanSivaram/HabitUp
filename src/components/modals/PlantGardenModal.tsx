@@ -28,6 +28,7 @@ export const PlantGardenModal: React.FC = () => {
     setIsPlantGardenModalOpen,
     overallStats,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -175,7 +176,10 @@ export const PlantGardenModal: React.FC = () => {
                         {r.name}
                       </Text>
                       <Text style={[styles.realmPillSub, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                        Month {r.monthNumber} ({r.requiredStreak}d+)
+                        {t('garden.month_streak_req', `Month ${r.monthNumber} (${r.requiredStreak}d+)`, {
+                          month: r.monthNumber,
+                          streak: r.requiredStreak,
+                        })}
                       </Text>
                     </View>
 
@@ -235,7 +239,7 @@ export const PlantGardenModal: React.FC = () => {
                     { color: isDark ? '#FFFFFF' : '#065F46' },
                   ]}
                 >
-                  Stage {activeStage.level} • {activeStage.name}
+                  {t('garden.stages_progression', 'Stage')} {activeStage.level} • {activeStage.name}
                 </Text>
                 <View
                   style={[
@@ -286,7 +290,7 @@ export const PlantGardenModal: React.FC = () => {
                   ]}
                 >
                   <Text style={[styles.streakStatLabel, { color: isDark ? '#8B949E' : '#64748B' }]}>
-                    CURRENT STREAK
+                    {t('habits.streak', 'CURRENT STREAK')}
                   </Text>
                   <View style={styles.streakStatValRow}>
                     <Text style={styles.streakEmoji}>🔥</Text>
@@ -296,7 +300,7 @@ export const PlantGardenModal: React.FC = () => {
                         { color: isDark ? '#FFFFFF' : '#0F172A' },
                       ]}
                     >
-                      {currentStreak} days
+                      {currentStreak} {t('common.days', 'days')}
                     </Text>
                   </View>
                 </View>
@@ -311,7 +315,7 @@ export const PlantGardenModal: React.FC = () => {
                   ]}
                 >
                   <Text style={[styles.streakStatLabel, { color: isDark ? '#8B949E' : '#64748B' }]}>
-                    BEST STREAK
+                    {t('habits.best_streak', 'BEST STREAK')}
                   </Text>
                   <View style={styles.streakStatValRow}>
                     <Text style={styles.streakEmoji}>🏆</Text>
@@ -321,7 +325,7 @@ export const PlantGardenModal: React.FC = () => {
                         { color: activeRealm.primaryColor },
                       ]}
                     >
-                      {bestStreak} days
+                      {bestStreak} {t('common.days', 'days')}
                     </Text>
                   </View>
                 </View>
@@ -336,10 +340,10 @@ export const PlantGardenModal: React.FC = () => {
                   { color: isDark ? '#E2E8F0' : '#0F172A' },
                 ]}
               >
-                {activeRealm.name.toUpperCase()} STAGES
+                {activeRealm.name.toUpperCase()} {t('garden.stages_progression', 'STAGES')}
               </Text>
               <Text style={[styles.roadmapSub, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-                Tap to preview
+                {t('garden.tap_to_preview', 'Tap to preview')}
               </Text>
             </View>
 
@@ -415,12 +419,15 @@ export const PlantGardenModal: React.FC = () => {
                               { backgroundColor: activeRealm.primaryColor },
                             ]}
                           >
-                            <Text style={styles.currentBadgeText}>CURRENT</Text>
+                            <Text style={styles.currentBadgeText}>{t('garden.current_stage', 'CURRENT')}</Text>
                           </View>
                         )}
                       </View>
                       <Text style={[styles.stageStreakReqText, { color: isDark ? '#8B949E' : '#64748B' }]}>
-                        Requires {s.minStreak}d realm streak ({fullStreakRequired}d total)
+                        {t('garden.requires_streak', `Requires ${s.minStreak}d realm streak (${fullStreakRequired}d total)`, {
+                          realmStreak: s.minStreak,
+                          fullStreak: fullStreakRequired,
+                        })}
                       </Text>
                     </View>
 
@@ -465,7 +472,7 @@ export const PlantGardenModal: React.FC = () => {
                     { color: isDark ? '#FFFFFF' : '#0F172A' },
                   ]}
                 >
-                  How 30-Day Monthly Realms Work
+                  {t('garden.how_realms_work', 'How 30-Day Monthly Realms Work')}
                 </Text>
               </View>
 
@@ -473,21 +480,21 @@ export const PlantGardenModal: React.FC = () => {
                 <View style={styles.bulletRow}>
                   <Text style={[styles.bulletDot, { color: isDark ? '#94A3B8' : '#64748B' }]}>•</Text>
                   <Text style={[styles.bulletText, { color: isDark ? '#94A3B8' : '#475569' }]}>
-                    Every 30-day streak milestone completes a realm and awards a permanent mastery trophy!
+                    {t('garden.bullet_1', 'Every 30-day streak milestone completes a realm and awards a permanent mastery trophy!')}
                   </Text>
                 </View>
 
                 <View style={styles.bulletRow}>
                   <Text style={[styles.bulletDot, { color: isDark ? '#94A3B8' : '#64748B' }]}>•</Text>
                   <Text style={[styles.bulletText, { color: isDark ? '#94A3B8' : '#475569' }]}>
-                    Month 1 unlocks 🌱 Living Garden, Month 2 awakens 🔥 Cosmic Flame, Month 3 hatches 🐉 Dragon Hatchery, and beyond.
+                    {t('garden.bullet_2', 'Month 1 unlocks 🌱 Living Garden, Month 2 awakens 🔥 Cosmic Flame, Month 3 hatches 🐉 Dragon Hatchery, and beyond.')}
                   </Text>
                 </View>
 
                 <View style={styles.bulletRow}>
                   <Text style={[styles.bulletDot, { color: isDark ? '#94A3B8' : '#64748B' }]}>•</Text>
                   <Text style={[styles.bulletText, { color: isDark ? '#94A3B8' : '#475569' }]}>
-                    100% daily habit completion fuels your active mascot with life and unlocks new animations.
+                    {t('garden.bullet_3', '100% daily habit completion fuels your active mascot with life and unlocks new animations.')}
                   </Text>
                 </View>
               </View>
@@ -502,7 +509,7 @@ export const PlantGardenModal: React.FC = () => {
               onPress={() => setIsPlantGardenModalOpen(false)}
               activeOpacity={0.85}
             >
-              <Text style={styles.ctaButtonText}>Back to Habits</Text>
+              <Text style={styles.ctaButtonText}>{t('garden.back_to_habits', 'Back to Habits')}</Text>
               <ArrowRight size={18} color="#080E1A" strokeWidth={2.5} />
             </TouchableOpacity>
           </ScrollView>

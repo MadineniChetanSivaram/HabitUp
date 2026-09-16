@@ -1,18 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useHabit } from '../../context/HabitContext';
 
 export interface PasswordStrengthResult {
   score: number; // 0 to 4
+  levelKey: 'weak' | 'fair' | 'medium' | 'strong' | '';
   label: string;
   color: string;
 }
 
 export function getPasswordStrength(pass: string): PasswordStrengthResult {
   if (!pass || pass.length === 0) {
-    return { score: 0, label: '', color: '#64748B' };
+    return { score: 0, levelKey: '', label: '', color: '#64748B' };
   }
   if (pass.length < 6) {
-    return { score: 1, label: 'Weak', color: '#FF4D6D' };
+    return { score: 1, levelKey: 'weak', label: 'Weak', color: '#FF4D6D' };
   }
 
   let points = 1;
@@ -22,13 +24,13 @@ export function getPasswordStrength(pass: string): PasswordStrengthResult {
   if (/[^A-Za-z0-9]/.test(pass)) points++;
 
   if (points <= 1) {
-    return { score: 1, label: 'Weak', color: '#FF4D6D' };
+    return { score: 1, levelKey: 'weak', label: 'Weak', color: '#FF4D6D' };
   } else if (points === 2) {
-    return { score: 2, label: 'Fair', color: '#FF8A00' };
+    return { score: 2, levelKey: 'fair', label: 'Fair', color: '#FF8A00' };
   } else if (points === 3 || points === 4) {
-    return { score: 3, label: 'Medium', color: '#FFB800' };
+    return { score: 3, levelKey: 'medium', label: 'Medium', color: '#FFB800' };
   } else {
-    return { score: 4, label: 'Strong', color: '#00E599' };
+    return { score: 4, levelKey: 'strong', label: 'Strong', color: '#00E599' };
   }
 }
 
@@ -45,10 +47,22 @@ interface Props {
 }
 
 export const PasswordStrengthIndicator: React.FC<Props> = ({ password, isDark = true }) => {
+  const { t } = useHabit();
   if (!password) return null;
 
-  const { score, label, color } = getPasswordStrength(password);
+  const { score, levelKey, color } = getPasswordStrength(password);
   const trackColor = isDark ? '#1E293B' : '#E2E8F0';
+
+  const localizedLabel =
+    levelKey === 'weak'
+      ? t('password.weak', 'Weak')
+      : levelKey === 'fair'
+      ? t('password.fair', 'Fair')
+      : levelKey === 'medium'
+      ? t('password.medium', 'Medium')
+      : levelKey === 'strong'
+      ? t('password.strong', 'Strong')
+      : '';
 
   return (
     <View style={styles.container}>
@@ -71,10 +85,10 @@ export const PasswordStrengthIndicator: React.FC<Props> = ({ password, isDark = 
 
       <View style={styles.labelRow}>
         <Text style={[styles.title, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          Password Strength
+          {t('password.strength', 'Password Strength')}
         </Text>
         <Text style={[styles.level, { color }]}>
-          {label}
+          {localizedLabel}
         </Text>
       </View>
     </View>

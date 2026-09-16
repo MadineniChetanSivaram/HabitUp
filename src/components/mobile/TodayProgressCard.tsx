@@ -14,6 +14,7 @@ export const TodayProgressCard: React.FC = () => {
     theme,
     overallStats,
     setIsPlantGardenModalOpen,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -62,13 +63,13 @@ export const TodayProgressCard: React.FC = () => {
           <View style={styles.titleRow}>
             <Text style={[styles.cardTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
               {selectedDate === formatDateKey(new Date())
-                ? "TODAY'S PROGRESS"
-                : `${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(selectedDateTime).toUpperCase()} PROGRESS`}
+                ? t('home.todays_progress', "TODAY'S PROGRESS")
+                : `${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(selectedDateTime).toUpperCase()} ${t('common.progress', 'PROGRESS')}`}
             </Text>
             {isPerfectDay && (
               <View style={styles.perfectBadge}>
                 <Sparkles size={10} color="#10B981" />
-                <Text style={styles.perfectText}>Perfect</Text>
+                <Text style={styles.perfectText}>{t('home.perfect', 'Perfect')}</Text>
               </View>
             )}
           </View>
@@ -103,10 +104,12 @@ export const TodayProgressCard: React.FC = () => {
 
           <Text style={[styles.subtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
             {totalCount === 0
-              ? 'Ready to grow? 🌱 Add your first habit!'
+              ? t('home.ready_to_grow', 'Ready to grow? 🌱 Add your first habit!')
               : totalCount - completedCount === 0
-              ? 'All habits completed! 🌟'
-              : `${totalCount - completedCount} habit${totalCount - completedCount === 1 ? '' : 's'} remaining`}
+              ? t('home.all_completed_short', 'All habits completed! 🌟')
+              : totalCount - completedCount === 1
+              ? `1 ${t('common.remaining_single', 'habit remaining')}`
+              : `${totalCount - completedCount} ${t('common.remaining_plural', 'habits remaining')}`}
           </Text>
 
           {/* Plant Garden Button */}
@@ -124,7 +127,7 @@ export const TodayProgressCard: React.FC = () => {
             >
               <Sprout size={12} color="#10B981" />
               <Text style={[styles.plantPillText, { color: isDark ? '#6EE7B7' : '#065F46' }]}>
-                {plant.stage.name} • Lvl {plant.stage.level}
+                {plant.stage.name} • {t('common.level', 'Lvl')} {plant.stage.level}
               </Text>
               <ChevronRight size={12} color="#10B981" />
             </TouchableOpacity>
