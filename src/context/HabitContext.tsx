@@ -27,7 +27,7 @@ import {
   SocialFeedActivity,
   SupportedLanguage,
 } from '../types';
-import { translate } from '../i18n/translations';
+import { translate, localizeHabitName, localizeHabitDescription } from '../i18n/translations';
 import { INITIAL_FRIENDS, INITIAL_FEED } from '../constants/socialData';
 import { getDetectedTimezone } from '../constants/timezones';
 import { localApi, getUserIdFromEmail, createDefaultUserProfile } from '../services/apiService';
@@ -78,6 +78,8 @@ interface HabitContextType {
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => Promise<void>;
   t: (key: string, fallback?: string, params?: Record<string, string | number>) => string;
+  tHabitName: (name?: string | null) => string;
+  tHabitDesc: (desc?: string | null) => string;
   isOffline: boolean;
   setIsOffline: (offline: boolean) => void;
   syncQueue: SyncMutation[];
@@ -1054,6 +1056,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>) => {
     return translate(language, key, fallback, params);
+  }, [language]);
+
+  const tHabitName = useCallback((name?: string | null): string => {
+    return localizeHabitName(name, language);
+  }, [language]);
+
+  const tHabitDesc = useCallback((desc?: string | null): string => {
+    return localizeHabitDescription(desc, language);
   }, [language]);
 
   const [isOffline, setIsOffline] = useState<boolean>(false);
@@ -4068,6 +4078,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         language,
         setLanguage,
         t,
+        tHabitName,
+        tHabitDesc,
         isOffline,
         setIsOffline,
         syncQueue,

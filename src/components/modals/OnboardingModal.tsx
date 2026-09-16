@@ -22,6 +22,8 @@ export const OnboardingModal: React.FC = () => {
     triggerCelebration,
     theme,
     t,
+    tHabitName,
+    tHabitDesc,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -49,8 +51,8 @@ export const OnboardingModal: React.FC = () => {
 
     selected.forEach((tpl) => {
       createHabit({
-        name: tpl.name,
-        description: tpl.description,
+        name: tHabitName(tpl.name),
+        description: tHabitDesc(tpl.description),
         icon: tpl.icon,
         color: tpl.color,
         frequency_type: tpl.frequency_type,
@@ -117,10 +119,10 @@ export const OnboardingModal: React.FC = () => {
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.tplName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                      {tpl.name}
+                      {tHabitName(tpl.name)}
                     </Text>
                     <Text style={[styles.tplDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                      {tpl.description}
+                      {tHabitDesc(tpl.description)}
                     </Text>
                   </View>
 

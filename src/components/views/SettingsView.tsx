@@ -305,6 +305,9 @@ export const SettingsView: React.FC = () => {
             <Text style={[styles.userName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
               {user?.name || 'Google User'}
             </Text>
+            <Text style={[styles.userHandleText, { color: '#818CF8' }]}>
+              {user?.username ? (user.username.startsWith('@') ? user.username : `@${user.username}`) : `@${(user?.email || 'user').split('@')[0]}`}
+            </Text>
             <Text style={[styles.userEmail, { color: isDark ? '#94A3B8' : '#64748B' }]}>
               {user?.email || 'user@gmail.com'}
             </Text>
@@ -922,6 +925,12 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 17,
     fontWeight: '900',
+  },
+  userHandleText: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 1,
+    marginBottom: 2,
   },
   userEmail: {
     fontSize: 12,

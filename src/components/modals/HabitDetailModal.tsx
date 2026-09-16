@@ -50,6 +50,8 @@ export const HabitDetailModal: React.FC = () => {
     theme,
     language,
     t,
+    tHabitName,
+    tHabitDesc,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -162,10 +164,10 @@ export const HabitDetailModal: React.FC = () => {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.habitTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  {habit.name}
+                  {tHabitName(habit.name)}
                 </Text>
                 <Text style={[styles.habitSubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  {habit.description || t('common.daily', 'Daily consistent habit')}
+                  {tHabitDesc(habit.description) || t('common.daily', 'Daily consistent habit')}
                 </Text>
               </View>
             </View>

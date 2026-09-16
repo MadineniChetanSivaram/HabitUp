@@ -79,6 +79,7 @@ export const FriendsView: React.FC = () => {
     showToast,
     recordFriendsExposure,
     t,
+    tHabitName,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -953,7 +954,7 @@ export const FriendsView: React.FC = () => {
                             ]}
                             numberOfLines={1}
                           >
-                            {friendHabit.name}
+                            {tHabitName(friendHabit.name)}
                           </Text>
                           <View style={styles.mutualSubtitleRow}>
                             <Clock size={11} color={isDark ? '#94A3B8' : '#64748B'} />
@@ -1038,7 +1039,7 @@ export const FriendsView: React.FC = () => {
                           style={[styles.habitItemName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
                           numberOfLines={1}
                         >
-                          {h.name}
+                          {tHabitName(h.name)}
                         </Text>
                         <View style={styles.mutualSubtitleRow}>
                           <Clock size={11} color={isDark ? '#94A3B8' : '#64748B'} />
@@ -1197,7 +1198,7 @@ export const FriendsView: React.FC = () => {
                       { color: togetherHabitName === p.name ? '#7C5CFF' : isDark ? '#E2E8F0' : '#0F172A' },
                     ]}
                   >
-                    {p.name}
+                    {tHabitName(p.name)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -1431,7 +1432,7 @@ export const FriendsView: React.FC = () => {
                         ]}
                         numberOfLines={1}
                       >
-                        {liveFriendHabit.name}
+                        {tHabitName(liveFriendHabit.name)}
                       </Text>
                       <Text
                         style={[

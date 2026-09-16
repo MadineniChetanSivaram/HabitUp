@@ -16,6 +16,7 @@ export const StatsView: React.FC = () => {
     setActiveTab,
     theme,
     t,
+    tHabitName,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -574,7 +575,7 @@ export const StatsView: React.FC = () => {
 
             <View style={{ flex: 1 }}>
               <Text style={[styles.habitName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                {item.name}
+                {tHabitName(item.name)}
               </Text>
               <View style={[styles.progressTrack, { backgroundColor: isDark ? '#0C1322' : '#F1F5F9' }]}>
                 <View

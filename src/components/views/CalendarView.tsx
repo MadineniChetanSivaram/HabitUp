@@ -31,6 +31,7 @@ export const CalendarView: React.FC = () => {
     theme,
     language,
     t,
+    tHabitName,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -403,7 +404,7 @@ export const CalendarView: React.FC = () => {
                   </View>
                   <View>
                     <Text style={[styles.habitItemName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                      {habit.name}
+                      {tHabitName(habit.name)}
                     </Text>
                     <Text style={[styles.habitItemFreq, { color: isDark ? '#94A3B8' : '#64748B' }]}>
                       {habit.frequency_type === 'daily' ? t('common.daily', 'Daily') : t('common.custom_days', 'Custom Days')}

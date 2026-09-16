@@ -50,6 +50,8 @@ export const HabitsView: React.FC = () => {
     theme,
     language,
     t,
+    tHabitName,
+    tHabitDesc,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -290,10 +292,10 @@ export const HabitsView: React.FC = () => {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.archivedName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                        {h.name}
+                        {tHabitName(h.name)}
                       </Text>
                       <Text style={[styles.archivedDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                        {h.description || 'Archived habit'}
+                        {tHabitDesc(h.description) || t('habits.archived_badge', 'Archived')}
                       </Text>
                     </View>
                     <View style={styles.archivedBadge}>
@@ -367,10 +369,10 @@ export const HabitsView: React.FC = () => {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.archivedName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                        {h.name}
+                        {tHabitName(h.name)}
                       </Text>
                       <Text style={[styles.archivedDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                        {h.description || 'Paused habit'}
+                        {tHabitDesc(h.description) || t('habits.paused_badge', 'Paused')}
                       </Text>
                     </View>
                     <View style={[styles.archivedBadge, { backgroundColor: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.3)' }]}>
@@ -495,7 +497,7 @@ export const HabitsView: React.FC = () => {
                       { color: isSelected ? '#FFFFFF' : isDark ? '#E2E8F0' : '#334155' },
                     ]}
                   >
-                    {h.name}
+                    {tHabitName(h.name)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -515,10 +517,10 @@ export const HabitsView: React.FC = () => {
               </View>
 
               <Text style={[styles.heroHabitName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                {currentHabit.name}
+                {tHabitName(currentHabit.name)}
               </Text>
               <Text style={[styles.heroHabitDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                {currentHabit.description || '10 mins mindfulness & calm breathing'}
+                {tHabitDesc(currentHabit.description) || t('habits.active', 'Active')}
               </Text>
 
               {/* 2x2 Stats Grid matching Image 1 */}

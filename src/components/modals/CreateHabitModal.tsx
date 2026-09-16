@@ -23,7 +23,7 @@ import { formatTo12Hour } from '../../utils/streakCalculator';
 import { ArrowLeft, Check, X, Bell, Sparkles, Clock } from 'lucide-react-native';
 
 export const CreateHabitModal: React.FC = () => {
-  const { isCreateModalOpen, setIsCreateModalOpen, createHabit, theme, t } = useHabit();
+  const { isCreateModalOpen, setIsCreateModalOpen, createHabit, theme, t, tHabitName, tHabitDesc } = useHabit();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -65,8 +65,8 @@ export const CreateHabitModal: React.FC = () => {
   };
 
   const handleApplyTemplate = (tpl: QuickStartTemplate) => {
-    setName(tpl.name);
-    setDescription(tpl.description);
+    setName(tHabitName(tpl.name));
+    setDescription(tHabitDesc(tpl.description));
     setSelectedIcon(tpl.icon);
     setSelectedColor(tpl.color);
     setFrequencyType(tpl.frequency_type);
@@ -250,10 +250,10 @@ export const CreateHabitModal: React.FC = () => {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.tplName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                        {tpl.name}
+                        {tHabitName(tpl.name)}
                       </Text>
                       <Text style={[styles.tplDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                        {tpl.description}
+                        {tHabitDesc(tpl.description)}
                       </Text>
                     </View>
                     <Sparkles size={16} color="#7C5CFF" />

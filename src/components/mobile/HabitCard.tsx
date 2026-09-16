@@ -23,6 +23,8 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
     deleteHabit,
     theme,
     t,
+    tHabitName,
+    tHabitDesc,
   } = useHabit();
 
   const [showMenu, setShowMenu] = useState(false);
@@ -43,7 +45,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
   const getSubtitle = () => {
     const parts: string[] = [];
     if (habit.description) {
-      parts.push(habit.description);
+      parts.push(tHabitDesc(habit.description));
     } else {
       if (habit.frequency_type === 'daily') parts.push(t('common.daily', 'Daily'));
       else if (habit.frequency_type === 'custom_days') {
@@ -115,7 +117,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
               ]}
               numberOfLines={1}
             >
-              {habit.name}
+              {tHabitName(habit.name)}
             </Text>
             {stats.currentStreak > 0 && (
               <View style={[styles.streakBadge, { backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7' }]}>
