@@ -4,7 +4,7 @@ import { useHabit } from '../../context/HabitContext';
 import { Home, Users, BarChart2, Calendar, Plus, Flame } from 'lucide-react-native';
 
 export const BottomTabBar: React.FC = () => {
-  const { activeTab, setActiveTab, setIsCreateModalOpen, theme, friendsEnabled } = useHabit();
+  const { activeTab, setActiveTab, setIsCreateModalOpen, theme, friendsEnabled, t } = useHabit();
   const isDark = theme === 'dark';
 
   return (
@@ -35,7 +35,7 @@ export const BottomTabBar: React.FC = () => {
             activeTab === 'home' && styles.activeTabLabel,
           ]}
         >
-          Home
+          {t('tab.home', 'Home')}
         </Text>
         {activeTab === 'home' && <View style={styles.activeDot} />}
       </TouchableOpacity>
@@ -59,7 +59,7 @@ export const BottomTabBar: React.FC = () => {
               activeTab === 'friends' && styles.activeTabLabel,
             ]}
           >
-            Friends
+            {t('tab.friends', 'Friends')}
           </Text>
           {activeTab === 'friends' && <View style={styles.activeDot} />}
         </TouchableOpacity>
@@ -81,7 +81,7 @@ export const BottomTabBar: React.FC = () => {
               activeTab === 'streaks' && styles.activeTabLabel,
             ]}
           >
-            Streaks
+            {t('tab.streaks', 'Streaks')}
           </Text>
           {activeTab === 'streaks' && <View style={[styles.activeDot, { backgroundColor: '#F59E0B' }]} />}
         </TouchableOpacity>
@@ -119,7 +119,7 @@ export const BottomTabBar: React.FC = () => {
             activeTab === 'stats' && styles.activeTabLabel,
           ]}
         >
-          Stats
+          {t('tab.stats', 'Analytics')}
         </Text>
         {activeTab === 'stats' && <View style={styles.activeDot} />}
       </TouchableOpacity>
@@ -142,7 +142,7 @@ export const BottomTabBar: React.FC = () => {
             activeTab === 'calendar' && styles.activeTabLabel,
           ]}
         >
-          Calendar
+          {t('tab.calendar', 'Calendar')}
         </Text>
         {activeTab === 'calendar' && <View style={styles.activeDot} />}
       </TouchableOpacity>

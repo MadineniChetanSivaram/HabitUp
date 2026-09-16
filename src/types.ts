@@ -180,4 +180,6 @@ export interface SocialFeedActivity {
 export type TabType = 'home' | 'friends' | 'habits' | 'calendar' | 'stats' | 'streaks' | 'settings';
 export type DeviceFrameType = 'iphone' | 'android' | 'fullscreen';
 export type ColorTheme = 'dark' | 'light';
+export type { SupportedLanguage } from './i18n/translations';
+
 

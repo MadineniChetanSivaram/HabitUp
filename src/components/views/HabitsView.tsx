@@ -48,6 +48,7 @@ export const HabitsView: React.FC = () => {
     setIsCreateModalOpen,
     setIsOnboardingModalOpen,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -136,7 +137,7 @@ export const HabitsView: React.FC = () => {
         </TouchableOpacity>
 
         <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Habit Details
+          {t('habits.title', 'Habit Details')}
         </Text>
 
         <TouchableOpacity
@@ -176,7 +177,7 @@ export const HabitsView: React.FC = () => {
               },
             ]}
           >
-            Active ({activeHabits.length})
+            {t('habits.active', 'Active')} ({activeHabits.length})
           </Text>
         </TouchableOpacity>
 
@@ -206,7 +207,7 @@ export const HabitsView: React.FC = () => {
               },
             ]}
           >
-            Paused ({pausedHabits.length})
+            {t('habits.paused', 'Paused')} ({pausedHabits.length})
           </Text>
         </TouchableOpacity>
 
@@ -236,7 +237,7 @@ export const HabitsView: React.FC = () => {
               },
             ]}
           >
-            Archived ({archivedHabits.length})
+            {t('habits.archived', 'Archived')} ({archivedHabits.length})
           </Text>
         </TouchableOpacity>
       </View>

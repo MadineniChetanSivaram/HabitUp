@@ -11,15 +11,16 @@ export const TopHeader: React.FC = () => {
     isOffline,
     setIsOffline,
     showToast,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
 
   const getGreetingTime = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('home.greeting_morning', 'Good morning');
+    if (hour < 18) return t('home.greeting_afternoon', 'Good afternoon');
+    return t('home.greeting_evening', 'Good evening');
   };
 
   return (
@@ -29,7 +30,7 @@ export const TopHeader: React.FC = () => {
           {getGreetingTime()}, {user?.name ? user.name.split(' ')[0] : 'Hero'}! 👋
         </Text>
         <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Let's <Text style={{ color: '#7C5CFF' }}>crush</Text> today!
+          {t('home.tagline', "Let's crush today!")}
         </Text>
       </View>
 
@@ -41,8 +42,8 @@ export const TopHeader: React.FC = () => {
             setIsOffline(nextOffline);
             showToast(
               nextOffline
-                ? 'Switched to Offline Mode (Mutations cached locally)'
-                : 'Back Online! Synchronized with storage',
+                ? t('home.offline_mode_active', 'Switched to Offline Mode (Mutations cached locally)')
+                : t('home.online_mode_active', 'Back Online! Synchronized with storage'),
               undefined,
               nextOffline ? 'warning' : 'success'
             );

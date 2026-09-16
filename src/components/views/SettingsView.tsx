@@ -20,6 +20,7 @@ import { useHabit } from '../../context/HabitContext';
 import { soundService } from '../../services/soundService';
 import { requestNotificationPermission } from '../../services/notificationService';
 import { HabitUpLogo } from '../common/HabitUpLogo';
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n/translations';
 import {
   ChevronLeft,
   ChevronRight,
@@ -37,6 +38,8 @@ import {
   Eye,
   EyeOff,
   X,
+  Globe,
+  Check,
 } from 'lucide-react-native';
 
 export const SettingsView: React.FC = () => {
@@ -59,13 +62,20 @@ export const SettingsView: React.FC = () => {
     logout,
     deleteAccount,
     showToast,
+    language,
+    setLanguage,
+    t,
   } = useHabit();
 
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [deletePassword, setDeletePassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string>('');
+
+  const currentLangObj =
+    SUPPORTED_LANGUAGES.find((l) => l.code === language) || SUPPORTED_LANGUAGES[0];
 
   const isDark = theme === 'dark';
 
@@ -230,10 +240,10 @@ export const SettingsView: React.FC = () => {
       <View style={styles.topHeader}>
         <View>
           <Text style={[styles.pageTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            Settings
+            {t('settings.title', 'Settings')}
           </Text>
           <Text style={[styles.pageSubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            Preferences & Data
+            {t('settings.preferences_data', 'Preferences & Data')}
           </Text>
         </View>
 
@@ -250,7 +260,7 @@ export const SettingsView: React.FC = () => {
         >
           <ChevronLeft size={16} color={isDark ? '#E2E8F0' : '#0F172A'} />
           <Text style={[styles.backPillText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            Back
+            {t('common.back', 'Back')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -306,7 +316,7 @@ export const SettingsView: React.FC = () => {
           style={styles.editDpBtn}
           onPress={() => setIsAuthSessionModalOpen(true)}
         >
-          <Text style={styles.editDpText}>Edit DP</Text>
+          <Text style={styles.editDpText}>{t('settings.edit_dp', 'Edit DP')}</Text>
           <ChevronRight size={14} color="#818CF8" />
         </TouchableOpacity>
       </View>
@@ -322,10 +332,48 @@ export const SettingsView: React.FC = () => {
         ]}
       >
         <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          APP PREFERENCES
+          {t('settings.app_preferences', 'APP PREFERENCES')}
         </Text>
 
-        {/* 1. Habit Reminders */}
+        {/* 1. Language Selector Row */}
+        <TouchableOpacity
+          style={styles.preferenceRow}
+          onPress={() => setIsLanguageModalOpen(true)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.prefLeft}>
+            <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(56, 189, 248, 0.15)' }]}>
+              <Globe size={16} color="#38BDF8" />
+            </View>
+            <View>
+              <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+                {t('settings.language', 'Language')}
+              </Text>
+              <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+                {t('settings.language_desc', '8 Indian Languages + English')}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={[
+              styles.langSelectPill,
+              {
+                backgroundColor: isDark ? '#0C1322' : '#F1F5F9',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#CBD5E1',
+              },
+            ]}
+          >
+            <Text style={[styles.langSelectPillText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+              {currentLangObj.flag} {currentLangObj.nativeName}
+            </Text>
+            <ChevronRight size={14} color={isDark ? '#94A3B8' : '#64748B'} />
+          </View>
+        </TouchableOpacity>
+
+        {/* Divider */}
+        <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9' }]} />
+
+        {/* 2. Habit Reminders */}
         <View style={styles.preferenceRow}>
           <View style={styles.prefLeft}>
             <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(124, 92, 255, 0.15)' }]}>
@@ -333,10 +381,10 @@ export const SettingsView: React.FC = () => {
             </View>
             <View>
               <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Habit Reminders
+                {t('settings.habit_reminders', 'Habit Reminders')}
               </Text>
               <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Send alerts at scheduled times
+                {t('settings.habit_reminders_desc', 'Send alerts at scheduled times')}
               </Text>
             </View>
           </View>
@@ -351,7 +399,7 @@ export const SettingsView: React.FC = () => {
         {/* Divider */}
         <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9' }]} />
 
-        {/* 2. Notification Sound */}
+        {/* 3. Notification Sound */}
         <View style={styles.preferenceRow}>
           <View style={styles.prefLeft}>
             <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
@@ -359,10 +407,10 @@ export const SettingsView: React.FC = () => {
             </View>
             <View>
               <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Notification Sound
+                {t('settings.notification_sound', 'Notification Sound')}
               </Text>
               <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Play chime on reminders & check-ins
+                {t('settings.notification_sound_desc', 'Play chime on reminders & check-ins')}
               </Text>
             </View>
           </View>
@@ -386,7 +434,7 @@ export const SettingsView: React.FC = () => {
         {/* Divider */}
         <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9' }]} />
 
-        {/* 3. Theme Mode */}
+        {/* 4. Theme Mode */}
         <View style={styles.preferenceRow}>
           <View style={styles.prefLeft}>
             <View style={[styles.prefIconBadge, { backgroundColor: isDark ? 'rgba(129, 140, 248, 0.15)' : 'rgba(245, 158, 11, 0.15)' }]}>
@@ -394,10 +442,10 @@ export const SettingsView: React.FC = () => {
             </View>
             <View>
               <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Theme Mode
+                {t('settings.theme_mode', 'Theme Mode')}
               </Text>
               <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                {isDark ? 'Dark Mode' : 'Light Mode'}
+                {isDark ? t('settings.dark_mode', 'Dark Mode') : t('settings.light_mode', 'Light Mode')}
               </Text>
             </View>
           </View>
@@ -413,7 +461,7 @@ export const SettingsView: React.FC = () => {
             activeOpacity={0.7}
           >
             <Text style={[styles.themeToggleText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-              {isDark ? 'Dark' : 'Light'}
+              {isDark ? t('settings.dark', 'Dark') : t('settings.light', 'Light')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -421,7 +469,7 @@ export const SettingsView: React.FC = () => {
         {/* Divider */}
         <View style={[styles.divider, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : '#F1F5F9' }]} />
 
-        {/* 4. Vibration Feedback */}
+        {/* 5. Vibration Feedback */}
         <View style={styles.preferenceRow}>
           <View style={styles.prefLeft}>
             <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(244, 63, 94, 0.15)' }]}>
@@ -429,10 +477,10 @@ export const SettingsView: React.FC = () => {
             </View>
             <View>
               <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Vibration Feedback
+                {t('settings.vibration', 'Vibration Feedback')}
               </Text>
               <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Vibrate gently on button tap
+                {t('settings.vibration_desc', 'Vibrate gently on button tap')}
               </Text>
             </View>
           </View>
@@ -446,7 +494,7 @@ export const SettingsView: React.FC = () => {
 
       </View>
 
-      {/* Simplified Standalone Export CSV Button */}
+      {/* Standalone Export CSV Button */}
       <TouchableOpacity
         style={[
           styles.exportCsvBtn,
@@ -460,14 +508,14 @@ export const SettingsView: React.FC = () => {
       >
         <FileSpreadsheet size={18} color="#10B981" />
         <Text style={[styles.exportCsvBtnText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Export CSV File
+          {t('settings.export_csv', 'Export CSV File')}
         </Text>
       </TouchableOpacity>
 
       {/* Sign Out Button */}
       <TouchableOpacity style={styles.signOutBtn} onPress={logout}>
         <LogOut size={18} color="#FF4D6D" />
-        <Text style={styles.signOutBtnText}>Sign Out</Text>
+        <Text style={styles.signOutBtnText}>{t('settings.sign_out', 'Sign Out')}</Text>
       </TouchableOpacity>
 
       {/* Delete Account Button */}
@@ -486,12 +534,13 @@ export const SettingsView: React.FC = () => {
         }}
       >
         <Trash2 size={18} color="#EF4444" />
-        <Text style={styles.deleteAccountBtnText}>Delete Account</Text>
+        <Text style={styles.deleteAccountBtnText}>{t('settings.delete_account', 'Delete Account')}</Text>
       </TouchableOpacity>
 
       {/* Footer User Email */}
       <Text style={[styles.footerEmail, { color: isDark ? '#64748B' : '#94A3B8' }]}>
-        Signed in as <Text style={{ fontWeight: '700' }}>{user?.email || 'user@gmail.com'}</Text>
+        {t('settings.signed_in_as', 'Signed in as')}{' '}
+        <Text style={{ fontWeight: '700' }}>{user?.email || 'user@gmail.com'}</Text>
       </Text>
 
       {/* Logo branding */}
@@ -501,6 +550,131 @@ export const SettingsView: React.FC = () => {
           Version 1.0 • Build 2026.8
         </Text>
       </View>
+
+      {/* Language Selection Modal */}
+      <Modal
+        visible={isLanguageModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsLanguageModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.langModalContainer,
+              {
+                backgroundColor: isDark ? '#131C2E' : '#FFFFFF',
+                borderColor: isDark ? '#1E293B' : '#E2E8F0',
+              },
+            ]}
+          >
+            {/* Modal Header */}
+            <View style={styles.deleteModalHeader}>
+              <View
+                style={[
+                  styles.prefIconBadge,
+                  {
+                    width: 40,
+                    height: 40,
+                    borderRadius: 12,
+                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                  },
+                ]}
+              >
+                <Globe size={20} color="#38BDF8" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.deleteModalTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+                  {t('settings.select_language', 'Select Language')}
+                </Text>
+                <Text style={[styles.deleteModalSubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+                  {t('settings.select_language_desc', '8 Indian Languages + English')}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.closeBtn}
+                onPress={() => setIsLanguageModalOpen(false)}
+              >
+                <X size={18} color={isDark ? '#94A3B8' : '#64748B'} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Language Options List */}
+            <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+              {SUPPORTED_LANGUAGES.map((langOption) => {
+                const isSelected = language === langOption.code;
+                return (
+                  <TouchableOpacity
+                    key={langOption.code}
+                    style={[
+                      styles.langOptionItem,
+                      {
+                        backgroundColor: isSelected
+                          ? isDark
+                            ? 'rgba(124, 92, 255, 0.18)'
+                            : 'rgba(124, 92, 255, 0.1)'
+                          : isDark
+                          ? 'rgba(255, 255, 255, 0.03)'
+                          : '#F8FAFC',
+                        borderColor: isSelected
+                          ? '#7C5CFF'
+                          : isDark
+                          ? 'rgba(255, 255, 255, 0.06)'
+                          : '#E2E8F0',
+                      },
+                    ]}
+                    onPress={async () => {
+                      await setLanguage(langOption.code);
+                      if (soundEnabled) soundService.playClickSound();
+                      showToast(
+                        `${langOption.flag} ${langOption.nativeName} (${langOption.name})`,
+                        undefined,
+                        'success'
+                      );
+                      setIsLanguageModalOpen(false);
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.langItemLeft}>
+                      <Text style={styles.langFlag}>{langOption.flag}</Text>
+                      <View>
+                        <Text
+                          style={[
+                            styles.langNativeName,
+                            {
+                              color: isSelected
+                                ? '#7C5CFF'
+                                : isDark
+                                ? '#FFFFFF'
+                                : '#0F172A',
+                            },
+                          ]}
+                        >
+                          {langOption.nativeName}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.langEnglishName,
+                            { color: isDark ? '#94A3B8' : '#64748B' },
+                          ]}
+                        >
+                          {langOption.name} • {langOption.region}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {isSelected && (
+                      <View style={styles.selectedBadge}>
+                        <Check size={16} color="#FFFFFF" strokeWidth={3} />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
       {/* Delete Account Confirmation Modal */}
       <Modal
@@ -528,7 +702,7 @@ export const SettingsView: React.FC = () => {
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[styles.deleteModalTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  Delete Account
+                  {t('settings.delete_account', 'Delete Account')}
                 </Text>
               </View>
               <TouchableOpacity
@@ -553,13 +727,13 @@ export const SettingsView: React.FC = () => {
               ]}
             >
               <Text style={[styles.deleteWarningText, { color: isDark ? '#FCA5A5' : '#B91C1C' }]}>
-                ⚠️ This will permanently delete your account and all habit data.
+                {t('settings.delete_warning', '⚠️ This will permanently delete your account and all habit data.')}
               </Text>
             </View>
 
             {/* Password input */}
             <Text style={[styles.passwordLabel, { color: isDark ? '#E2E8F0' : '#334155' }]}>
-              CONFIRM PASSWORD:
+              {t('settings.confirm_password', 'CONFIRM PASSWORD:')}
             </Text>
             <View
               style={[
@@ -583,7 +757,7 @@ export const SettingsView: React.FC = () => {
                       } as any)
                     : {},
                 ]}
-                placeholder="Enter your password..."
+                placeholder={t('settings.enter_password', 'Enter your password...')}
                 placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
                 secureTextEntry={!showPassword}
                 value={deletePassword}
@@ -627,7 +801,7 @@ export const SettingsView: React.FC = () => {
                 disabled={isDeleting}
               >
                 <Text style={[styles.cancelBtnText, { color: isDark ? '#E2E8F0' : '#475569' }]}>
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </Text>
               </TouchableOpacity>
 
@@ -644,7 +818,7 @@ export const SettingsView: React.FC = () => {
                 ) : (
                   <>
                     <Trash2 size={16} color="#FFFFFF" strokeWidth={2.5} />
-                    <Text style={styles.confirmDeleteBtnText}>Delete Forever</Text>
+                    <Text style={styles.confirmDeleteBtnText}>{t('settings.delete_forever', 'Delete Forever')}</Text>
                   </>
                 )}
               </TouchableOpacity>
@@ -1001,5 +1175,66 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '900',
+  },
+  langSelectPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  langSelectPillText: {
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  langModalContainer: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 24,
+    borderWidth: 1,
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  langOptionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    marginBottom: 8,
+  },
+  langItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  langFlag: {
+    fontSize: 22,
+  },
+  langNativeName: {
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  langEnglishName: {
+    fontSize: 12,
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  selectedBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#7C5CFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

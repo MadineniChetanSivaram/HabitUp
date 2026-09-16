@@ -78,6 +78,7 @@ export const FriendsView: React.FC = () => {
     theme,
     showToast,
     recordFriendsExposure,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -438,7 +439,7 @@ export const FriendsView: React.FC = () => {
           </View>
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-              Friends & Habit Following
+              {t('friends.title', 'Friends & Habit Following')}
             </Text>
           </View>
         </View>
@@ -455,7 +456,7 @@ export const FriendsView: React.FC = () => {
         >
           <ChevronLeft size={16} color={isDark ? '#E2E8F0' : '#0F172A'} />
           <Text style={[styles.backPillText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-            Back
+            {t('common.back', 'Back')}
           </Text>
         </TouchableOpacity>
       </View>

@@ -15,6 +15,7 @@ export const StatsView: React.FC = () => {
     setSelectedHabitForDetail,
     setActiveTab,
     theme,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -342,7 +343,7 @@ export const StatsView: React.FC = () => {
         </TouchableOpacity>
 
         <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          Statistics
+          {t('stats.title', 'Statistics')}
         </Text>
 
         <View style={{ width: 38 }} />
@@ -352,6 +353,12 @@ export const StatsView: React.FC = () => {
       <View style={[styles.tabs, { backgroundColor: isDark ? '#141D2E' : '#E2E8F0', borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#CBD5E1' }]}>
         {(['week', 'month', 'year'] as const).map((r) => {
           const isActive = timeRange === r;
+          const rangeLabel =
+            r === 'week'
+              ? t('stats.week', 'Week')
+              : r === 'month'
+              ? t('stats.month', 'Month')
+              : t('stats.year', 'Year');
           return (
             <TouchableOpacity
               key={r}
@@ -375,7 +382,7 @@ export const StatsView: React.FC = () => {
                   { color: isActive ? '#FFFFFF' : isDark ? '#94A3B8' : '#64748B', fontWeight: isActive ? '800' : '600' },
                 ]}
               >
-                {r.charAt(0).toUpperCase() + r.slice(1)}
+                {rangeLabel}
               </Text>
             </TouchableOpacity>
           );

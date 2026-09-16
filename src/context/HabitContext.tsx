@@ -25,7 +25,9 @@ import {
   FriendPublicHabit,
   FollowRequestItem,
   SocialFeedActivity,
+  SupportedLanguage,
 } from '../types';
+import { getTranslation } from '../i18n/translations';
 import { INITIAL_FRIENDS, INITIAL_FEED } from '../constants/socialData';
 import { getDetectedTimezone } from '../constants/timezones';
 import { localApi, getUserIdFromEmail, createDefaultUserProfile } from '../services/apiService';
@@ -73,6 +75,9 @@ interface HabitContextType {
   setSoundEnabled: (enabled: boolean) => void;
   hapticsEnabled: boolean;
   setHapticsEnabled: (enabled: boolean) => void;
+  language: SupportedLanguage;
+  setLanguage: (lang: SupportedLanguage) => Promise<void>;
+  t: (key: string, fallback?: string) => string;
   isOffline: boolean;
   setIsOffline: (offline: boolean) => void;
   syncQueue: SyncMutation[];
@@ -1035,6 +1040,21 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setTheme] = useState<ColorTheme>('dark');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [hapticsEnabled, setHapticsEnabled] = useState<boolean>(true);
+  const [language, setLanguageState] = useState<SupportedLanguage>('en');
+
+  const setLanguage = useCallback(async (newLang: SupportedLanguage) => {
+    setLanguageState(newLang);
+    try {
+      await AsyncStorage.setItem('habitup_language_v1', newLang);
+    } catch (e) {
+      console.warn('Failed to persist language setting:', e);
+    }
+  }, []);
+
+  const t = useCallback((key: string, fallback?: string) => {
+    return getTranslation(language, key, fallback);
+  }, [language]);
+
   const [isOffline, setIsOffline] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastData | null>(null);
 
@@ -1116,6 +1136,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       try {
         // Request notification permission immediately on startup
         requestNotificationPermission().catch(() => {});
+
+        // 0. Restore persistent Language setting
+        try {
+          const savedLang = await AsyncStorage.getItem('habitup_language_v1');
+          if (savedLang && ['en', 'hi', 'te', 'ta', 'kn', 'ml', 'bn', 'mr', 'gu'].includes(savedLang)) {
+            setLanguageState(savedLang as SupportedLanguage);
+          }
+        } catch {}
 
         // 1. Restore persistent user ID
         const savedUidRaw = await AsyncStorage.getItem('habitup_current_user_id');
@@ -4036,6 +4064,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSoundEnabled,
         hapticsEnabled,
         setHapticsEnabled,
+        language,
+        setLanguage,
+        t,
         isOffline,
         setIsOffline,
         syncQueue,

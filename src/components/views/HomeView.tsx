@@ -17,6 +17,7 @@ export const HomeView: React.FC = () => {
     setIsCreateModalOpen,
     setIsOnboardingModalOpen,
     setIsPlantGardenModalOpen,
+    t,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -54,8 +55,8 @@ export const HomeView: React.FC = () => {
         <View style={styles.sectionTitleRow}>
           <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {selectedDate === formatDateKey(new Date())
-              ? "Today's Habits"
-              : `Habits for ${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).format(selectedDateTime)}`}
+              ? t('home.todays_habits', "Today's Habits")
+              : `${t('tab.habits', 'Habits')} (${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).format(selectedDateTime)})`}
           </Text>
           <View
             style={[
@@ -74,7 +75,12 @@ export const HomeView: React.FC = () => {
           <View style={styles.filterRow}>
             {(['all', 'pending', 'completed'] as const).map((mode) => {
               const isActive = filterMode === mode;
-              const label = mode === 'all' ? 'All' : mode === 'pending' ? 'Pending' : 'Done';
+              const label =
+                mode === 'all'
+                  ? t('home.filter_all', 'All')
+                  : mode === 'pending'
+                  ? t('home.filter_pending', 'Pending')
+                  : t('home.filter_completed', 'Done');
               return (
                 <TouchableOpacity
                   key={mode}
@@ -141,10 +147,13 @@ export const HomeView: React.FC = () => {
               <Sparkles size={24} color="#7C5CFF" />
             </View>
             <Text style={[styles.emptyTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-              No habits yet!
+              {t('home.no_habits', 'No habits yet!')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Choose from popular templates or create a custom habit to start building your streak.
+              {t(
+                'home.no_habits_desc',
+                'Choose from popular templates or create a custom habit to start building your streak.'
+              )}
             </Text>
 
             <View style={styles.emptyActions}>
@@ -155,7 +164,7 @@ export const HomeView: React.FC = () => {
               >
                 <Sparkles size={15} color="#FFFFFF" />
                 <Text style={[styles.templateBtnText, { color: '#FFFFFF' }]}>
-                  Browse Templates
+                  {t('home.browse_templates', 'Browse Templates')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -172,7 +181,7 @@ export const HomeView: React.FC = () => {
               >
                 <Plus size={15} color={isDark ? '#F8FAFC' : '#0F172A'} />
                 <Text style={[styles.addBtnText, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>
-                  Custom Habit
+                  {t('home.custom_habit', 'Custom Habit')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -192,17 +201,17 @@ export const HomeView: React.FC = () => {
             </View>
             <Text style={[styles.emptyTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
               {filterMode === 'completed'
-                ? 'No habits completed yet'
+                ? t('home.no_habits_completed', 'No habits completed yet')
                 : filterMode === 'pending'
-                ? 'All pending habits completed!'
+                ? t('home.all_completed', 'All pending habits completed!')
                 : scheduledHabits.length === 0
-                ? 'No habits scheduled for today'
-                : 'All scheduled habits completed!'}
+                ? t('home.no_habits_for_day', 'No habits scheduled for today')
+                : t('home.all_completed', 'All scheduled habits completed!')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
               {scheduledHabits.length === 0
-                ? 'Enjoy your rest day or add a new habit.'
-                : 'Great job maintaining consistency today!'}
+                ? t('home.enjoy_rest_day', 'Enjoy your rest day or add a new habit.')
+                : t('home.all_completed_desc', 'Great job maintaining consistency today!')}
             </Text>
 
             <View style={styles.emptyActions}>
@@ -212,7 +221,7 @@ export const HomeView: React.FC = () => {
                 activeOpacity={0.8}
               >
                 <Plus size={15} color="#FFFFFF" />
-                <Text style={styles.addBtnText}>Add Habit</Text>
+                <Text style={styles.addBtnText}>{t('home.add_habit', 'Add Habit')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -227,7 +236,7 @@ export const HomeView: React.FC = () => {
               >
                 <Sparkles size={15} color="#7C5CFF" />
                 <Text style={[styles.templateBtnText, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>
-                  Templates
+                  {t('home.templates', 'Templates')}
                 </Text>
               </TouchableOpacity>
             </View>
