@@ -483,15 +483,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               </G>
             )}
 
-            {/* 🌱 HOPEFUL / REST: Sprouting Leaf */}
-            {(mood === 'hopeful' || mood === 'rest') && (
-              <G id="rp-leaf-sprout">
-                <Line x1="80" y1="36" x2="80" y2="24" stroke="#10B981" strokeWidth={2.2} strokeLinecap="round" />
-                <Path d="M80 28 C 86 22 92 26 90 32 C 85 32 80 30 80 28 Z" fill="#34D399" />
-                <Circle cx="80" cy="24" r="2" fill="#FDE047" />
-              </G>
-            )}
-
             {/* --- 7. FACIAL EXPRESSIONS & EYES (MOOD REACTIVE) --- */}
 
             {/* 😴 SAD: Droopy Sleepy Eyes & Downturned Mouth */}
@@ -586,13 +577,29 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               </G>
             )}
 
+            {/* 🎋 HOPEFUL: Bamboo Stalk held in Paw */}
+            {mood === 'hopeful' && (
+              <G id="rp-bamboo-snack">
+                {/* Bamboo Stalk */}
+                <Path d="M102 128 L108 96" stroke="#16A34A" strokeWidth={4.5} strokeLinecap="round" />
+                <Line x1="102.5" y1="116" x2="107.5" y2="114" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                <Line x1="104.5" y1="105" x2="109.5" y2="103" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                {/* Bamboo Leaf 1 */}
+                <Path d="M108 96 Q 120 90 126 95 Q 117 101 108 96 Z" fill="#22C55E" />
+                {/* Bamboo Leaf 2 */}
+                <Path d="M106 103 Q 120 98 123 107 Q 114 109 106 103 Z" fill="#4ADE80" />
+                {/* Bamboo Leaf 3 */}
+                <Path d="M107 92 Q 106 80 98 78 Q 101 87 107 92 Z" fill="#15803D" />
+              </G>
+            )}
+
             {/* --- 8. DARK CHOCOLATE FRONT PAWS --- */}
             {/* Left Paw */}
             <Ellipse cx="62" cy="116" rx="9" ry="7" fill="url(#rpDarkBrown)" />
-            {/* Right Paw (Waving in hopeful / celebrating) */}
+            {/* Right Paw (Holding bamboo or waving) */}
             <Ellipse
-              cx={mood === 'celebrating' || mood === 'hyped' ? 104 : 98}
-              cy={mood === 'celebrating' || mood === 'hyped' ? 108 : 116}
+              cx={mood === 'hopeful' ? 104 : mood === 'celebrating' || mood === 'hyped' ? 104 : 98}
+              cy={mood === 'hopeful' ? 112 : mood === 'celebrating' || mood === 'hyped' ? 108 : 116}
               rx="9"
               ry="7"
               fill="url(#rpDarkBrown)"
