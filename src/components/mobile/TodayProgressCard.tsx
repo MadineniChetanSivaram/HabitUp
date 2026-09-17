@@ -15,6 +15,7 @@ export const TodayProgressCard: React.FC = () => {
     overallStats,
     setIsPlantGardenModalOpen,
     t,
+    language,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -64,7 +65,7 @@ export const TodayProgressCard: React.FC = () => {
             <Text style={[styles.cardTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
               {selectedDate === formatDateKey(new Date())
                 ? t('home.todays_progress', "TODAY'S PROGRESS")
-                : `${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(selectedDateTime).toUpperCase()} ${t('common.progress', 'PROGRESS')}`}
+                : `${new Intl.DateTimeFormat(language === 'en' ? 'en-US' : language, { month: 'short', day: 'numeric' }).format(selectedDateTime).toUpperCase()} ${t('common.progress', 'PROGRESS')}`}
             </Text>
             {isPerfectDay && (
               <View style={styles.perfectBadge}>

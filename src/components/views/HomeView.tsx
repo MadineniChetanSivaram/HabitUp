@@ -18,6 +18,7 @@ export const HomeView: React.FC = () => {
     setIsOnboardingModalOpen,
     setIsPlantGardenModalOpen,
     t,
+    language,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -56,7 +57,7 @@ export const HomeView: React.FC = () => {
           <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {selectedDate === formatDateKey(new Date())
               ? t('home.todays_habits', "Today's Habits")
-              : `${t('tab.habits', 'Habits')} (${new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', weekday: 'short' }).format(selectedDateTime)})`}
+              : `${t('tab.habits', 'Habits')} (${new Intl.DateTimeFormat(language === 'en' ? 'en-US' : language, { month: 'short', day: 'numeric', weekday: 'short' }).format(selectedDateTime)})`}
           </Text>
           <View
             style={[

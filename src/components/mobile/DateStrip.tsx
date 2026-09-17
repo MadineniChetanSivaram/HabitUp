@@ -6,7 +6,7 @@ import { getWeekDays, formatDateKey } from '../../utils/streakCalculator';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 
 export const DateStrip: React.FC = () => {
-  const { selectedDate, setSelectedDate, completions, habits, theme, t } = useHabit();
+  const { selectedDate, setSelectedDate, completions, habits, theme, t, language } = useHabit();
   const isDark = theme === 'dark';
 
   const selectedDateTime = new Date(selectedDate + 'T12:00:00');
@@ -27,7 +27,7 @@ export const DateStrip: React.FC = () => {
     setSelectedDate(todayKey);
   };
 
-  const monthYearLabel = new Intl.DateTimeFormat('en-US', {
+  const monthYearLabel = new Intl.DateTimeFormat(language === 'en' ? 'en-US' : language, {
     month: 'long',
     year: 'numeric',
   }).format(selectedDateTime);
