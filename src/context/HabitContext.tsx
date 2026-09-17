@@ -2626,7 +2626,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         };
 
         setHabits((prev) => deduplicateHabits(prev.map((h) => (h.id === existing.id ? merged : h))));
-        showToast(`Habit "${merged.name}" updated!`, undefined, 'success');
+        showToast(
+          t('habits.updated_toast', `Habit "${tHabitName(merged.name)}" updated!`, {
+            name: tHabitName(merged.name),
+          }),
+          undefined,
+          'success'
+        );
 
         if (merged.reminder_enabled && merged.reminder_time) {
           notificationService.scheduleReminder(merged);
@@ -2656,7 +2662,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       };
 
       setHabits((prev) => deduplicateHabits([...prev, newHabit]));
-      showToast(`Habit "${newHabit.name}" created!`, undefined, 'success');
+      showToast(
+        t('habits.created_toast', `Habit "${tHabitName(newHabit.name)}" created!`, {
+          name: tHabitName(newHabit.name),
+        }),
+        undefined,
+        'success'
+      );
 
       if (newHabit.reminder_enabled && newHabit.reminder_time) {
         notificationService.scheduleReminder(newHabit);
@@ -2774,9 +2786,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           addMutationToQueue(`/habits/${habitId}`, 'DELETE', null);
         });
       }
-      showToast('Habit deleted.', undefined, 'info');
+      showToast(t('habits.deleted_toast', 'Habit deleted.'), undefined, 'info');
     },
-    [habits, user, isOffline, showToast, addMutationToQueue]
+    [habits, user, isOffline, showToast, addMutationToQueue, t]
   );
 
   const updateUser = useCallback((updates: Partial<UserProfile>) => {

@@ -421,10 +421,10 @@ export const HabitsView: React.FC = () => {
                 <Sparkles size={28} color="#7C5CFF" />
               </View>
               <Text style={[styles.emptyTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                No Active Habits
+                {t('habits.no_active_habits', 'No Active Habits')}
               </Text>
               <Text style={[styles.emptySubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Create your first habit or start with templates.
+                {t('habits.no_active_subtitle', 'Create your first habit or start with templates.')}
               </Text>
 
               <View style={styles.emptyActions}>
@@ -433,7 +433,7 @@ export const HabitsView: React.FC = () => {
                   onPress={() => setIsCreateModalOpen(true)}
                 >
                   <Plus size={16} color="#FFFFFF" />
-                  <Text style={styles.emptyAddBtnText}>Add Habit</Text>
+                  <Text style={styles.emptyAddBtnText}>{t('habits.add_habit_btn', 'Add Habit')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -448,7 +448,7 @@ export const HabitsView: React.FC = () => {
                 >
                   <Sparkles size={16} color="#7C5CFF" />
                   <Text style={[styles.emptyTplBtnText, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>
-                    Templates
+                    {t('habits.templates_btn', 'Templates')}
                   </Text>
                 </TouchableOpacity>
               </View>

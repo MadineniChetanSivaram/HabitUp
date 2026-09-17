@@ -64,7 +64,13 @@ export const OnboardingModal: React.FC = () => {
 
     setIsOnboardingModalOpen(false);
     triggerCelebration();
-    showToast(`Added ${selected.length} starter habits to your routine!`, undefined, 'success');
+    showToast(
+      t('onboarding.starter_toast', `Added ${selected.length} starter habits to your routine!`, {
+        count: selected.length,
+      }),
+      undefined,
+      'success'
+    );
   };
 
   return (

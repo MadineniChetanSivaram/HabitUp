@@ -297,7 +297,7 @@ export const CreateHabitModal: React.FC = () => {
                         color: isDark ? '#FFFFFF' : '#0F172A',
                       },
                     ]}
-                    placeholder={t('create_habit.description_label', 'e.g. Expand knowledge before bedtime')}
+                    placeholder={t('create_habit.description_placeholder', 'e.g. Expand knowledge before bedtime')}
                     placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
                     value={description}
                     onChangeText={setDescription}
@@ -424,7 +424,7 @@ export const CreateHabitModal: React.FC = () => {
                                 { color: isDaySelected ? '#FFFFFF' : isDark ? '#94A3B8' : '#64748B' },
                               ]}
                             >
-                              {day.short}
+                              {t(`days.short_${day.full.toLowerCase()}`, day.short)}
                             </Text>
                           </TouchableOpacity>
                         );
@@ -484,7 +484,7 @@ export const CreateHabitModal: React.FC = () => {
                       {/* Hour Input Box */}
                       <View style={styles.timeInputUnitBox}>
                         <Text style={[styles.timeUnitLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                          Hour
+                          {t('create_habit.hour', 'Hour')}
                         </Text>
                         <TextInput
                           style={[
@@ -520,7 +520,7 @@ export const CreateHabitModal: React.FC = () => {
                       {/* Minute Input Box */}
                       <View style={styles.timeInputUnitBox}>
                         <Text style={[styles.timeUnitLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                          Min
+                          {t('create_habit.min', 'Min')}
                         </Text>
                         <TextInput
                           style={[
@@ -608,10 +608,10 @@ export const CreateHabitModal: React.FC = () => {
                     {/* Quick Presets */}
                     <View style={styles.timePresetsGrid}>
                       {[
-                        { label: '🌅 7:00 AM Morning', h: '07', m: '00', p: 'AM' as const },
-                        { label: '☀️ 8:30 AM Daytime', h: '08', m: '30', p: 'AM' as const },
-                        { label: '🌆 6:00 PM Evening', h: '06', m: '00', p: 'PM' as const },
-                        { label: '🌙 9:00 PM Night', h: '09', m: '00', p: 'PM' as const },
+                        { label: `🌅 7:00 AM ${t('time.morning', 'Morning')}`, h: '07', m: '00', p: 'AM' as const },
+                        { label: `☀️ 8:30 AM ${t('time.daytime', 'Daytime')}`, h: '08', m: '30', p: 'AM' as const },
+                        { label: `🌆 6:00 PM ${t('time.evening', 'Evening')}`, h: '06', m: '00', p: 'PM' as const },
+                        { label: `🌙 9:00 PM ${t('time.night', 'Night')}`, h: '09', m: '00', p: 'PM' as const },
                       ].map((preset) => {
                         const isSelected =
                           reminderHour === preset.h &&
