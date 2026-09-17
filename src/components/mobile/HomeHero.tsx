@@ -90,8 +90,9 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingTop: 14,
     paddingBottom: 4,
+    overflow: 'visible',
   },
   topRow: {
     flexDirection: 'row',
@@ -124,6 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    overflow: 'visible',
   },
   headlineCol: {
     flex: 1,
@@ -138,5 +140,7 @@ const styles = StyleSheet.create({
     width: 150,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
+    zIndex: 10,
   },
 });

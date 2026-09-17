@@ -25,6 +25,15 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
 
 export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
   "en": {
+    "mascot.mood_sad": "No habits done yet... Let's wake up and crush habit #1! 😴",
+    "mascot.mood_hopeful": "Great start! Keep the momentum going! 🌱",
+    "mascot.mood_hyped": "Over halfway there! You're unstoppable today! 🔥",
+    "mascot.mood_celebrating": "PERFECT DAY! 🏆 All habits crushed! You are a legend! 🌟",
+    "mascot.mood_rest": "Rest & recharge! You earned it today! 🧘",
+    "mascot.tap_1": "Consistency is your superpower! ⚡",
+    "mascot.tap_2": "One habit at a time, you're building a great future! 🚀",
+    "mascot.tap_3": "High five! I believe in you! ✋",
+
     "tab.home": "Home",
     "tab.habits": "Habits",
     "tab.stats": "Analytics",
@@ -483,6 +492,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "Undo"
   },
   "hi": {
+    "mascot.mood_sad": "अभी तक कोई आदत पूरी नहीं हुई... चलो जागो और पहली आदत पूरी करो! 😴",
+    "mascot.mood_hopeful": "शानदार शुरुआत! अपनी रफ़्तार बनाए रखें! 🌱",
+    "mascot.mood_hyped": "आधे से अधिक पूरा! आप आज अजेय हैं! 🔥",
+    "mascot.mood_celebrating": "शानदार दिन! 🏆 सभी आदतें पूरी हुईं! आप लेजेंड हैं! 🌟",
+    "mascot.mood_rest": "आराम करें और ऊर्जा भरें! आपने इसे कमाया है! 🧘",
+    "mascot.tap_1": "नियमितता आपकी सबसे बड़ी ताकत है! ⚡",
+    "mascot.tap_2": "एक-एक आदत से आपका भविष्य शानदार बन रहा है! 🚀",
+    "mascot.tap_3": "हाई फाइव! मुझे आप पर पूरा भरोसा है! ✋",
+
     "tab.home": "होम",
     "tab.habits": "आदतें",
     "tab.stats": "एनालिटिक्स",
@@ -941,6 +959,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "पूर्ववत करें"
   },
   "te": {
+    "mascot.mood_sad": "ఇంకా ఏ అలవాటూ పూర్తి కాలేదు... మేల్కొందాం, మొదటి అలవాటును పూర్తి చేద్దాం! 😴",
+    "mascot.mood_hopeful": "గొప్ప ప్రారంభం! ఇదే ఊపును కొనసాగించండి! 🌱",
+    "mascot.mood_hyped": "సగానికి పైగా పూర్తయింది! ఈ రోజు మీరు అద్భుతం! 🔥",
+    "mascot.mood_celebrating": "పర్ఫెక్ట్ డే! 🏆 అన్ని అలవాట్లు పూర్తయ్యాయి! మీరు లెజెండ్! 🌟",
+    "mascot.mood_rest": "విశ్రాంతి తీసుకోండి! ఈ రోజు మీరు అర్హులు! 🧘",
+    "mascot.tap_1": "క్రమశిక్షణ మీ సూపర్ పవర్! ⚡",
+    "mascot.tap_2": "ప్రతి అలవాటు మీ ఉజ్వల భవిష్యత్తుకు పునాది! 🚀",
+    "mascot.tap_3": "హై ఫైవ్! మీపై నాకు పూర్తి నమ్మకం ఉంది! ✋",
+
     "tab.home": "హోమ్",
     "tab.habits": "అలవాట్లు",
     "tab.stats": "విశ్లేషణలు",
@@ -1399,6 +1426,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "రద్దు చేయి"
   },
   "ta": {
+    "mascot.mood_sad": "இன்னும் எந்தப் பழக்கமும் முடிக்கப்படவில்லை... விழித்தெழுந்து முதல் பழக்கத்தைச் செய்வோம்! 😴",
+    "mascot.mood_hopeful": "சிறப்பான தொடக்கம்! வேகத்தைத் தொடருங்கள்! 🌱",
+    "mascot.mood_hyped": "பாதிக்கும் மேல் முடிந்தது! இன்று நீங்கள் அசைக்க முடியாதவர்! 🔥",
+    "mascot.mood_celebrating": "அற்புதமான நாள்! 🏆 எல்லா பழக்கங்களும் முடிந்தது! நீங்கள் வெற்றியாளர்! 🌟",
+    "mascot.mood_rest": "ஓய்வெடுத்து புதுப்பித்துக் கொள்ளுங்கள்! 🧘",
+    "mascot.tap_1": "தொடர்ச்சி உங்கள் மிகப்பெரிய சக்தி! ⚡",
+    "mascot.tap_2": "ஒவ்வொரு பழக்கமும் உங்கள் எதிர்காலத்தை உருவாக்குகிறது! 🚀",
+    "mascot.tap_3": "ஹை ஃபைவ்! உங்கள் மீது எனக்கு நம்பிக்கை உள்ளது! ✋",
+
     "tab.home": "முகப்பு",
     "tab.habits": "பழக்கங்கள்",
     "tab.stats": "பகுப்பாய்வு",
@@ -1857,6 +1893,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "செயல்தவிர்"
   },
   "kn": {
+    "mascot.mood_sad": "ಇನ್ನೂ ಯಾವುದೇ ಅಭ್ಯಾಸ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ... ಎದ್ದೇಳಿ, ಮೊದಲ ಅಭ್ಯಾಸ ಆರಂಭಿಸೋಣ! 😴",
+    "mascot.mood_hopeful": "ಉತ್ತಮ ಆರಂಭ! ವೇಗವನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ! 🌱",
+    "mascot.mood_hyped": "ಅರ್ಧಕ್ಕಿಂತ ಹೆಚ್ಚು ಮುಗಿದಿದೆ! ಇವತ್ತು ನೀವು ಅದ್ಭುತ! 🔥",
+    "mascot.mood_celebrating": "ಪರಿಪೂರ್ಣ ದಿನ! 🏆 ಎಲ್ಲಾ ಅಭ್ಯಾಸಗಳು ಪೂರ್ಣಗೊಂಡಿವೆ! ನೀವು ಚಾಂಪಿಯನ್! 🌟",
+    "mascot.mood_rest": "ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ ಮತ್ತು ಶಕ್ತಿ ತುಂಬಿಕೊಳ್ಳಿ! 🧘",
+    "mascot.tap_1": "ಸತತತೆ ನಿಮ್ಮ ಸೂಪರ್ ಪವರ್! ⚡",
+    "mascot.tap_2": "ಪ್ರತಿ ಅಭ್ಯಾಸವೂ ನಿಮ್ಮ ಉತ್ತಮ ಭವಿಷ್ಯಕ್ಕೆ ನಾಂದಿ! 🚀",
+    "mascot.tap_3": "ಹೈ ಫೈವ್! ನಿಮ್ಮ ಮೇಲೆ ನನಗೆ ಸಂಪೂರ್ಣ ನಂಬಿಕೆ ಇದೆ! ✋",
+
     "tab.home": "ಮುಖಪುಟ",
     "tab.habits": "ಅಭ್ಯಾಸಗಳು",
     "tab.stats": "ವಿಶ್ಲೇಷಣೆ",
@@ -2315,6 +2360,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "ರದ್ದುಮಾಡು"
   },
   "ml": {
+    "mascot.mood_sad": "ഇതുവരെ ഒരു ശീലവും പൂർത്തിയായിട്ടില്ല... ഉണരൂ, ആദ്യ ശീലം പൂർത്തിയാക്കാം! 😴",
+    "mascot.mood_hopeful": "മികച്ച തുടക്കം! വേഗത നിലനിർത്തൂ! 🌱",
+    "mascot.mood_hyped": "പകുതിയിലേറെ പൂർത്തിയായി! ഇന്ന് നിങ്ങൾ തകർത്തു! 🔥",
+    "mascot.mood_celebrating": "മികച്ച ദിനം! 🏆 എല്ലാ ശീലങ്ങളും പൂർത്തിയായി! നിങ്ങൾ ഇതിഹാസമാണ്! 🌟",
+    "mascot.mood_rest": "വിശ്രമിച്ച് ഊർജ്ജം വീണ്ടെടുക്കൂ! 🧘",
+    "mascot.tap_1": "സ്ഥിരതയാണ് നിങ്ങളുടെ ഏറ്റവും വലിയ ശക്തി! ⚡",
+    "mascot.tap_2": "ഓരോ ശീലവും നിങ്ങളുടെ മികച്ച ഭാവിയെ നിർമ്മിക്കുന്നു! 🚀",
+    "mascot.tap_3": "ഹൈ ഫൈവ്! എനിക്ക് നിങ്ങളിൽ വിശ്വാസമുണ്ട്! ✋",
+
     "tab.home": "ഹോം",
     "tab.habits": "ശീലങ്ങൾ",
     "tab.stats": "അനലിറ്റിക്സ്",
@@ -2773,6 +2827,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "പൂർവ്വസ്ഥിതിയിലാക്കുക"
   },
   "bn": {
+    "mascot.mood_sad": "এখনও কোনো অভ্যাস সম্পন্ন হয়নি... জেগে উঠুন এবং প্রথম অভ্যাসটি শুরু করুন! 😴",
+    "mascot.mood_hopeful": "দারুণ শুরু! গতি বজায় রাখুন! 🌱",
+    "mascot.mood_hyped": "অর্ধেকের বেশি শেষ! আপনি আজ অপ্রতিরোধ্য! 🔥",
+    "mascot.mood_celebrating": "পারফেক্ট ডে! 🏆 সব অভ্যাস শেষ! আপনি একজন কিংবদন্তি! 🌟",
+    "mascot.mood_rest": "বিশ্রাম নিন এবং শক্তি সঞ্চয় করুন! 🧘",
+    "mascot.tap_1": "ধারাবাহিকতাই আপনার সুপারপাওয়ার! ⚡",
+    "mascot.tap_2": "প্রতিটি অভ্যাস আপনার উজ্জ্বল ভবিষ্যৎ তৈরি করছে! 🚀",
+    "mascot.tap_3": "হাই ফাইভ! আপনার ওপর আমার পূর্ণ বিশ্বাস আছে! ✋",
+
     "tab.home": "হোম",
     "tab.habits": "অভ্যাস",
     "tab.stats": "পরিসংখ্যান",
@@ -3231,6 +3294,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "পূর্বাবস্থায় ফেরান"
   },
   "mr": {
+    "mascot.mood_sad": "अजून एकही सवय पूर्ण झालेली नाही... जागे व्हा आणि पहिली सवय पूर्ण करा! 😴",
+    "mascot.mood_hopeful": "छान सुरुवात! गती कायम ठेवा! 🌱",
+    "mascot.mood_hyped": "निम्म्याहून अधिक पूर्ण! तुम्ही आज कमाल करत आहात! 🔥",
+    "mascot.mood_celebrating": "परफेक्ट दिवस! 🏆 सर्व सवयी पूर्ण झाल्या! तुम्ही लेजेंड आहात! 🌟",
+    "mascot.mood_rest": "विश्रांती घ्या आणि रीचार्ज व्हा! 🧘",
+    "mascot.tap_1": "सातत्य ही तुमची खरी ताकद आहे! ⚡",
+    "mascot.tap_2": "प्रत्येक सवय तुमचे उज्ज्वल भविष्य घडवत आहे! 🚀",
+    "mascot.tap_3": "हाय फाईव्ह! मला तुमच्यावर पूर्ण विश्वास आहे! ✋",
+
     "tab.home": "होम",
     "tab.habits": "सवयी",
     "tab.stats": "आकडेवारी",
@@ -3689,6 +3761,15 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "पूर्ववत करा"
   },
   "gu": {
+    "mascot.mood_sad": "હજી સુધી કોઈ આદત પૂર્ણ નથી થઈ... ચાલો જાગો અને પહેલી આદત શરૂ કરીએ! 😴",
+    "mascot.mood_hopeful": "સરસ શરૂઆત! ગતિ જાળવી રાખો! 🌱",
+    "mascot.mood_hyped": "અડધાથી વધુ પૂર્ણ! તમે આજે અદભુત કરી રહ્યા છો! 🔥",
+    "mascot.mood_celebrating": "પરફેક્ટ દિવસ! 🏆 બધી આદતો પૂર્ણ થઈ! તમે લિજેન્ડ છો! 🌟",
+    "mascot.mood_rest": "આરામ કરો અને રિચાર્જ થાઓ! 🧘",
+    "mascot.tap_1": "નિયમિતતા તમારી સૌથી મોટી તાકાત છે! ⚡",
+    "mascot.tap_2": "દરેક આદત તમારું ઉજ્જવળ ભવિષ્ય બનાવી રહી છે! 🚀",
+    "mascot.tap_3": "હાઈ ફાઈવ! મને તમારા પર પૂરો વિશ્વાસ છે! ✋",
+
     "tab.home": "હોમ",
     "tab.habits": "આદતો",
     "tab.stats": "આંકડા",
