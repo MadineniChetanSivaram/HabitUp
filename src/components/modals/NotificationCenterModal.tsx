@@ -34,6 +34,7 @@ export const NotificationCenterModal: React.FC = () => {
     setSoundEnabled,
     showToast,
     t,
+    tHabitName,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -200,7 +201,7 @@ export const NotificationCenterModal: React.FC = () => {
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                         <Text style={[styles.habitTimeName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                          {h.name}
+                          {tHabitName(h.name)}
                         </Text>
                         {isDone && (
                           <View style={styles.doneBadge}>
@@ -214,7 +215,7 @@ export const NotificationCenterModal: React.FC = () => {
                         <Clock size={12} color="#C084FC" />
                         <Text style={styles.timeRowText}>
                           {t('notifications.habit_time', '{name} Time: {time}', {
-                            name: h.name,
+                            name: tHabitName(h.name),
                             time: formatTo12Hour(habitTime),
                           })}
                         </Text>

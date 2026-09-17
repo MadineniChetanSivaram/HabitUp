@@ -179,16 +179,14 @@ const HabitContext = createContext<HabitContextType | null>(null);
 
 function deduplicateHabits(list: Habit[]): Habit[] {
   if (!Array.isArray(list)) return [];
-  const nameMap = new Map<string, Habit>();
+  const idMap = new Map<string, Habit>();
 
   for (const h of list) {
     if (!h || !h.id) continue;
-    const cleanName = (h.name || '').trim().toLowerCase();
-    if (!cleanName) continue;
 
-    const existing = nameMap.get(cleanName);
+    const existing = idMap.get(h.id);
     if (!existing) {
-      nameMap.set(cleanName, { ...h });
+      idMap.set(h.id, { ...h });
     } else {
       // Merge into the best habit record
       const existingIsActive = !existing.deleted_at && !existing.archived_at;
@@ -200,6 +198,7 @@ function deduplicateHabits(list: Habit[]): Habit[] {
 
       const merged: Habit = {
         ...base,
+        name: base.name || other.name,
         is_shared: base.is_shared || other.is_shared || false,
         buddy_id: base.buddy_id || other.buddy_id,
         buddy_name: base.buddy_name || other.buddy_name,
@@ -211,11 +210,11 @@ function deduplicateHabits(list: Habit[]): Habit[] {
         reminder_enabled: base.reminder_enabled || other.reminder_enabled,
       };
 
-      nameMap.set(cleanName, merged);
+      idMap.set(h.id, merged);
     }
   }
 
-  return Array.from(nameMap.values());
+  return Array.from(idMap.values());
 }
 
 export function deduplicateFriendHabits(list: FriendPublicHabit[]): FriendPublicHabit[] {
@@ -2601,53 +2600,11 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const createHabit = useCallback(
     (habitData: Omit<Habit, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Habit => {
       const now = new Date().toISOString();
-      const cleanName = (habitData.name || '').trim().toLowerCase();
       const tempId = `hab-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
       const resolvedScheduledDays =
         habitData.frequency_type === 'daily' || !habitData.scheduled_days || habitData.scheduled_days.length === 0
           ? [0, 1, 2, 3, 4, 5, 6]
           : habitData.scheduled_days;
-
-      // Check if habit with same name already exists
-      const existing = habits.find(
-        (h) => !h.deleted_at && !h.archived_at && (h.name || '').trim().toLowerCase() === cleanName
-      );
-
-      if (existing) {
-        const merged: Habit = {
-          ...existing,
-          ...habitData,
-          scheduled_days: resolvedScheduledDays,
-          is_shared: habitData.is_shared || existing.is_shared || false,
-          buddy_id: habitData.buddy_id || existing.buddy_id,
-          buddy_name: habitData.buddy_name || existing.buddy_name,
-          buddy_avatar: habitData.buddy_avatar || existing.buddy_avatar,
-          updated_at: now,
-        };
-
-        setHabits((prev) => deduplicateHabits(prev.map((h) => (h.id === existing.id ? merged : h))));
-        showToast(
-          t('habits.updated_toast', `Habit "${tHabitName(merged.name)}" updated!`, {
-            name: tHabitName(merged.name),
-          }),
-          undefined,
-          'success'
-        );
-
-        if (merged.reminder_enabled && merged.reminder_time) {
-          notificationService.scheduleReminder(merged);
-        }
-
-        if (isOffline) {
-          addMutationToQueue(`/habits/${existing.id}`, 'PATCH', merged);
-        } else {
-          localApi.updateHabitOnServer(existing.id, merged).catch(() => {
-            addMutationToQueue(`/habits/${existing.id}`, 'PATCH', merged);
-          });
-        }
-
-        return merged;
-      }
 
       const newHabit: Habit = {
         ...habitData,
@@ -2689,11 +2646,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             };
             setHabits((prev) =>
               deduplicateHabits(
-                prev.map((h) =>
-                  h.id === tempId || (h.name && h.name.toLowerCase() === serverHabit.name.toLowerCase() && h.buddy_id === newHabit.buddy_id)
-                    ? mergedHabit
-                    : h
-                )
+                prev.map((h) => (h.id === tempId ? mergedHabit : h))
               )
             );
           }
@@ -2704,7 +2657,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       return newHabit;
     },
-    [user?.id, isOffline, showToast, addMutationToQueue]
+    [user?.id, isOffline, showToast, addMutationToQueue, t, tHabitName]
   );
 
   const updateHabit = useCallback(
