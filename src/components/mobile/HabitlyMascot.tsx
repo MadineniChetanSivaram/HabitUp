@@ -30,8 +30,6 @@ interface HabitlyMascotProps {
   forcedMood?: MascotMood;
 }
 
-const AnimatedG = Animated.createAnimatedComponent(G);
-
 export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   onClick,
   size = 120,
@@ -120,39 +118,39 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     );
     floatLoop.start();
 
-    // 2. Tail Wagging Loop
+    // 2. Visible, Lively Tail Wagging Loop
     const tailLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(tailWag, {
-          toValue: isSleep ? 1.5 : mood === 'celebrating' || mood === 'hyped' ? 5 : 3,
-          duration: isSleep ? 2000 : mood === 'celebrating' ? 380 : 800,
+          toValue: 1,
+          duration: isSleep ? 2000 : mood === 'celebrating' || mood === 'hyped' ? 420 : 750,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
+          useNativeDriver: useNative,
         }),
         Animated.timing(tailWag, {
-          toValue: isSleep ? -1.5 : mood === 'celebrating' || mood === 'hyped' ? -5 : -3,
-          duration: isSleep ? 2000 : mood === 'celebrating' ? 380 : 800,
+          toValue: -1,
+          duration: isSleep ? 2000 : mood === 'celebrating' || mood === 'hyped' ? 420 : 750,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
+          useNativeDriver: useNative,
         }),
       ])
     );
     tailLoop.start();
 
-    // 3. Hand Wave Greeting Loop (active when awake / celebrating / hyped)
+    // 3. Cheerful "Hi" Hand Wave Loop (natural speed & arc)
     const waveLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(handWave, {
           toValue: 1,
-          duration: 360,
+          duration: mood === 'celebrating' ? 240 : 340,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false, // SVG rotation attribute requires JS driver on web
+          useNativeDriver: useNative,
         }),
         Animated.timing(handWave, {
           toValue: -1,
-          duration: 360,
+          duration: mood === 'celebrating' ? 240 : 340,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: false,
+          useNativeDriver: useNative,
         }),
       ])
     );
@@ -319,16 +317,16 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
   const auraColor = getAuraColor();
 
-  // Waving rotation (numbers for SVG rotation)
-  const pawWaveAngle = handWave.interpolate({
+  // Waving rotation (natural wrist/forearm tilt)
+  const pawWaveRotate = handWave.interpolate({
     inputRange: [-1, 1],
-    outputRange: [-12, 14],
+    outputRange: ['-16deg', '22deg'],
   });
 
-  // Tail rotation for SVG
-  const tailWaveAngle = tailWag.interpolate({
-    inputRange: [-5, 5],
-    outputRange: [-4, 4],
+  // Lively Tail wagging rotation
+  const tailWagRotate = tailWag.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-10deg', '14deg'],
   });
 
   // Zzz Interpolations
@@ -348,6 +346,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const z3Scale = zzzAnim3.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.5] });
 
   const isWavingMood = mood === 'awake' || mood === 'celebrating' || mood === 'hyped';
+  const mascotPixelSize = size * 1.25;
 
   return (
     <View style={[styles.outerWrapper, { width: size * 1.3, height: size * 1.25 }]}>
@@ -436,312 +435,322 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
         {/* Master Red Panda Body with Breathing & Spring Bounce */}
         <AnimatedView
           style={{
+            width: mascotPixelSize,
+            height: mascotPixelSize,
             transform: [
               { translateY: floatAnim },
               { scale: bounceScale },
             ],
             alignItems: 'center',
             justifyContent: 'center',
+            position: 'relative',
           }}
         >
-          <Svg width={size * 1.25} height={size * 1.2} viewBox="0 0 160 150">
-            <Defs>
-              {/* Warm Red Panda Fur Gradient */}
-              <RadialGradient id="rpFurGrad" cx="50%" cy="35%" r="65%">
-                <Stop offset="0%" stopColor="#FB923C" />
-                <Stop offset="60%" stopColor="#EA580C" />
-                <Stop offset="100%" stopColor="#C2410C" />
-              </RadialGradient>
-
-              {/* Bushy Striped Tail Gradient */}
-              <LinearGradient id="rpTailGrad" x1="0" y1="0" x2="1" y2="1">
-                <Stop offset="0%" stopColor="#FB923C" />
-                <Stop offset="50%" stopColor="#EA580C" />
-                <Stop offset="100%" stopColor="#9A3412" />
-              </LinearGradient>
-
-              {/* Dark Espresso Fur for Paws/Limbs */}
-              <LinearGradient id="rpDarkFur" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0%" stopColor="#3F1D0B" />
-                <Stop offset="100%" stopColor="#240F05" />
-              </LinearGradient>
-
-              {/* Royal Crown Gradient */}
-              <LinearGradient id="rpCrown" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0%" stopColor="#FDE047" />
-                <Stop offset="60%" stopColor="#F59E0B" />
-                <Stop offset="100%" stopColor="#D97706" />
-              </LinearGradient>
-
-              {/* Fire Headband Gradient */}
-              <LinearGradient id="rpFire" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0%" stopColor="#FFA07A" />
-                <Stop offset="50%" stopColor="#FF4500" />
-                <Stop offset="100%" stopColor="#DC2626" />
-              </LinearGradient>
-            </Defs>
-
-            {/* --- 1. BUSHY STRIPED RED PANDA TAIL (Behind Body) --- */}
-            <AnimatedG
-              origin="92, 108"
-              rotation={tailWaveAngle}
-            >
+          {/* ======================================================== */}
+          {/* LAYER 1: LIVELY ANIMATED WAGGING TAIL (Behind Body)     */}
+          {/* ======================================================== */}
+          <AnimatedView
+            style={[
+              styles.layerAbsolute,
+              {
+                transform: [{ rotate: tailWagRotate }],
+                transformOrigin: '58% 68%' as any,
+                zIndex: 1,
+              },
+            ]}
+            pointerEvents="none"
+          >
+            <Svg width={mascotPixelSize} height={mascotPixelSize} viewBox="0 0 160 160">
+              <Defs>
+                <LinearGradient id="tailGradFull" x1="0" y1="0" x2="1" y2="1">
+                  <Stop offset="0%" stopColor="#FB923C" />
+                  <Stop offset="45%" stopColor="#EA580C" />
+                  <Stop offset="100%" stopColor="#9A3412" />
+                </LinearGradient>
+              </Defs>
               <Path
-                d="M 96 98 C 122 108, 145 95, 142 72 C 138 52, 120 54, 108 72 Z"
-                fill="url(#rpTailGrad)"
+                d="M 94 104 C 122 114, 150 100, 146 72 C 142 50, 120 54, 108 76 Z"
+                fill="url(#tailGradFull)"
               />
               <Path
-                d="M 142 72 C 140 56, 128 54, 122 62 C 132 68, 138 75, 142 72 Z"
+                d="M 146 72 C 144 54, 128 52, 122 62 C 134 68, 142 76, 146 72 Z"
                 fill="#FEF3C7"
               />
               <Path
-                d="M 136 80 C 128 77, 122 80, 116 87 C 121 91, 130 89, 136 80 Z"
+                d="M 139 80 C 130 77, 122 80, 116 88 C 122 92, 132 90, 139 80 Z"
                 fill="#240F05"
                 opacity={0.8}
               />
               <Path
-                d="M 126 90 C 118 88, 112 91, 109 97 C 113 100, 119 98, 126 90 Z"
+                d="M 128 92 C 120 90, 114 93, 110 100 C 115 103, 122 101, 128 92 Z"
                 fill="#240F05"
                 opacity={0.8}
               />
-            </AnimatedG>
+            </Svg>
+          </AnimatedView>
 
-            {/* --- 2. CUTE FLUFFY ROUNDED EARS (Top of Head) --- */}
-            {/* Left Ear */}
-            <G id="rp-ear-left">
-              <Path
-                d="M 36 50 C 26 32, 40 20, 56 32 C 60 38, 56 48, 48 52 Z"
-                fill="url(#rpFurGrad)"
-              />
-              <Path
-                d="M 38 48 C 30 36, 42 28, 52 36 Z"
-                fill="#FFFFFF"
-              />
-              <Path
-                d="M 40 47 C 34 38, 42 32, 48 38 Z"
-                fill="#FEF3C7"
-                opacity={0.7}
-              />
-            </G>
+          {/* ======================================================== */}
+          {/* LAYER 2: CHUBBY BODY, EARS, HEAD & 4 PAWS (Base Layer) */}
+          {/* ======================================================== */}
+          <View style={[styles.layerAbsolute, { zIndex: 5 }]} pointerEvents="none">
+            <Svg width={mascotPixelSize} height={mascotPixelSize} viewBox="0 0 160 160">
+              <Defs>
+                <RadialGradient id="rpFurGrad2" cx="50%" cy="35%" r="65%">
+                  <Stop offset="0%" stopColor="#FB923C" />
+                  <Stop offset="60%" stopColor="#EA580C" />
+                  <Stop offset="100%" stopColor="#C2410C" />
+                </RadialGradient>
+                <LinearGradient id="rpDarkFur2" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%" stopColor="#3F1D0B" />
+                  <Stop offset="100%" stopColor="#240F05" />
+                </LinearGradient>
+                <LinearGradient id="rpCrown2" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%" stopColor="#FDE047" />
+                  <Stop offset="60%" stopColor="#F59E0B" />
+                  <Stop offset="100%" stopColor="#D97706" />
+                </LinearGradient>
+                <LinearGradient id="rpFire2" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%" stopColor="#FFA07A" />
+                  <Stop offset="50%" stopColor="#FF4500" />
+                  <Stop offset="100%" stopColor="#DC2626" />
+                </LinearGradient>
+              </Defs>
 
-            {/* Right Ear */}
-            <G id="rp-ear-right">
-              <Path
-                d="M 124 50 C 134 32, 120 20, 104 32 C 100 38, 104 48, 112 52 Z"
-                fill="url(#rpFurGrad)"
-              />
-              <Path
-                d="M 122 48 C 130 36, 118 28, 108 36 Z"
-                fill="#FFFFFF"
-              />
-              <Path
-                d="M 120 47 C 126 38, 118 32, 112 38 Z"
-                fill="#FEF3C7"
-                opacity={0.7}
-              />
-            </G>
-
-            {/* --- 3. CHUBBY SEATED BODY & BELLY --- */}
-            <Ellipse cx="80" cy="98" rx="34" ry="26" fill="url(#rpFurGrad)" />
-            {/* Dark Espresso Belly */}
-            <Ellipse cx="80" cy="103" rx="21" ry="15" fill="url(#rpDarkFur)" />
-            {/* White Chest Collar Tuft */}
-            <Path d="M 72 87 Q 80 94 88 87 Q 80 91 72 87 Z" fill="#FFFFFF" opacity={0.9} />
-
-            {/* --- 4. BOTTOM HIND FEET / PAWS (Paws 3 & 4 of 4 Paws) --- */}
-            {/* Left Foot */}
-            <G id="rp-hind-foot-left">
-              <Ellipse cx="48" cy="122" rx="11" ry="8" fill="url(#rpDarkFur)" transform="rotate(-10 48 122)" />
-              <Ellipse cx="48" cy="122" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(-10 48 122)" />
-              <Circle cx="41" cy="118" r="1.6" fill="#FEF08A" opacity={0.95} />
-              <Circle cx="46" cy="115" r="1.6" fill="#FEF08A" opacity={0.95} />
-              <Circle cx="52" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
-            </G>
-
-            {/* Right Foot */}
-            <G id="rp-hind-foot-right">
-              <Ellipse cx="112" cy="122" rx="11" ry="8" fill="url(#rpDarkFur)" transform="rotate(10 112 122)" />
-              <Ellipse cx="112" cy="122" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(10 112 122)" />
-              <Circle cx="108" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
-              <Circle cx="114" cy="115" r="1.6" fill="#FEF08A" opacity={0.95} />
-              <Circle cx="119" cy="118" r="1.6" fill="#FEF08A" opacity={0.95} />
-            </G>
-
-            {/* --- 5. ADORABLE CHUBBY HEAD & MARKINGS --- */}
-            <Ellipse cx="80" cy="62" rx="36" ry="29" fill="url(#rpFurGrad)" />
-
-            {/* White Facial Snout Mask */}
-            <Ellipse cx="80" cy="69" rx="15" ry="11" fill="#FFFFFF" />
-            {/* White Eyebrow Dots */}
-            <Circle cx="63" cy="49" r="4.2" fill="#FFFFFF" />
-            <Circle cx="97" cy="49" r="4.2" fill="#FFFFFF" />
-            {/* White Cheek Teardrops */}
-            <Path d="M 48 64 C 45 72, 52 77, 57 73 C 55 67, 51 64, 48 64 Z" fill="#FFFFFF" />
-            <Path d="M 112 64 C 115 72, 108 77, 103 73 C 105 67, 109 64, 112 64 Z" fill="#FFFFFF" />
-
-            {/* Cute Black Button Nose with Highlight */}
-            <Path d="M 76 65 Q 80 63 84 65 Q 80 70 76 65 Z" fill="#1C1917" />
-            <Circle cx="78.5" cy="65.5" r="0.7" fill="#FFFFFF" />
-
-            {/* --- 6. MOOD SPECIFIC ACCESSORIES --- */}
-            {/* 👑 CELEBRATING: Golden Royal Crown */}
-            {mood === 'celebrating' && (
-              <G id="rp-crown">
-                <Path d="M66 30 L70 14 L76 22 L80 10 L84 22 L90 14 L94 30 Z" fill="url(#rpCrown)" stroke="#B45309" strokeWidth={1} />
-                <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
-                <Circle cx="72" cy="22" r="1.8" fill="#3B82F6" />
-                <Circle cx="88" cy="22" r="1.8" fill="#10B981" />
-              </G>
-            )}
-
-            {/* 🔥 HYPED: Blazing Flame Headband */}
-            {mood === 'hyped' && (
-              <G id="rp-fire-band">
-                <Path d="M80 12 C 84 18 90 20 86 28 C 84 26 82 28 80 26 C 78 28 76 26 74 28 C 70 20 76 18 80 12 Z" fill="url(#rpFire)" />
-                <Circle cx="80" cy="22" r="2.2" fill="#FEF08A" />
-              </G>
-            )}
-
-            {/* --- 7. FACIAL EXPRESSIONS & EYES --- */}
-
-            {/* 😴 SLEEPING: Peaceful Closed Eyes ( ˘ω˘ ) */}
-            {mood === 'sleeping' && (
-              <G id="rp-face-sleeping">
-                <Path d="M 64 61 Q 69 66 74 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
-                <Path d="M 86 61 Q 91 66 96 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
-                <Path d="M 77 71 Q 80 74 83 71" stroke="#1C1917" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-                <Ellipse cx="55" cy="67" rx="4" ry="2.2" fill="#F43F5E" opacity={0.45} />
-                <Ellipse cx="105" cy="67" rx="4" ry="2.2" fill="#F43F5E" opacity={0.45} />
-              </G>
-            )}
-
-            {/* 👋 AWAKE / GREETING / HOPEFUL: Big Sparkly Anime Eyes */}
-            {(mood === 'awake' || mood === 'hopeful') && (
-              <G id="rp-face-awake">
-                <Circle cx="65" cy="59" r="4.8" fill="#1C1917" />
-                <Circle cx="63.5" cy="57.5" r="1.8" fill="#FFFFFF" />
-                <Circle cx="66.5" cy="60.5" r="0.8" fill="#FFFFFF" />
-
-                <Circle cx="95" cy="59" r="4.8" fill="#1C1917" />
-                <Circle cx="93.5" cy="57.5" r="1.8" fill="#FFFFFF" />
-                <Circle cx="96.5" cy="60.5" r="0.8" fill="#FFFFFF" />
-
-                <Path d="M 75 70 Q 77.5 73 80 70.5 Q 82.5 73 85 70" stroke="#1C1917" strokeWidth={2} strokeLinecap="round" fill="none" />
-                <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.65} />
-                <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.65} />
-              </G>
-            )}
-
-            {/* 🔥 HYPED: Starry Anime Eyes */}
-            {mood === 'hyped' && (
-              <G id="rp-face-hyped">
-                <Path d="M65 54 L66.5 58 L70 59 L66.5 60 L65 64 L63.5 60 L60 59 L63.5 58 Z" fill="#78350F" />
-                <Circle cx="66" cy="57" r="1.1" fill="#FFFFFF" />
-                <Path d="M95 54 L96.5 58 L100 59 L96.5 60 L95 64 L93.5 60 L90 59 L93.5 58 Z" fill="#78350F" />
-                <Circle cx="96" cy="57" r="1.1" fill="#FFFFFF" />
-
-                <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EF4444" opacity={0.75} />
-                <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EF4444" opacity={0.75} />
-
-                <Path d="M75 70 Q 80 78 85 70 Q 80 73 75 70 Z" fill="#991B1B" />
-                <Path d="M77 73 Q 80 76 83 73 Z" fill="#F87171" />
-              </G>
-            )}
-
-            {/* 👑 CELEBRATING: Laughing Joyful Arcs */}
-            {mood === 'celebrating' && (
-              <G id="rp-face-celebrating">
-                <Path d="M 61 59 Q 66 53 71 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
-                <Path d="M 89 59 Q 94 53 99 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
-
-                <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
-                <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
-
-                <Path d="M 74 69 Q 80 80 86 69 Z" fill="#3F1D0B" />
-                <Path d="M 77 74 Q 80 78 83 74 Z" fill="#F472B6" />
-                <Path d="M 76 70 L 84 70" stroke="#FFFFFF" strokeWidth={1.2} />
-              </G>
-            )}
-
-            {/* 🧘 REST: Peaceful Smile */}
-            {mood === 'rest' && (
-              <G id="rp-face-rest">
-                <Path d="M 64 61 Q 69 66 74 61" stroke="#3F1D0B" strokeWidth={2.4} strokeLinecap="round" fill="none" />
-                <Path d="M 86 61 Q 91 66 96 61" stroke="#3F1D0B" strokeWidth={2.4} strokeLinecap="round" fill="none" />
-                <Ellipse cx="55" cy="67" rx="3.8" ry="2.2" fill="#FB923C" opacity={0.5} />
-                <Ellipse cx="105" cy="67" rx="3.8" ry="2.2" fill="#FB923C" opacity={0.5} />
-                <Path d="M 77 71 Q 80 74 83 71" stroke="#3F1D0B" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-              </G>
-            )}
-
-            {/* 🎋 HOPEFUL: Bamboo Stalk */}
-            {mood === 'hopeful' && (
-              <G id="rp-bamboo-snack">
-                <Path d="M102 120 L108 88" stroke="#16A34A" strokeWidth={4} strokeLinecap="round" />
-                <Line x1="102.5" y1="108" x2="107.5" y2="106" stroke="#14532D" strokeWidth={1.6} strokeLinecap="round" />
-                <Line x1="104.5" y1="98" x2="109.5" y2="96" stroke="#14532D" strokeWidth={1.6} strokeLinecap="round" />
-                <Path d="M108 88 Q 118 82 124 87 Q 116 93 108 88 Z" fill="#22C55E" />
-                <Path d="M106 94 Q 118 89 122 97 Q 114 99 106 94 Z" fill="#4ADE80" />
-                <Path d="M107 84 Q 106 73 99 71 Q 102 79 107 84 Z" fill="#15803D" />
-              </G>
-            )}
-
-            {/* --- 8. FRONT PAWS (Paws 1 & 2 of 4 Paws) --- */}
-            {/* Front Left Paw (Paw 1 - Resting Cutely on Chest) */}
-            <G id="rp-front-paw-left">
-              <Ellipse cx="62" cy="94" rx="8" ry="7" fill="url(#rpDarkFur)" transform="rotate(-15 62 94)" />
-              <Ellipse cx="62" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
-              <Circle cx="58" cy="90" r="1.1" fill="#FEF08A" opacity={0.9} />
-              <Circle cx="62" cy="88" r="1.1" fill="#FEF08A" opacity={0.9} />
-              <Circle cx="66" cy="89" r="1.1" fill="#FEF08A" opacity={0.9} />
-            </G>
-
-            {/* Front Right Paw (Paw 2) - Resting in Sleeping / Rest Mood */}
-            {(mood === 'sleeping' || mood === 'rest') && (
-              <G id="rp-front-paw-right-resting">
-                <Ellipse cx="98" cy="94" rx="8" ry="7" fill="url(#rpDarkFur)" transform="rotate(15 98 94)" />
-                <Ellipse cx="98" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
-                <Circle cx="94" cy="89" r="1.1" fill="#FEF08A" opacity={0.9} />
-                <Circle cx="98" cy="88" r="1.1" fill="#FEF08A" opacity={0.9} />
-                <Circle cx="102" cy="90" r="1.1" fill="#FEF08A" opacity={0.9} />
-              </G>
-            )}
-
-            {/* Front Right Paw - Hopeful Mood (Holding Bamboo) */}
-            {mood === 'hopeful' && (
-              <G id="rp-front-paw-right-hopeful">
+              {/* Teddy Bear Rounded Ears on top of head */}
+              <G id="rp-ears">
+                {/* Left Ear */}
                 <Path
-                  d="M 94 92 C 100 90, 105 94, 102 102 C 98 105, 91 102, 93 94 Z"
-                  fill="url(#rpDarkFur)"
+                  d="M 36 50 C 26 30, 40 18, 56 30 C 60 36, 56 46, 48 52 Z"
+                  fill="url(#rpFurGrad2)"
                 />
-                <Ellipse cx="99" cy="98" rx="3.5" ry="2.5" fill="#FEF08A" opacity={0.85} />
-              </G>
-            )}
-
-            {/* 👋 FRONT RIGHT WAVING ARM (Paw 2) - Cute Short Chubby Arm Beside Head */}
-            {isWavingMood && (
-              <AnimatedG
-                origin="94, 84"
-                rotation={pawWaveAngle}
-              >
-                {/* Short Chubby Arm from Shoulder (94, 86) to Palm (114, 46) */}
                 <Path
-                  d="M 94 86 C 100 80, 106 68, 114 48"
-                  stroke="url(#rpDarkFur)"
-                  strokeWidth="11"
+                  d="M 38 48 C 30 34, 42 26, 52 34 Z"
+                  fill="#FFFFFF"
+                />
+                <Path
+                  d="M 40 47 C 34 36, 42 30, 48 36 Z"
+                  fill="#FEF3C7"
+                  opacity={0.7}
+                />
+
+                {/* Right Ear */}
+                <Path
+                  d="M 124 50 C 134 30, 120 18, 104 30 C 100 36, 104 46, 112 52 Z"
+                  fill="url(#rpFurGrad2)"
+                />
+                <Path
+                  d="M 122 48 C 130 34, 118 26, 108 34 Z"
+                  fill="#FFFFFF"
+                />
+                <Path
+                  d="M 120 47 C 126 36, 118 30, 112 36 Z"
+                  fill="#FEF3C7"
+                  opacity={0.7}
+                />
+              </G>
+
+              {/* Chubby Seated Body & Belly */}
+              <Ellipse cx="80" cy="100" rx="34" ry="26" fill="url(#rpFurGrad2)" />
+              <Ellipse cx="80" cy="105" rx="21" ry="15" fill="url(#rpDarkFur2)" />
+              <Path d="M 72 88 Q 80 95 88 88 Q 80 92 72 88 Z" fill="#FFFFFF" opacity={0.9} />
+
+              {/* Bottom Hind Feet (Paws 3 & 4 of 4 Paws) */}
+              {/* Left Foot */}
+              <Ellipse cx="48" cy="123" rx="11" ry="8" fill="url(#rpDarkFur2)" transform="rotate(-10 48 123)" />
+              <Ellipse cx="48" cy="123" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(-10 48 123)" />
+              <Circle cx="41" cy="119" r="1.6" fill="#FEF08A" opacity={0.95} />
+              <Circle cx="46" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
+              <Circle cx="52" cy="117" r="1.6" fill="#FEF08A" opacity={0.95} />
+
+              {/* Right Foot */}
+              <Ellipse cx="112" cy="123" rx="11" ry="8" fill="url(#rpDarkFur2)" transform="rotate(10 112 123)" />
+              <Ellipse cx="112" cy="123" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(10 112 123)" />
+              <Circle cx="108" cy="117" r="1.6" fill="#FEF08A" opacity={0.95} />
+              <Circle cx="114" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
+              <Circle cx="119" cy="119" r="1.6" fill="#FEF08A" opacity={0.95} />
+
+              {/* Front Left Paw (Paw 1 - Resting Cutely on Upper Chest) */}
+              <Ellipse cx="60" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(-15 60 94)" />
+              <Ellipse cx="60" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
+              <Circle cx="56" cy="90" r="1.1" fill="#FEF08A" opacity={0.9} />
+              <Circle cx="60" cy="88" r="1.1" fill="#FEF08A" opacity={0.9} />
+              <Circle cx="64" cy="89" r="1.1" fill="#FEF08A" opacity={0.9} />
+
+              {/* Front Right Paw Resting (When Sleeping or Rest Mode) */}
+              {(!isWavingMood && mood !== 'hopeful') && (
+                <G id="rp-front-paw-right-resting">
+                  <Ellipse cx="100" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(15 100 94)" />
+                  <Ellipse cx="100" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
+                  <Circle cx="96" cy="89" r="1.1" fill="#FEF08A" opacity={0.9} />
+                  <Circle cx="100" cy="88" r="1.1" fill="#FEF08A" opacity={0.9} />
+                  <Circle cx="104" cy="90" r="1.1" fill="#FEF08A" opacity={0.9} />
+                </G>
+              )}
+
+              {/* Front Right Paw - Hopeful Mode (Holding Bamboo) */}
+              {mood === 'hopeful' && (
+                <G id="rp-front-paw-hopeful">
+                  <Path d="M102 120 L108 88" stroke="#16A34A" strokeWidth={4} strokeLinecap="round" />
+                  <Line x1="102.5" y1="108" x2="107.5" y2="106" stroke="#14532D" strokeWidth={1.6} strokeLinecap="round" />
+                  <Line x1="104.5" y1="98" x2="109.5" y2="96" stroke="#14532D" strokeWidth={1.6} strokeLinecap="round" />
+                  <Path d="M108 88 Q 118 82 124 87 Q 116 93 108 88 Z" fill="#22C55E" />
+                  <Path d="M106 94 Q 118 89 122 97 Q 114 99 106 94 Z" fill="#4ADE80" />
+                  <Path d="M107 84 Q 106 73 99 71 Q 102 79 107 84 Z" fill="#15803D" />
+
+                  <Path d="M 94 92 C 100 90, 105 94, 102 102 C 98 105, 91 102, 93 94 Z" fill="url(#rpDarkFur2)" />
+                  <Ellipse cx="99" cy="98" rx="3.5" ry="2.5" fill="#FEF08A" opacity={0.85} />
+                </G>
+              )}
+
+              {/* Right Shoulder Base for Waving Arm */}
+              {isWavingMood && (
+                <Path d="M 94 92 C 102 90, 108 94, 105 101 C 101 106, 94 103, 94 92 Z" fill="url(#rpDarkFur2)" />
+              )}
+
+              {/* Round Chubby Head & Markings */}
+              <Ellipse cx="80" cy="62" rx="36" ry="29" fill="url(#rpFurGrad2)" />
+              <Ellipse cx="80" cy="69" rx="15" ry="11" fill="#FFFFFF" />
+              <Circle cx="63" cy="49" r="4.2" fill="#FFFFFF" />
+              <Circle cx="97" cy="49" r="4.2" fill="#FFFFFF" />
+              <Path d="M 48 64 C 45 72, 52 77, 57 73 C 55 67, 51 64, 48 64 Z" fill="#FFFFFF" />
+              <Path d="M 112 64 C 115 72, 108 77, 103 73 C 105 67, 109 64, 112 64 Z" fill="#FFFFFF" />
+
+              {/* Cute Black Button Nose with Highlight */}
+              <Path d="M 76 65 Q 80 63 84 65 Q 80 70 76 65 Z" fill="#1C1917" />
+              <Circle cx="78.5" cy="65.5" r="0.7" fill="#FFFFFF" />
+
+              {/* Crown for Celebrating */}
+              {mood === 'celebrating' && (
+                <G id="rp-crown">
+                  <Path d="M66 30 L70 14 L76 22 L80 10 L84 22 L90 14 L94 30 Z" fill="url(#rpCrown2)" stroke="#B45309" strokeWidth={1} />
+                  <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
+                  <Circle cx="72" cy="22" r="1.8" fill="#3B82F6" />
+                  <Circle cx="88" cy="22" r="1.8" fill="#10B981" />
+                </G>
+              )}
+
+              {/* Flame Band for Hyped */}
+              {mood === 'hyped' && (
+                <G id="rp-fire-band">
+                  <Path d="M80 12 C 84 18 90 20 86 28 C 84 26 82 28 80 26 C 78 28 76 26 74 28 C 70 20 76 18 80 12 Z" fill="url(#rpFire2)" />
+                  <Circle cx="80" cy="22" r="2.2" fill="#FEF08A" />
+                </G>
+              )}
+
+              {/* Facial Expressions & Eyes */}
+              {/* 😴 Sleeping: Peaceful Closed Eyes ( ˘ω˘ ) */}
+              {mood === 'sleeping' && (
+                <G id="rp-face-sleeping">
+                  <Path d="M 64 61 Q 69 66 74 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+                  <Path d="M 86 61 Q 91 66 96 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+                  <Path d="M 77 71 Q 80 74 83 71" stroke="#1C1917" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+                  <Ellipse cx="55" cy="67" rx="4" ry="2.2" fill="#F43F5E" opacity={0.45} />
+                  <Ellipse cx="105" cy="67" rx="4" ry="2.2" fill="#F43F5E" opacity={0.45} />
+                </G>
+              )}
+
+              {/* 👋 Awake / Hopeful: Big Sparkly Anime Eyes */}
+              {(mood === 'awake' || mood === 'hopeful') && (
+                <G id="rp-face-awake">
+                  <Circle cx="65" cy="59" r="4.8" fill="#1C1917" />
+                  <Circle cx="63.5" cy="57.5" r="1.8" fill="#FFFFFF" />
+                  <Circle cx="66.5" cy="60.5" r="0.8" fill="#FFFFFF" />
+
+                  <Circle cx="95" cy="59" r="4.8" fill="#1C1917" />
+                  <Circle cx="93.5" cy="57.5" r="1.8" fill="#FFFFFF" />
+                  <Circle cx="96.5" cy="60.5" r="0.8" fill="#FFFFFF" />
+
+                  <Path d="M 75 70 Q 77.5 73 80 70.5 Q 82.5 73 85 70" stroke="#1C1917" strokeWidth={2} strokeLinecap="round" fill="none" />
+                  <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.65} />
+                  <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.65} />
+                </G>
+              )}
+
+              {/* 🔥 Hyped: Starry Anime Eyes */}
+              {mood === 'hyped' && (
+                <G id="rp-face-hyped">
+                  <Path d="M65 54 L66.5 58 L70 59 L66.5 60 L65 64 L63.5 60 L60 59 L63.5 58 Z" fill="#78350F" />
+                  <Circle cx="66" cy="57" r="1.1" fill="#FFFFFF" />
+                  <Path d="M95 54 L96.5 58 L100 59 L96.5 60 L95 64 L93.5 60 L90 59 L93.5 58 Z" fill="#78350F" />
+                  <Circle cx="96" cy="57" r="1.1" fill="#FFFFFF" />
+
+                  <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EF4444" opacity={0.75} />
+                  <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EF4444" opacity={0.75} />
+
+                  <Path d="M75 70 Q 80 78 85 70 Q 80 73 75 70 Z" fill="#991B1B" />
+                  <Path d="M77 73 Q 80 76 83 73 Z" fill="#F87171" />
+                </G>
+              )}
+
+              {/* 👑 Celebrating: Laughing Joyful Arcs */}
+              {mood === 'celebrating' && (
+                <G id="rp-face-celebrating">
+                  <Path d="M 61 59 Q 66 53 71 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
+                  <Path d="M 89 59 Q 94 53 99 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
+
+                  <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
+                  <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
+
+                  <Path d="M 74 69 Q 80 80 86 69 Z" fill="#3F1D0B" />
+                  <Path d="M 77 74 Q 80 78 83 74 Z" fill="#F472B6" />
+                  <Path d="M 76 70 L 84 70" stroke="#FFFFFF" strokeWidth={1.2} />
+                </G>
+              )}
+
+              {/* 🧘 Rest: Peaceful Smile */}
+              {mood === 'rest' && (
+                <G id="rp-face-rest">
+                  <Path d="M 64 61 Q 69 66 74 61" stroke="#3F1D0B" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+                  <Path d="M 86 61 Q 91 66 96 61" stroke="#3F1D0B" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+                  <Ellipse cx="55" cy="67" rx="3.8" ry="2.2" fill="#FB923C" opacity={0.5} />
+                  <Ellipse cx="105" cy="67" rx="3.8" ry="2.2" fill="#FB923C" opacity={0.5} />
+                  <Path d="M 77 71 Q 80 74 83 71" stroke="#3F1D0B" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+                </G>
+              )}
+            </Svg>
+          </View>
+
+          {/* ======================================================== */}
+          {/* LAYER 3: CUTE WAVING ARM & PAW ("HI" GREETING MOTION)    */}
+          {/* ======================================================== */}
+          {isWavingMood && (
+            <AnimatedView
+              style={[
+                styles.layerAbsolute,
+                {
+                  transform: [{ rotate: pawWaveRotate }],
+                  transformOrigin: '66% 56%' as any,
+                  zIndex: 10,
+                },
+              ]}
+              pointerEvents="none"
+            >
+              <Svg width={mascotPixelSize} height={mascotPixelSize} viewBox="0 0 160 160">
+                <Defs>
+                  <LinearGradient id="darkFurArm" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor="#3F1D0B" />
+                    <Stop offset="100%" stopColor="#240F05" />
+                  </LinearGradient>
+                </Defs>
+                {/* Cute, natural, short bent arm from shoulder (103, 91) up beside cheek (116, 56) */}
+                <Path
+                  d="M 103 91 Q 112 78 116 56"
+                  stroke="url(#darkFurArm)"
+                  strokeWidth="12"
                   strokeLinecap="round"
                 />
-                {/* Chubby Palm */}
-                <Ellipse cx="115" cy="46" rx="7.5" ry="7" fill="url(#rpDarkFur)" />
-                {/* 🐾 Cute Paw Pads: Central pad + 4 toe beans */}
-                <Ellipse cx="115" cy="47" rx="3.5" ry="2.8" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="109" cy="43" r="1.4" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="113" cy="39.5" r="1.4" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="118" cy="40" r="1.4" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="121" cy="44" r="1.4" fill="#FEF08A" opacity={0.95} />
-              </AnimatedG>
-            )}
-          </Svg>
+                {/* Cute Round Palm beside Cheek */}
+                <Ellipse cx="117" cy="53" rx="8" ry="7.5" fill="url(#darkFurArm)" />
+                {/* 🐾 Paw Pads: 1 Main Golden Pad + 4 Arched Toe Beans */}
+                <Ellipse cx="117" cy="54" rx="3.8" ry="3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="111" cy="49.5" r="1.4" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="115" cy="46" r="1.4" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="120" cy="46.5" r="1.4" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="123.5" cy="50.5" r="1.4" fill="#FEF08A" opacity={0.95} />
+              </Svg>
+            </AnimatedView>
+          )}
+
         </AnimatedView>
       </TouchableOpacity>
     </View>
@@ -759,6 +768,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
     cursor: 'pointer' as any,
+  },
+  layerAbsolute: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   auraDisk: {
     position: 'absolute',
