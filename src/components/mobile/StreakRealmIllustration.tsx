@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Animated, Easing, Platform } from 'react-native';
 import Svg, {
   Defs,
   LinearGradient,
@@ -36,19 +36,21 @@ export const StreakRealmIllustration: React.FC<StreakRealmIllustrationProps> = (
   useEffect(() => {
     if (!isAnimated) return;
 
+    const useNative = Platform.OS !== 'web';
+
     const swayLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(swayAnim, {
           toValue: 1,
           duration: 2500,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
+          useNativeDriver: useNative,
         }),
         Animated.timing(swayAnim, {
           toValue: -1,
           duration: 2500,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
+          useNativeDriver: useNative,
         }),
       ])
     );
@@ -59,13 +61,13 @@ export const StreakRealmIllustration: React.FC<StreakRealmIllustrationProps> = (
           toValue: 1.03,
           duration: 2000,
           easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
+          useNativeDriver: useNative,
         }),
         Animated.timing(pulseAnim, {
           toValue: 0.98,
           duration: 2000,
           easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
+          useNativeDriver: useNative,
         }),
       ])
     );
@@ -76,13 +78,13 @@ export const StreakRealmIllustration: React.FC<StreakRealmIllustrationProps> = (
           toValue: -4,
           duration: 1800,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
+          useNativeDriver: useNative,
         }),
         Animated.timing(floatAnim, {
           toValue: 4,
           duration: 1800,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
+          useNativeDriver: useNative,
         }),
       ])
     );

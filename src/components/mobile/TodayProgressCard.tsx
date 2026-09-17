@@ -5,7 +5,6 @@ import { useHabit } from '../../context/HabitContext';
 import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
 import { PlantVisualizer } from './PlantVisualizer';
 import { Sparkles, Sprout, ChevronRight } from 'lucide-react-native';
-import { LottieAnimation } from '../common/LottieAnimation';
 
 export const TodayProgressCard: React.FC = () => {
   const {
@@ -169,18 +168,14 @@ export const TodayProgressCard: React.FC = () => {
           </Svg>
 
           <View style={styles.plantCenter}>
-            {plant ? (
-              <PlantVisualizer
-                stage={plant.stage}
-                streak={plant.currentStreak}
-                hydrationPercent={progressPercent}
-                isWateredToday={completedCount > 0}
-                size="sm"
-                interactive={false}
-              />
-            ) : (
-              <LottieAnimation source="plantGrowing" size={38} />
-            )}
+            <PlantVisualizer
+              stage={plant?.stage}
+              streak={plant?.currentStreak || 0}
+              hydrationPercent={progressPercent}
+              isWateredToday={completedCount > 0}
+              size="sm"
+              interactive={false}
+            />
           </View>
         </TouchableOpacity>
       </View>

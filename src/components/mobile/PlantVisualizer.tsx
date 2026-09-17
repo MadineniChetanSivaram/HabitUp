@@ -1,42 +1,47 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { PlantStageInfo } from '../../types';
-import { LottieAnimation } from '../common/LottieAnimation';
+import { getActiveRealmProgress } from '../../utils/realmStreakData';
+import { StreakRealmIllustration } from './StreakRealmIllustration';
 import { Sparkles, Droplets } from 'lucide-react-native';
 
 interface PlantVisualizerProps {
-  stage: PlantStageInfo;
-  streak: number;
-  hydrationPercent: number;
-  isWateredToday: boolean;
+  stage?: PlantStageInfo;
+  streak?: number;
+  hydrationPercent?: number;
+  isWateredToday?: boolean;
   size?: 'sm' | 'md' | 'lg';
   interactive?: boolean;
 }
 
 export const PlantVisualizer: React.FC<PlantVisualizerProps> = ({
   stage,
-  streak,
-  hydrationPercent,
-  isWateredToday,
+  streak = 0,
+  hydrationPercent = 0,
+  isWateredToday = false,
   size = 'md',
 }) => {
-  const pixelSize = size === 'sm' ? 46 : size === 'lg' ? 140 : 76;
+  const { activeRealm, stage: realmStage } = getActiveRealmProgress(streak);
+  const currentLevel = stage?.level || realmStage.level || 1;
 
   return (
     <View style={styles.container}>
-      <LottieAnimation
-        source="plantGrowing"
-        size={pixelSize}
-        speed={isWateredToday ? 1.2 : 0.8}
+      <StreakRealmIllustration
+        realmId={activeRealm.id}
+        level={currentLevel}
+        hydrationPercent={hydrationPercent}
+        isWateredToday={isWateredToday}
+        size={size}
+        isAnimated={true}
       />
 
-      {isWateredToday && (
+      {isWateredToday && size !== 'sm' && (
         <View style={styles.sparkleBadge}>
           <Sparkles size={14} color="#FDE047" />
         </View>
       )}
 
-      {hydrationPercent > 0 && !isWateredToday && (
+      {hydrationPercent > 0 && !isWateredToday && size !== 'sm' && (
         <View style={styles.dropletBadge}>
           <Droplets size={14} color="#38BDF8" />
         </View>
@@ -55,7 +60,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: 'rgba(253, 224, 71, 0.2)',
+    backgroundColor: 'rgba(253, 224, 71, 0.25)',
     borderRadius: 10,
     padding: 2,
   },
@@ -63,8 +68,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -4,
     left: -4,
-    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+    backgroundColor: 'rgba(56, 189, 248, 0.25)',
     borderRadius: 10,
     padding: 2,
   },
 });
+
