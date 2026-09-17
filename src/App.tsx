@@ -20,6 +20,7 @@ import { AuthSessionModal } from './components/modals/AuthSessionModal';
 import { BiometricScanModal } from './components/modals/BiometricScanModal';
 import { PlantGardenModal } from './components/modals/PlantGardenModal';
 import { NotificationBanner } from './components/common/NotificationBanner';
+import { FullScreenConfetti } from './components/common/FullScreenConfetti';
 
 const AppContent: React.FC = () => {
   const { activeTab, isAuthenticated, isAuthLoading } = useHabit();
@@ -62,6 +63,9 @@ const AppContent: React.FC = () => {
       {activeTab === 'stats' && <StatsView />}
       {activeTab === 'streaks' && <StreaksView />}
       {activeTab === 'settings' && <SettingsView />}
+
+      {/* Global Full-Page Confetti Celebration Burst */}
+      <FullScreenConfetti />
 
       {/* Global Modals & Biometrics */}
       <BiometricScanModal />

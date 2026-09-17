@@ -142,6 +142,8 @@ interface HabitContextType {
   importJsonData: (json: string) => boolean;
   exportJsonData: () => string;
   triggerCelebration: () => void;
+  isConfettiActive: boolean;
+  triggerConfetti: () => void;
   isSyncing: boolean;
   syncWithBackend: () => Promise<void>;
   
@@ -2060,7 +2062,22 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => clearInterval(interval);
   }, [user, checkAndDeliverPendingNudges]);
 
+  const [isConfettiActive, setIsConfettiActive] = useState<boolean>(false);
+  const confettiTimeoutRef = useRef<any>(null);
+
+  const triggerConfetti = useCallback(() => {
+    setIsConfettiActive(false);
+    if (confettiTimeoutRef.current) clearTimeout(confettiTimeoutRef.current);
+    setTimeout(() => {
+      setIsConfettiActive(true);
+      confettiTimeoutRef.current = setTimeout(() => {
+        setIsConfettiActive(false);
+      }, 3500);
+    }, 10);
+  }, []);
+
   const triggerCelebration = useCallback(() => {
+    triggerConfetti();
     if (soundEnabled) {
       try {
         soundService.playCompletionChime();
@@ -2075,7 +2092,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // ignore
       }
     }
-  }, [soundEnabled, hapticsEnabled]);
+  }, [soundEnabled, hapticsEnabled, triggerConfetti]);
 
   const switchAccountData = useCallback(async (targetUser: UserProfile) => {
     isLoggingOut.current = false;
@@ -4099,6 +4116,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         importJsonData,
         exportJsonData,
         triggerCelebration,
+        isConfettiActive,
+        triggerConfetti,
         isSyncing,
         syncWithBackend,
         getHabitStats,
