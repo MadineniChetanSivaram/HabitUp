@@ -1,9 +1,8 @@
-﻿import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { PlantStageInfo } from '../../types';
-import { PlantIllustration } from './PlantIllustration';
+import { LottieAnimation } from '../common/LottieAnimation';
 import { Sparkles, Droplets } from 'lucide-react-native';
-import { useHabit } from '../../context/HabitContext';
 
 interface PlantVisualizerProps {
   stage: PlantStageInfo;
@@ -21,16 +20,14 @@ export const PlantVisualizer: React.FC<PlantVisualizerProps> = ({
   isWateredToday,
   size = 'md',
 }) => {
-  const { theme } = useHabit();
-  const isDark = theme === 'dark';
+  const pixelSize = size === 'sm' ? 46 : size === 'lg' ? 140 : 76;
 
   return (
     <View style={styles.container}>
-      <PlantIllustration
-        level={stage.level}
-        hydrationPercent={hydrationPercent}
-        isWateredToday={isWateredToday}
-        size={size}
+      <LottieAnimation
+        source="plantGrowing"
+        size={pixelSize}
+        speed={isWateredToday ? 1.2 : 0.8}
       />
 
       {isWateredToday && (
