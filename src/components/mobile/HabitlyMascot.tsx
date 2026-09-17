@@ -137,7 +137,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     );
     tailLoop.start();
 
-    // 3. Cheerful "Hi" Hand Wave Loop (natural speed & arc)
+    // 3. Cheerful "Hi" Hand Wave Loop (natural cute speed & arc)
     const waveLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(handWave, {
@@ -317,10 +317,10 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
   const auraColor = getAuraColor();
 
-  // Waving rotation (natural wrist/forearm tilt)
+  // Waving rotation (natural cute wrist/forearm tilt)
   const pawWaveRotate = handWave.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-16deg', '22deg'],
+    outputRange: ['-14deg', '18deg'],
   });
 
   // Lively Tail wagging rotation
@@ -602,11 +602,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* Right Shoulder Base for Waving Arm */}
-              {isWavingMood && (
-                <Path d="M 94 92 C 102 90, 108 94, 105 101 C 101 106, 94 103, 94 92 Z" fill="url(#rpDarkFur2)" />
-              )}
-
               {/* Round Chubby Head & Markings */}
               <Ellipse cx="80" cy="62" rx="36" ry="29" fill="url(#rpFurGrad2)" />
               <Ellipse cx="80" cy="69" rx="15" ry="11" fill="#FFFFFF" />
@@ -711,7 +706,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           </View>
 
           {/* ======================================================== */}
-          {/* LAYER 3: CUTE WAVING ARM & PAW ("HI" GREETING MOTION)    */}
+          {/* LAYER 3: SHORT CUTE CHUBBY WAVING PAW BESIDE CHEEK ("HI") */}
           {/* ======================================================== */}
           {isWavingMood && (
             <AnimatedView
@@ -719,7 +714,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 styles.layerAbsolute,
                 {
                   transform: [{ rotate: pawWaveRotate }],
-                  transformOrigin: '66% 56%' as any,
+                  transformOrigin: '61% 52%' as any,
                   zIndex: 10,
                 },
               ]}
@@ -727,26 +722,26 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             >
               <Svg width={mascotPixelSize} height={mascotPixelSize} viewBox="0 0 160 160">
                 <Defs>
-                  <LinearGradient id="darkFurArm" x1="0" y1="0" x2="0" y2="1">
+                  <LinearGradient id="darkFurPaw" x1="0" y1="0" x2="0" y2="1">
                     <Stop offset="0%" stopColor="#3F1D0B" />
                     <Stop offset="100%" stopColor="#240F05" />
                   </LinearGradient>
                 </Defs>
-                {/* Cute, natural, short bent arm from shoulder (103, 91) up beside cheek (116, 56) */}
+                {/* Cute Short Arm from Shoulder (95, 84) to Paw (105, 66) */}
                 <Path
-                  d="M 103 91 Q 112 78 116 56"
-                  stroke="url(#darkFurArm)"
-                  strokeWidth="12"
+                  d="M 95 84 Q 102 76 105 66"
+                  stroke="url(#darkFurPaw)"
+                  strokeWidth="11"
                   strokeLinecap="round"
                 />
-                {/* Cute Round Palm beside Cheek */}
-                <Ellipse cx="117" cy="53" rx="8" ry="7.5" fill="url(#darkFurArm)" />
-                {/* 🐾 Paw Pads: 1 Main Golden Pad + 4 Arched Toe Beans */}
-                <Ellipse cx="117" cy="54" rx="3.8" ry="3" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="111" cy="49.5" r="1.4" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="115" cy="46" r="1.4" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="120" cy="46.5" r="1.4" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="123.5" cy="50.5" r="1.4" fill="#FEF08A" opacity={0.95} />
+                {/* Chubby Palm at Cheek Level */}
+                <Ellipse cx="106" cy="64" rx="7.5" ry="7" fill="url(#darkFurPaw)" />
+                {/* 🐾 Paw Pads: 1 Central + 4 Arched Golden Toe Beans */}
+                <Ellipse cx="106" cy="65" rx="3.5" ry="2.8" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="101" cy="60.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="105" cy="57.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="109.5" cy="58" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="112.5" cy="62" r="1.3" fill="#FEF08A" opacity={0.95} />
               </Svg>
             </AnimatedView>
           )}
