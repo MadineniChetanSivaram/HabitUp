@@ -317,16 +317,16 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
   const auraColor = getAuraColor();
 
-  // Waving rotation (natural cute wrist/forearm tilt)
+  // Waving rotation (natural cute wrist/forearm tilt from shoulder joint)
   const pawWaveRotate = handWave.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-14deg', '18deg'],
+    outputRange: ['-10deg', '14deg'],
   });
 
   // Lively Tail wagging rotation
   const tailWagRotate = tailWag.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-10deg', '14deg'],
+    outputRange: ['-8deg', '12deg'],
   });
 
   // Zzz Interpolations
@@ -706,7 +706,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           </View>
 
           {/* ======================================================== */}
-          {/* LAYER 3: SHORT CUTE CHUBBY WAVING PAW BESIDE CHEEK ("HI") */}
+          {/* LAYER 3: ANCHORED SHOULDER & WAVING ARM BESIDE CHEEK     */}
           {/* ======================================================== */}
           {isWavingMood && (
             <AnimatedView
@@ -714,7 +714,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 styles.layerAbsolute,
                 {
                   transform: [{ rotate: pawWaveRotate }],
-                  transformOrigin: '61% 52%' as any,
+                  transformOrigin: '62.5% 58.75%' as any,
                   zIndex: 10,
                 },
               ]}
@@ -727,21 +727,23 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                     <Stop offset="100%" stopColor="#240F05" />
                   </LinearGradient>
                 </Defs>
-                {/* Cute Short Arm from Shoulder (95, 84) to Paw (105, 66) */}
+                {/* Shoulder Hub (at 100, 94 - perfectly flush with right chest/torso) */}
+                <Circle cx="100" cy="94" r="7.5" fill="url(#darkFurPaw)" />
+                {/* Short Cute Forearm from Shoulder to Palm */}
                 <Path
-                  d="M 95 84 Q 102 76 105 66"
+                  d="M 100 94 C 103 84, 106 76, 110 68"
                   stroke="url(#darkFurPaw)"
-                  strokeWidth="11"
+                  strokeWidth="12"
                   strokeLinecap="round"
                 />
                 {/* Chubby Palm at Cheek Level */}
-                <Ellipse cx="106" cy="64" rx="7.5" ry="7" fill="url(#darkFurPaw)" />
+                <Ellipse cx="111" cy="66" rx="7.5" ry="7" fill="url(#darkFurPaw)" />
                 {/* 🐾 Paw Pads: 1 Central + 4 Arched Golden Toe Beans */}
-                <Ellipse cx="106" cy="65" rx="3.5" ry="2.8" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="101" cy="60.5" r="1.3" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="105" cy="57.5" r="1.3" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="109.5" cy="58" r="1.3" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="112.5" cy="62" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Ellipse cx="111" cy="67" rx="3.5" ry="2.8" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="106" cy="62.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="110" cy="59.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="114.5" cy="60" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="117.5" cy="64" r="1.3" fill="#FEF08A" opacity={0.95} />
               </Svg>
             </AnimatedView>
           )}
