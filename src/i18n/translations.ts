@@ -25,6 +25,10 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
 
 export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
   "en": {
+    "mascot.mood_sleeping": "Zzz... 😴 Tap me to wake up!",
+    "mascot.mood_awake_hi": "Hi there! 👋 I'm Sparky! Ready to crush your first habit today? 🐾",
+    "mascot.tap_4": "Keep showing up! You got this! 🌟",
+
     "mascot.mood_sad": "No habits done yet... Let's wake up and crush habit #1! 😴",
     "mascot.mood_hopeful": "Great start! Keep the momentum going! 🌱",
     "mascot.mood_hyped": "Over halfway there! You're unstoppable today! 🔥",
@@ -492,6 +496,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "Undo"
   },
   "hi": {
+    "mascot.mood_sleeping": "ज़ज़ज़... 😴 मुझे जगाने के लिए टैप करें!",
+    "mascot.mood_awake_hi": "नमस्ते! 👋 मैं स्पार्की हूँ! चलिए आज की पहली आदत पूरी करते हैं! 🐾",
+    "mascot.tap_4": "लगातार लगे रहें! आप कर सकते हैं! 🌟",
+
     "mascot.mood_sad": "अभी तक कोई आदत पूरी नहीं हुई... चलो जागो और पहली आदत पूरी करो! 😴",
     "mascot.mood_hopeful": "शानदार शुरुआत! अपनी रफ़्तार बनाए रखें! 🌱",
     "mascot.mood_hyped": "आधे से अधिक पूरा! आप आज अजेय हैं! 🔥",
@@ -959,6 +967,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "पूर्ववत करें"
   },
   "te": {
+    "mascot.mood_sleeping": "జ్జ్జ్... 😴 నన్ను నిద్రలేపడానికి ట్యాప్ చేయండి!",
+    "mascot.mood_awake_hi": "నమస్కారం! 👋 నేను స్పార్కీ! ఈరోజు మీ మొదటి అలవాటును ప్రారంభిద్దాం! 🐾",
+    "mascot.tap_4": "క్రమం తప్పకుండా కొనసాగించండి! మీరు సాధించగలరు! 🌟",
+
     "mascot.mood_sad": "ఇంకా ఏ అలవాటూ పూర్తి కాలేదు... మేల్కొందాం, మొదటి అలవాటును పూర్తి చేద్దాం! 😴",
     "mascot.mood_hopeful": "గొప్ప ప్రారంభం! ఇదే ఊపును కొనసాగించండి! 🌱",
     "mascot.mood_hyped": "సగానికి పైగా పూర్తయింది! ఈ రోజు మీరు అద్భుతం! 🔥",
@@ -1426,6 +1438,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "రద్దు చేయి"
   },
   "ta": {
+    "mascot.mood_sleeping": "இஸ்ஸ்ஸ்... 😴 என்னை எழுப்ப தட்டவும்!",
+    "mascot.mood_awake_hi": "வணக்கம்! 👋 நான் ஸ்பார்க்கி! இன்றைய முதல் பழக்கத்தை முடிக்க தயாரா? 🐾",
+    "mascot.tap_4": "தொடர்ந்து செய்யுங்கள்! உங்களால் முடியும்! 🌟",
+
     "mascot.mood_sad": "இன்னும் எந்தப் பழக்கமும் முடிக்கப்படவில்லை... விழித்தெழுந்து முதல் பழக்கத்தைச் செய்வோம்! 😴",
     "mascot.mood_hopeful": "சிறப்பான தொடக்கம்! வேகத்தைத் தொடருங்கள்! 🌱",
     "mascot.mood_hyped": "பாதிக்கும் மேல் முடிந்தது! இன்று நீங்கள் அசைக்க முடியாதவர்! 🔥",
@@ -1893,6 +1909,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "செயல்தவிர்"
   },
   "kn": {
+    "mascot.mood_sleeping": "ಜ್ಜ್ಜ್... 😴 ನನ್ನನ್ನು ಎಬ್ಬಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ!",
+    "mascot.mood_awake_hi": "ನಮಸ್ಕಾರ! 👋 ನಾನು ಸ್ಪಾರ್ಕಿ! ಇಂದಿನ ಮೊದಲ ಅಭ್ಯಾಸವನ್ನು ಪ್ರಾರಂಭಿಸೋಣ! 🐾",
+    "mascot.tap_4": "ನಿರಂತರವಾಗಿ ಮುಂದುವರಿಯಿರಿ! ನೀವು ಗೆಲ್ಲುತ್ತೀರಿ! 🌟",
+
     "mascot.mood_sad": "ಇನ್ನೂ ಯಾವುದೇ ಅಭ್ಯಾಸ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ... ಎದ್ದೇಳಿ, ಮೊದಲ ಅಭ್ಯಾಸ ಆರಂಭಿಸೋಣ! 😴",
     "mascot.mood_hopeful": "ಉತ್ತಮ ಆರಂಭ! ವೇಗವನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ! 🌱",
     "mascot.mood_hyped": "ಅರ್ಧಕ್ಕಿಂತ ಹೆಚ್ಚು ಮುಗಿದಿದೆ! ಇವತ್ತು ನೀವು ಅದ್ಭುತ! 🔥",
@@ -2360,6 +2380,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "ರದ್ದುಮಾಡು"
   },
   "ml": {
+    "mascot.mood_sleeping": "ഇസ്സ്സ്... 😴 എന്നെ ഉണർത്താൻ ടാപ്പ് ചെയ്യുക!",
+    "mascot.mood_awake_hi": "നമസ്കാരം! 👋 ഞാൻ സ്പാർക്കി! ഇന്നത്തെ ആദ്യ ശീലം പൂർത്തിയാക്കാൻ തയ്യാറാണോ? 🐾",
+    "mascot.tap_4": "സ്ഥിരത നിലനിർത്തുക! നിങ്ങൾക്ക് സാധിക്കും! 🌟",
+
     "mascot.mood_sad": "ഇതുവരെ ഒരു ശീലവും പൂർത്തിയായിട്ടില്ല... ഉണരൂ, ആദ്യ ശീലം പൂർത്തിയാക്കാം! 😴",
     "mascot.mood_hopeful": "മികച്ച തുടക്കം! വേഗത നിലനിർത്തൂ! 🌱",
     "mascot.mood_hyped": "പകുതിയിലേറെ പൂർത്തിയായി! ഇന്ന് നിങ്ങൾ തകർത്തു! 🔥",
@@ -2827,6 +2851,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "പൂർവ്വസ്ഥിതിയിലാക്കുക"
   },
   "bn": {
+    "mascot.mood_sleeping": "জজজ... 😴 আমাকে জাগাতে ট্যাপ করুন!",
+    "mascot.mood_awake_hi": "নমস্কার! 👋 আমি স্পার্কি! আজকের প্রথম অভ্যাসটি পূরণ করতে প্রস্তুত? 🐾",
+    "mascot.tap_4": "ধারাবাহিকতা বজায় রাখুন! আপনি পারবেন! 🌟",
+
     "mascot.mood_sad": "এখনও কোনো অভ্যাস সম্পন্ন হয়নি... জেগে উঠুন এবং প্রথম অভ্যাসটি শুরু করুন! 😴",
     "mascot.mood_hopeful": "দারুণ শুরু! গতি বজায় রাখুন! 🌱",
     "mascot.mood_hyped": "অর্ধেকের বেশি শেষ! আপনি আজ অপ্রতিরোধ্য! 🔥",
@@ -3294,6 +3322,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "পূর্বাবস্থায় ফেরান"
   },
   "mr": {
+    "mascot.mood_sleeping": "झ़झ़झ़... 😴 मला जागे करण्यासाठी टॅप करा!",
+    "mascot.mood_awake_hi": "नमस्कार! 👋 मी स्पार्की आहे! आजची पहिली सवय पूर्ण करूया! 🐾",
+    "mascot.tap_4": "सतत्य राखा! तुम्ही नक्की करू शकता! 🌟",
+
     "mascot.mood_sad": "अजून एकही सवय पूर्ण झालेली नाही... जागे व्हा आणि पहिली सवय पूर्ण करा! 😴",
     "mascot.mood_hopeful": "छान सुरुवात! गती कायम ठेवा! 🌱",
     "mascot.mood_hyped": "निम्म्याहून अधिक पूर्ण! तुम्ही आज कमाल करत आहात! 🔥",
@@ -3761,6 +3793,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     "common.undo": "पूर्ववत करा"
   },
   "gu": {
+    "mascot.mood_sleeping": "ઝઝઝ... 😴 મને જગાડવા માટે ટેપ કરો!",
+    "mascot.mood_awake_hi": "નમસ્તે! 👋 હું સ્પાર્કી છું! ચાલો આજની પ્રથમ આદત શરૂ કરીએ! 🐾",
+    "mascot.tap_4": "સતત આગળ વધતા રહો! તમે કરી શકો છો! 🌟",
+
     "mascot.mood_sad": "હજી સુધી કોઈ આદત પૂર્ણ નથી થઈ... ચાલો જાગો અને પહેલી આદત શરૂ કરીએ! 😴",
     "mascot.mood_hopeful": "સરસ શરૂઆત! ગતિ જાળવી રાખો! 🌱",
     "mascot.mood_hyped": "અડધાથી વધુ પૂર્ણ! તમે આજે અદભુત કરી રહ્યા છો! 🔥",
