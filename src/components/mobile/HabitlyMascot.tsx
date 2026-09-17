@@ -30,6 +30,8 @@ interface HabitlyMascotProps {
   forcedMood?: MascotMood;
 }
 
+const AnimatedG = Animated.createAnimatedComponent(G);
+
 export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   onClick,
   size = 120,
@@ -97,8 +99,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const useNative = Platform.OS !== 'web';
 
   useEffect(() => {
-    // 1. Floating / Breathing loop
     const isSleep = mood === 'sleeping';
+
+    // 1. Floating / Breathing loop
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, {
@@ -121,13 +124,13 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     const tailLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(tailWag, {
-          toValue: isSleep ? 1.5 : mood === 'celebrating' || mood === 'hyped' ? 7 : 4,
+          toValue: isSleep ? 1.5 : mood === 'celebrating' || mood === 'hyped' ? 6 : 3.5,
           duration: isSleep ? 2000 : mood === 'celebrating' ? 380 : 800,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(tailWag, {
-          toValue: isSleep ? -1.5 : mood === 'celebrating' || mood === 'hyped' ? -7 : -4,
+          toValue: isSleep ? -1.5 : mood === 'celebrating' || mood === 'hyped' ? -6 : -3.5,
           duration: isSleep ? 2000 : mood === 'celebrating' ? 380 : 800,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
@@ -141,15 +144,15 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       Animated.sequence([
         Animated.timing(handWave, {
           toValue: 1,
-          duration: 350,
+          duration: 380,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
+          useNativeDriver: false, // SVG rotation attribute requires JS driver on web
         }),
         Animated.timing(handWave, {
           toValue: -1,
-          duration: 350,
+          duration: 380,
           easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
+          useNativeDriver: false,
         }),
       ])
     );
@@ -253,9 +256,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
     // Ear wiggle animation
     Animated.sequence([
-      Animated.timing(earWiggle, { toValue: 6, duration: 75, useNativeDriver: useNative }),
-      Animated.timing(earWiggle, { toValue: -6, duration: 75, useNativeDriver: useNative }),
-      Animated.timing(earWiggle, { toValue: 4, duration: 75, useNativeDriver: useNative }),
+      Animated.timing(earWiggle, { toValue: 5, duration: 75, useNativeDriver: useNative }),
+      Animated.timing(earWiggle, { toValue: -5, duration: 75, useNativeDriver: useNative }),
+      Animated.timing(earWiggle, { toValue: 3, duration: 75, useNativeDriver: useNative }),
       Animated.timing(earWiggle, { toValue: 0, duration: 75, useNativeDriver: useNative }),
     ]).start();
 
@@ -271,7 +274,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     }
 
     if (quoteIndex === 0 && mood === 'awake') {
-      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Let's crush our first habit today! 🐾");
+      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Ready to crush your first habit today? 🐾");
     }
 
     if (quoteIndex === 1) return t('mascot.tap_1', 'Consistency is your superpower! ⚡');
@@ -281,7 +284,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
     switch (mood) {
       case 'awake':
-        return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Let's crush our first habit today! 🐾");
+        return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Ready to crush your first habit today? 🐾");
       case 'hopeful':
         return t('mascot.mood_hopeful', 'Great start! Keep the momentum going! 🌱');
       case 'hyped':
@@ -317,10 +320,10 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
   const auraColor = getAuraColor();
 
-  // Waving rotation
-  const pawWaveRotation = handWave.interpolate({
+  // Waving rotation (numbers for SVG rotation)
+  const pawWaveAngle = handWave.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-24deg', '32deg'],
+    outputRange: [-16, 20],
   });
 
   // Zzz Interpolations
@@ -438,7 +441,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
         >
           <Svg width={size * 1.25} height={size * 1.2} viewBox="0 0 160 150">
             <Defs>
-              {/* Warm Red Panda Rust/Chestnut Fur Gradient */}
+              {/* Warm Red Panda Fur Gradient */}
               <RadialGradient id="rpFurMain" cx="50%" cy="38%" r="62%">
                 <Stop offset="0%" stopColor="#FB923C" />
                 <Stop offset="65%" stopColor="#EA580C" />
@@ -452,19 +455,19 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 <Stop offset="100%" stopColor="#9A3412" />
               </LinearGradient>
 
-              {/* Crisp White Muzzle & Markings */}
+              {/* Crisp White Markings */}
               <LinearGradient id="rpWhite" x1="0" y1="0" x2="0" y2="1">
                 <Stop offset="0%" stopColor="#FFFFFF" />
                 <Stop offset="100%" stopColor="#F8FAFC" />
               </LinearGradient>
 
-              {/* Dark Espresso Paws/Ears */}
+              {/* Dark Espresso Fur for Paws/Limbs */}
               <LinearGradient id="rpDarkBrown" x1="0" y1="0" x2="0" y2="1">
                 <Stop offset="0%" stopColor="#451A03" />
                 <Stop offset="100%" stopColor="#290E02" />
               </LinearGradient>
 
-              {/* Crown Gradient */}
+              {/* Royal Crown Gradient */}
               <LinearGradient id="rpCrown" x1="0" y1="0" x2="0" y2="1">
                 <Stop offset="0%" stopColor="#FDE047" />
                 <Stop offset="60%" stopColor="#F59E0B" />
@@ -482,20 +485,20 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             {/* --- 1. BUSHY STRIPED RED PANDA TAIL --- */}
             <G id="red-panda-tail">
               <Path
-                d="M102 96 C 125 105, 145 92, 142 68 C 140 50, 122 52, 110 70 Z"
+                d="M102 96 C 128 108, 148 94, 144 68 C 140 48, 120 52, 108 72 Z"
                 fill="url(#rpTailGrad)"
               />
               <Path
-                d="M142 68 C 141 54, 130 51, 124 58 C 132 64, 138 72, 142 68 Z"
+                d="M144 68 C 142 52, 128 50, 122 58 C 132 64, 140 72, 144 68 Z"
                 fill="#FEF3C7"
               />
               <Path
-                d="M136 78 C 130 75, 124 78, 120 84 C 124 88, 131 86, 136 78 Z"
+                d="M138 78 C 130 75, 124 78, 118 85 C 123 89, 132 87, 138 78 Z"
                 fill="#451A03"
                 opacity={0.85}
               />
               <Path
-                d="M126 89 C 120 87, 114 90, 111 96 C 115 99, 121 97, 126 89 Z"
+                d="M128 89 C 120 87, 114 90, 111 96 C 115 99, 121 97, 128 89 Z"
                 fill="#451A03"
                 opacity={0.85}
               />
@@ -506,35 +509,61 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             <Ellipse cx="80" cy="104" rx="22" ry="16" fill="url(#rpDarkBrown)" />
             <Path d="M72 94 Q 80 102 88 94 Q 80 98 72 94 Z" fill="#FFFFFF" opacity={0.9} />
 
-            {/* --- 3. RED PANDA EARS --- */}
+            {/* --- 3. FLUFFY, CUTE ROUNDED EARS (Natural Red Panda Shape) --- */}
             {/* Left Ear */}
             <Path
-              d={mood === 'sleeping' ? "M48 48 L28 42 Q 22 52 38 60 Z" : "M46 52 L30 22 Q 24 32 44 58 Z"}
+              d={
+                mood === 'sleeping'
+                  ? "M 48 46 C 30 28, 22 36, 38 56 Z"
+                  : "M 48 48 C 26 22, 18 32, 40 56 Z"
+              }
               fill="url(#rpFurMain)"
             />
+            {/* Left Inner White Tuft */}
             <Path
-              d={mood === 'sleeping' ? "M44 50 L32 44 Q 28 50 38 56 Z" : "M42 50 L32 28 Q 28 36 40 54 Z"}
+              d={
+                mood === 'sleeping'
+                  ? "M 45 46 C 32 32, 26 38, 38 52 Z"
+                  : "M 45 48 C 28 26, 22 34, 38 52 Z"
+              }
               fill="#FFFFFF"
             />
             <Path
-              d={mood === 'sleeping' ? "M38 52 L30 46 L36 56 Z" : "M38 48 L30 32 L38 52 Z"}
-              fill="#FDE68A"
-              opacity={0.6}
+              d={
+                mood === 'sleeping'
+                  ? "M 40 46 C 32 36, 28 40, 36 50 Z"
+                  : "M 40 46 C 30 30, 24 36, 36 50 Z"
+              }
+              fill="#FEF3C7"
+              opacity={0.65}
             />
 
             {/* Right Ear */}
             <Path
-              d={mood === 'sleeping' ? "M112 48 L132 42 Q 138 52 122 60 Z" : "M114 52 L130 22 Q 136 32 116 58 Z"}
+              d={
+                mood === 'sleeping'
+                  ? "M 112 46 C 130 28, 138 36, 122 56 Z"
+                  : "M 112 48 C 134 22, 142 32, 120 56 Z"
+              }
               fill="url(#rpFurMain)"
             />
+            {/* Right Inner White Tuft */}
             <Path
-              d={mood === 'sleeping' ? "M116 50 L128 44 Q 132 50 122 56 Z" : "M118 50 L128 28 Q 132 36 120 54 Z"}
+              d={
+                mood === 'sleeping'
+                  ? "M 115 46 C 128 32, 134 38, 122 52 Z"
+                  : "M 115 48 C 132 26, 138 34, 122 52 Z"
+              }
               fill="#FFFFFF"
             />
             <Path
-              d={mood === 'sleeping' ? "M122 52 L130 46 L124 56 Z" : "M122 48 L130 32 L122 52 Z"}
-              fill="#FDE68A"
-              opacity={0.6}
+              d={
+                mood === 'sleeping'
+                  ? "M 120 46 C 128 36, 132 40, 124 50 Z"
+                  : "M 120 46 C 130 30, 136 36, 124 50 Z"
+              }
+              fill="#FEF3C7"
+              opacity={0.65}
             />
 
             {/* --- 4. RED PANDA ROUND FLUFFY HEAD --- */}
@@ -573,17 +602,13 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             {/* 😴 SLEEPING: Peaceful Closed Eyes ( ˘ω˘ ) */}
             {mood === 'sleeping' && (
               <G id="rp-face-sleeping">
-                {/* Left Closed Eyelid */}
                 <Path d="M63 65 Q 69 70 75 65" stroke="#1C1917" strokeWidth={3} strokeLinecap="round" fill="none" />
                 <Line x1="69" y1="68" x2="69" y2="72" stroke="#1C1917" strokeWidth={1.8} strokeLinecap="round" />
-                {/* Right Closed Eyelid */}
                 <Path d="M85 65 Q 91 70 97 65" stroke="#1C1917" strokeWidth={3} strokeLinecap="round" fill="none" />
                 <Line x1="91" y1="68" x2="91" y2="72" stroke="#1C1917" strokeWidth={1.8} strokeLinecap="round" />
 
-                {/* Gentle Sleeping Smile */}
                 <Path d="M77 76 Q 80 79 83 76" stroke="#1C1917" strokeWidth={2} strokeLinecap="round" fill="none" />
 
-                {/* Soft Sleeping Cheeks */}
                 <Ellipse cx="57" cy="71" rx="4" ry="2.2" fill="#F43F5E" opacity={0.4} />
                 <Ellipse cx="103" cy="71" rx="4" ry="2.2" fill="#F43F5E" opacity={0.4} />
               </G>
@@ -592,7 +617,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             {/* 👋 AWAKE / GREETING / HOPEFUL: Wide Bright Glossy Eyes */}
             {(mood === 'awake' || mood === 'hopeful') && (
               <G id="rp-face-awake">
-                {/* Big Glossy Eyes */}
                 <Circle cx="68" cy="62" r="5" fill="#1C1917" />
                 <Circle cx="69.8" cy="60" r="1.8" fill="#FFFFFF" />
                 <Circle cx="66.5" cy="63.5" r="0.9" fill="#FFFFFF" />
@@ -601,11 +625,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 <Circle cx="93.8" cy="60" r="1.8" fill="#FFFFFF" />
                 <Circle cx="90.5" cy="63.5" r="0.9" fill="#FFFFFF" />
 
-                {/* Rosy Cheeks */}
                 <Ellipse cx="56" cy="70" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.7} />
                 <Ellipse cx="104" cy="70" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.7} />
 
-                {/* Cheerful Smile */}
                 <Path d="M76 76 Q 80 82 84 76" stroke="#1C1917" strokeWidth={2.4} strokeLinecap="round" fill="none" />
               </G>
             )}
@@ -652,54 +674,71 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               </G>
             )}
 
-            {/* 🎋 HOPEFUL: Bamboo Stalk */}
+            {/* 🎋 HOPEFUL: Bamboo Stalk in hand */}
             {mood === 'hopeful' && (
               <G id="rp-bamboo-snack">
-                <Path d="M102 128 L108 96" stroke="#16A34A" strokeWidth={4.5} strokeLinecap="round" />
-                <Line x1="102.5" y1="116" x2="107.5" y2="114" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
-                <Line x1="104.5" y1="105" x2="109.5" y2="103" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
-                <Path d="M108 96 Q 120 90 126 95 Q 117 101 108 96 Z" fill="#22C55E" />
-                <Path d="M106 103 Q 120 98 123 107 Q 114 109 106 103 Z" fill="#4ADE80" />
-                <Path d="M107 92 Q 106 80 98 78 Q 101 87 107 92 Z" fill="#15803D" />
+                <Path d="M104 128 L110 94" stroke="#16A34A" strokeWidth={4.5} strokeLinecap="round" />
+                <Line x1="104.5" y1="116" x2="109.5" y2="114" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                <Line x1="106.5" y1="105" x2="111.5" y2="103" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                <Path d="M110 94 Q 122 88 128 93 Q 119 99 110 94 Z" fill="#22C55E" />
+                <Path d="M108 101 Q 122 96 125 105 Q 116 107 108 101 Z" fill="#4ADE80" />
+                <Path d="M109 90 Q 108 78 100 76 Q 103 85 109 90 Z" fill="#15803D" />
               </G>
             )}
 
-            {/* --- 8. DARK CHOCOLATE FRONT PAWS --- */}
-            {/* Left Paw (Resting) */}
-            <Ellipse cx="62" cy="116" rx="9" ry="7" fill="url(#rpDarkBrown)" />
+            {/* --- 8. FRONT PAWS & FULL CONNECTED WAVING ARM --- */}
+            {/* Left Paw (Folded cosily on chest) */}
+            <Ellipse cx="58" cy="112" rx="10" ry="8" fill="url(#rpDarkBrown)" />
+            <Circle cx="58" cy="111" r="2.2" fill="#FEF08A" opacity={0.6} />
 
-            {/* Right Paw: Waving when awake/greeting, or resting when sleeping */}
-            {!isWavingMood ? (
-              <Ellipse
-                cx={mood === 'hopeful' ? 104 : mood === 'sleeping' ? 94 : 98}
-                cy={mood === 'hopeful' ? 112 : mood === 'sleeping' ? 116 : 116}
-                rx="9"
-                ry="7"
-                fill="url(#rpDarkBrown)"
-              />
-            ) : null}
+            {/* Sleeping Paws */}
+            {mood === 'sleeping' && (
+              <G id="rp-sleeping-paws">
+                <Ellipse cx="102" cy="112" rx="10" ry="8" fill="url(#rpDarkBrown)" />
+                <Circle cx="102" cy="111" r="2.2" fill="#FEF08A" opacity={0.6} />
+              </G>
+            )}
+
+            {/* Hopeful Paw */}
+            {mood === 'hopeful' && (
+              <G id="rp-hopeful-paw">
+                <Path d="M 98 100 C 104 92, 108 98, 106 110" stroke="url(#rpDarkBrown)" strokeWidth="14" strokeLinecap="round" />
+                <Ellipse cx="104" cy="110" rx="9" ry="8" fill="url(#rpDarkBrown)" />
+                <Circle cx="104" cy="109" r="2.2" fill="#FEF08A" opacity={0.7} />
+              </G>
+            )}
+
+            {/* Rest Paw */}
+            {mood === 'rest' && (
+              <G id="rp-rest-paws">
+                <Ellipse cx="102" cy="112" rx="10" ry="8" fill="url(#rpDarkBrown)" />
+                <Circle cx="102" cy="111" r="2.2" fill="#FEF08A" opacity={0.6} />
+              </G>
+            )}
+
+            {/* 👋 CONNECTED WAVING ARM WITH SHOULDER PIVOT (When Awake / Waving) */}
+            {isWavingMood && (
+              <AnimatedG
+                origin="96, 96"
+                rotation={pawWaveAngle}
+              >
+                {/* Smooth arm limb extending up from the shoulder */}
+                <Path
+                  d="M 96 98 C 102 84, 114 72, 122 56"
+                  stroke="url(#rpDarkBrown)"
+                  strokeWidth="15"
+                  strokeLinecap="round"
+                />
+                {/* Waving Palm */}
+                <Ellipse cx="122" cy="54" rx="10" ry="9" fill="url(#rpDarkBrown)" />
+                {/* Cute Paw Finger Beans / Pads */}
+                <Circle cx="121" cy="54" r="3.2" fill="#FEF08A" opacity={0.9} />
+                <Circle cx="115" cy="48" r="1.6" fill="#FEF08A" opacity={0.9} />
+                <Circle cx="120" cy="45" r="1.6" fill="#FEF08A" opacity={0.9} />
+                <Circle cx="126" cy="48" r="1.6" fill="#FEF08A" opacity={0.9} />
+              </AnimatedG>
+            )}
           </Svg>
-
-          {/* 👋 Waving Right Hand / Paw when Awake & Greeting */}
-          {isWavingMood && (
-            <AnimatedView
-              style={[
-                styles.wavingPawContainer,
-                {
-                  right: size * 0.12,
-                  top: size * 0.42,
-                  transform: [{ rotate: pawWaveRotation }],
-                },
-              ]}
-              pointerEvents="none"
-            >
-              <Svg width={size * 0.32} height={size * 0.32} viewBox="0 0 32 32">
-                <Ellipse cx="16" cy="16" rx="10" ry="7.5" fill="#451A03" />
-                {/* White paw pad glint */}
-                <Circle cx="14" cy="14" r="2.2" fill="#FEF08A" opacity={0.8} />
-              </Svg>
-            </AnimatedView>
-          )}
         </AnimatedView>
       </TouchableOpacity>
     </View>
@@ -782,11 +821,5 @@ const styles = StyleSheet.create({
   zzzText: {
     fontFamily: 'monospace',
     fontWeight: '800',
-  },
-  wavingPawContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
   },
 });
