@@ -1,7 +1,14 @@
-import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import lottie from 'lottie-web';
-import { LOTTIE_ANIMATIONS, LottieAnimationKey } from '../../assets/animations';
+import { LottieAnimationKey } from '../../assets/animations';
+import {
+  StreakFlameVector,
+  CelebrationBurstVector,
+  TrophyAchievementVector,
+  PlantGrowingVector,
+  MascotWavingVector,
+  ZenMeditationVector,
+} from './VectorAnimations';
 
 export interface LottieAnimationProps {
   /** Name of the built-in animation or custom animation object */
@@ -35,117 +42,48 @@ export const LottieAnimation = forwardRef<LottieAnimationRef, LottieAnimationPro
       speed = 1,
       style,
       onAnimationFinish,
-      size,
+      size = 48,
     },
     ref
   ) => {
-    const webContainerRef = useRef<HTMLDivElement | null>(null);
-    const animInstanceRef = useRef<any>(null);
-
-    // Resolve JSON data
-    const animationData =
-      typeof source === 'string' && source in LOTTIE_ANIMATIONS
-        ? LOTTIE_ANIMATIONS[source as LottieAnimationKey]
-        : typeof source === 'object'
-        ? source
-        : LOTTIE_ANIMATIONS.streakFlame;
-
-    // Imperative ref methods
     useImperativeHandle(ref, () => ({
-      play: () => {
-        try {
-          animInstanceRef.current?.play();
-        } catch {}
-      },
-      pause: () => {
-        try {
-          animInstanceRef.current?.pause();
-        } catch {}
-      },
-      reset: () => {
-        try {
-          animInstanceRef.current?.goToAndPlay(0, true);
-        } catch {}
-      },
+      play: () => {},
+      pause: () => {},
+      reset: () => {},
     }));
 
-    useEffect(() => {
-      let isMounted = true;
-      const container = webContainerRef.current;
-      if (!container) return;
+    const key = typeof source === 'string' ? source : 'streakFlame';
 
-      // Clean up previous instance
-      if (animInstanceRef.current) {
-        try {
-          animInstanceRef.current.destroy();
-        } catch {}
-        animInstanceRef.current = null;
+    const renderContent = () => {
+      switch (key) {
+        case 'streakFlame':
+          return <StreakFlameVector size={size} speed={speed} />;
+        case 'celebrationBurst':
+          return (
+            <CelebrationBurstVector
+              size={size}
+              loop={loop}
+              onAnimationFinish={onAnimationFinish}
+            />
+          );
+        case 'trophyAchievement':
+          return <TrophyAchievementVector size={size} speed={speed} />;
+        case 'plantGrowing':
+          return <PlantGrowingVector size={size} speed={speed} />;
+        case 'mascotWaving':
+          return <MascotWavingVector size={size} speed={speed} />;
+        case 'zenMeditation':
+          return <ZenMeditationVector size={size} speed={speed} />;
+        default:
+          return <StreakFlameVector size={size} speed={speed} />;
       }
-      container.innerHTML = '';
+    };
 
-      try {
-        const lottieLib = (window as any)?.lottie || (lottie as any)?.default || lottie;
-        if (lottieLib && typeof lottieLib.loadAnimation === 'function') {
-          // MUST deep clone animationData because lottie-web mutates the object in place
-          const clonedData = JSON.parse(JSON.stringify(animationData));
-
-          const anim = lottieLib.loadAnimation({
-            container,
-            renderer: 'svg',
-            loop,
-            autoplay: autoPlay,
-            animationData: clonedData,
-            rendererSettings: {
-              preserveAspectRatio: 'xMidYMid meet',
-              clearCanvas: true,
-              progressiveLoad: true,
-              hideOnTransparent: true,
-            },
-          });
-
-          if (speed !== 1) {
-            anim.setSpeed(speed);
-          }
-
-          if (onAnimationFinish) {
-            anim.addEventListener('complete', () => {
-              if (isMounted && onAnimationFinish) onAnimationFinish();
-            });
-          }
-
-          animInstanceRef.current = anim;
-        }
-      } catch (err) {
-        console.warn('Lottie web animation error:', err);
-      }
-
-      return () => {
-        isMounted = false;
-        if (animInstanceRef.current) {
-          try {
-            animInstanceRef.current.destroy();
-          } catch {}
-          animInstanceRef.current = null;
-        }
-      };
-    }, [animationData, loop, autoPlay, speed]);
-
-    const sizeStyle: ViewStyle = size ? { width: size, height: size } : { width: '100%', height: '100%' };
+    const containerSizeStyle: ViewStyle = { width: size, height: size };
 
     return (
-      <View style={[styles.container, sizeStyle, style]}>
-        <div
-          ref={webContainerRef}
-          style={{
-            width: size ? `${size}px` : '100%',
-            height: size ? `${size}px` : '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            pointerEvents: 'none',
-          }}
-        />
+      <View style={[styles.container, containerSizeStyle, style]}>
+        {renderContent()}
       </View>
     );
   }
@@ -157,6 +95,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
+    position: 'relative',
+    overflow: 'visible',
   },
 });

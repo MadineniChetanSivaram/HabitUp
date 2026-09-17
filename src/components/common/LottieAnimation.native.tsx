@@ -1,7 +1,14 @@
-import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
-import LottieView from 'lottie-react-native';
-import { LOTTIE_ANIMATIONS, LottieAnimationKey } from '../../assets/animations';
+import { LottieAnimationKey } from '../../assets/animations';
+import {
+  StreakFlameVector,
+  CelebrationBurstVector,
+  TrophyAchievementVector,
+  PlantGrowingVector,
+  MascotWavingVector,
+  ZenMeditationVector,
+} from './VectorAnimations';
 
 export interface LottieAnimationProps {
   /** Name of the built-in animation or custom animation object */
@@ -35,44 +42,48 @@ export const LottieAnimation = forwardRef<LottieAnimationRef, LottieAnimationPro
       speed = 1,
       style,
       onAnimationFinish,
-      size,
+      size = 48,
     },
     ref
   ) => {
-    const lottieRef = useRef<LottieView>(null);
-
-    const animationData =
-      typeof source === 'string' && source in LOTTIE_ANIMATIONS
-        ? LOTTIE_ANIMATIONS[source as LottieAnimationKey]
-        : typeof source === 'object'
-        ? source
-        : LOTTIE_ANIMATIONS.streakFlame;
-
     useImperativeHandle(ref, () => ({
-      play: () => {
-        lottieRef.current?.play();
-      },
-      pause: () => {
-        lottieRef.current?.pause();
-      },
-      reset: () => {
-        lottieRef.current?.reset();
-      },
+      play: () => {},
+      pause: () => {},
+      reset: () => {},
     }));
 
-    const sizeStyle: ViewStyle = size ? { width: size, height: size } : {};
+    const key = typeof source === 'string' ? source : 'streakFlame';
+
+    const renderContent = () => {
+      switch (key) {
+        case 'streakFlame':
+          return <StreakFlameVector size={size} speed={speed} />;
+        case 'celebrationBurst':
+          return (
+            <CelebrationBurstVector
+              size={size}
+              loop={loop}
+              onAnimationFinish={onAnimationFinish}
+            />
+          );
+        case 'trophyAchievement':
+          return <TrophyAchievementVector size={size} speed={speed} />;
+        case 'plantGrowing':
+          return <PlantGrowingVector size={size} speed={speed} />;
+        case 'mascotWaving':
+          return <MascotWavingVector size={size} speed={speed} />;
+        case 'zenMeditation':
+          return <ZenMeditationVector size={size} speed={speed} />;
+        default:
+          return <StreakFlameVector size={size} speed={speed} />;
+      }
+    };
+
+    const containerSizeStyle: ViewStyle = { width: size, height: size };
 
     return (
-      <View style={[styles.container, sizeStyle, style]}>
-        <LottieView
-          ref={lottieRef}
-          source={animationData}
-          autoPlay={autoPlay}
-          loop={loop}
-          speed={speed}
-          style={[StyleSheet.absoluteFill, sizeStyle]}
-          onAnimationFinish={onAnimationFinish}
-        />
+      <View style={[styles.container, containerSizeStyle, style]}>
+        {renderContent()}
       </View>
     );
   }
@@ -84,6 +95,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
+    position: 'relative',
+    overflow: 'visible',
   },
 });
