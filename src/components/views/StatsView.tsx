@@ -5,6 +5,7 @@ import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
 import { formatDateKey, isHabitScheduledOnDate } from '../../utils/streakCalculator';
 import { ChevronLeft, Flame, Trophy, CheckCircle2, TrendingUp } from 'lucide-react-native';
+import { LottieAnimation } from '../common/LottieAnimation';
 
 export const StatsView: React.FC = () => {
   const {
@@ -469,7 +470,7 @@ export const StatsView: React.FC = () => {
                 {analytics.streakLabel}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Flame size={18} color="#F59E0B" fill="#F59E0B" />
+                <LottieAnimation source="streakFlame" size={20} />
                 <Text
                   style={[styles.metricValue, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
                 >

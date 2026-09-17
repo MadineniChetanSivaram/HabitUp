@@ -4,7 +4,8 @@ import { Habit } from '../../types';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
 import { formatTo12Hour } from '../../utils/streakCalculator';
-import { Check, Flame, MoreVertical, Calendar, Pause, Play, Archive, Trash2, X } from 'lucide-react-native';
+import { Check, MoreVertical, Calendar, Pause, Play, Archive, Trash2, X } from 'lucide-react-native';
+import { LottieAnimation } from '../common/LottieAnimation';
 
 interface HabitCardProps {
   habit: Habit;
@@ -28,6 +29,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
   } = useHabit();
 
   const [showMenu, setShowMenu] = useState(false);
+  const [showBurst, setShowBurst] = useState(false);
   const isDark = theme === 'dark';
 
   const stats = getHabitStats(habit.id);
@@ -39,6 +41,10 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
   const isArchived = Boolean(habit.archived_at);
 
   const handleCheckClick = () => {
+    if (!isCompleted) {
+      setShowBurst(true);
+      setTimeout(() => setShowBurst(false), 1400);
+    }
     toggleCompletion(habit.id, selectedDate);
   };
 
@@ -121,7 +127,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             </Text>
             {stats.currentStreak > 0 && (
               <View style={[styles.streakBadge, { backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7' }]}>
-                <Flame size={12} color="#F59E0B" fill="#F59E0B" />
+                <LottieAnimation source="streakFlame" size={16} />
                 <Text style={styles.streakCount}>{stats.currentStreak}d</Text>
               </View>
             )}
@@ -167,20 +173,27 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             <MoreVertical size={16} color={isDark ? '#64748B' : '#94A3B8'} />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.checkbox,
-              isCompleted
-                ? styles.checkboxChecked
-                : isDark
-                ? styles.checkboxUncheckedDark
-                : styles.checkboxUncheckedLight,
-            ]}
-            onPress={handleCheckClick}
-            activeOpacity={0.7}
-          >
-            {isCompleted && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
-          </TouchableOpacity>
+          <View style={styles.checkboxWrapper}>
+            <TouchableOpacity
+              style={[
+                styles.checkbox,
+                isCompleted
+                  ? styles.checkboxChecked
+                  : isDark
+                  ? styles.checkboxUncheckedDark
+                  : styles.checkboxUncheckedLight,
+              ]}
+              onPress={handleCheckClick}
+              activeOpacity={0.7}
+            >
+              {isCompleted && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
+            </TouchableOpacity>
+            {showBurst && (
+              <View style={styles.burstOverlay} pointerEvents="none">
+                <LottieAnimation source="celebrationBurst" size={56} loop={false} />
+              </View>
+            )}
+          </View>
         </View>
       </View>
 
@@ -362,6 +375,19 @@ const styles = StyleSheet.create({
   moreBtn: {
     padding: 8,
     borderRadius: 8,
+  },
+  checkboxWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  burstOverlay: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 60,
+    height: 60,
+    zIndex: 99,
   },
   checkbox: {
     width: 32,

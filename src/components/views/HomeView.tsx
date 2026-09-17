@@ -6,7 +6,8 @@ import { DateStrip } from '../mobile/DateStrip';
 import { TodayProgressCard } from '../mobile/TodayProgressCard';
 import { HabitCard } from '../mobile/HabitCard';
 import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
-import { Plus, Sparkles, CheckCircle2 } from 'lucide-react-native';
+import { Plus, Sparkles } from 'lucide-react-native';
+import { LottieAnimation } from '../common/LottieAnimation';
 
 export const HomeView: React.FC = () => {
   const {
@@ -144,8 +145,8 @@ export const HomeView: React.FC = () => {
               },
             ]}
           >
-            <View style={[styles.emptyIconCircle, { backgroundColor: 'rgba(124, 92, 255, 0.15)' }]}>
-              <Sparkles size={24} color="#7C5CFF" />
+            <View style={{ width: 80, height: 80, alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+              <LottieAnimation source="mascotWaving" size={80} />
             </View>
             <Text style={[styles.emptyTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
               {t('home.no_habits', 'No habits yet!')}
@@ -197,8 +198,8 @@ export const HomeView: React.FC = () => {
               },
             ]}
           >
-            <View style={styles.emptyIconCircle}>
-              <CheckCircle2 size={24} color="#10B981" />
+            <View style={{ width: 80, height: 80, alignItems: 'center', justifyContent: 'center', marginBottom: 6 }}>
+              <LottieAnimation source="zenMeditation" size={80} />
             </View>
             <Text style={[styles.emptyTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
               {filterMode === 'completed'

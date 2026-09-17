@@ -5,6 +5,7 @@ import { useHabit } from '../../context/HabitContext';
 import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
 import { PlantVisualizer } from './PlantVisualizer';
 import { Sparkles, Sprout, ChevronRight } from 'lucide-react-native';
+import { LottieAnimation } from '../common/LottieAnimation';
 
 export const TodayProgressCard: React.FC = () => {
   const {
@@ -178,7 +179,7 @@ export const TodayProgressCard: React.FC = () => {
                 interactive={false}
               />
             ) : (
-              <Sprout size={24} color="#10B981" />
+              <LottieAnimation source="plantGrowing" size={38} />
             )}
           </View>
         </TouchableOpacity>

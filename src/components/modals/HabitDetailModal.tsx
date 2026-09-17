@@ -25,12 +25,11 @@ import {
   Archive,
   Trash2,
   X,
-  Flame,
-  Trophy,
   CheckCircle2,
   Bell,
   Zap,
 } from 'lucide-react-native';
+import { LottieAnimation } from '../common/LottieAnimation';
 
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
@@ -175,7 +174,7 @@ export const HabitDetailModal: React.FC = () => {
             {/* Metrics */}
             <View style={styles.statsRow}>
               <View style={[styles.statBox, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-                <Flame size={16} color="#F59E0B" />
+                <LottieAnimation source="streakFlame" size={18} />
                 <Text style={[styles.statNum, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                   {stats.currentStreak}
                 </Text>
@@ -185,7 +184,7 @@ export const HabitDetailModal: React.FC = () => {
               </View>
 
               <View style={[styles.statBox, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-                <Trophy size={16} color="#10B981" />
+                <LottieAnimation source="trophyAchievement" size={18} />
                 <Text style={[styles.statNum, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                   {stats.longestStreak}
                 </Text>
@@ -241,7 +240,7 @@ export const HabitDetailModal: React.FC = () => {
                     </View>
                   </View>
                   <View style={styles.buddyDetailStreak}>
-                    <Flame size={12} color="#F59E0B" fill="#F59E0B" />
+                    <LottieAnimation source="streakFlame" size={14} />
                     <Text style={styles.buddyDetailStreakText}>
                       {stats.currentStreak}d {t('habits.streak', 'Streak')}
                     </Text>

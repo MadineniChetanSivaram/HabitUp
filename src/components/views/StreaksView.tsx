@@ -1,16 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
-import Svg, {
-  Defs,
-  LinearGradient,
-  Stop,
-  G,
-  Path,
-  Circle,
-} from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
 import { PlantStreakCard } from '../mobile/PlantStreakCard';
-import { Flame, Trophy, CheckCircle2, Zap, ChevronLeft } from 'lucide-react-native';
+import { CheckCircle2, ChevronLeft } from 'lucide-react-native';
+import { LottieAnimation } from '../common/LottieAnimation';
 
 export const StreaksView: React.FC = () => {
   const { overallStats, setActiveTab, theme, t } = useHabit();
@@ -46,38 +39,11 @@ export const StreaksView: React.FC = () => {
         <View style={{ width: 38 }} />
       </View>
 
-      {/* Hero Flame Mascot */}
+      {/* Hero Flame Mascot with Lottie */}
       <View style={styles.heroFlameBox}>
-        <Svg width={120} height={120} viewBox="0 0 160 160">
-          <Defs>
-            <LinearGradient id="flameMain" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor="#FFA07A" />
-              <Stop offset="40%" stopColor="#FF6347" />
-              <Stop offset="100%" stopColor="#DC2626" />
-            </LinearGradient>
-            <LinearGradient id="flameInner" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor="#FEF08A" />
-              <Stop offset="50%" stopColor="#FBBF24" />
-              <Stop offset="100%" stopColor="#F97316" />
-            </LinearGradient>
-          </Defs>
-
-          {/* Outer Flame */}
-          <Path
-            d="M80 15C80 15 105 50 105 75C105 85 100 95 95 100C110 90 120 110 120 125C120 145 100 155 80 155C60 155 40 145 40 125C40 105 60 90 60 70C60 55 70 30 80 15Z"
-            fill="url(#flameMain)"
-          />
-          {/* Inner Flame */}
-          <Path
-            d="M80 65C80 65 95 85 95 105C95 120 88 135 80 145C72 135 65 120 65 105C65 85 80 65 80 65Z"
-            fill="url(#flameInner)"
-          />
-          {/* Flame Face */}
-          <Circle cx="73" cy="115" r="3" fill="#1F2937" />
-          <Circle cx="74" cy="113.5" r="1" fill="#FFFFFF" />
-          <Circle cx="87" cy="115" r="3" fill="#1F2937" />
-          <Circle cx="88" cy="113.5" r="1" fill="#FFFFFF" />
-        </Svg>
+        <View style={{ width: 130, height: 130, alignItems: 'center', justifyContent: 'center' }}>
+          <LottieAnimation source="streakFlame" size={130} />
+        </View>
 
         <Text style={[styles.streakHeroNumber, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
           {currentStreak}
@@ -102,7 +68,7 @@ export const StreaksView: React.FC = () => {
           ]}
         >
           <View style={styles.metricIconCircle}>
-            <Trophy size={18} color="#10B981" />
+            <LottieAnimation source="trophyAchievement" size={26} />
           </View>
           <Text style={[styles.metricLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}>
             {t('streaks.longest_streak', 'Longest Streak')}
