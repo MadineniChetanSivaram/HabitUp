@@ -174,7 +174,7 @@ export const HabitDetailModal: React.FC = () => {
             {/* Metrics */}
             <View style={styles.statsRow}>
               <View style={[styles.statBox, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-                <LottieAnimation source="streakFlame" size={18} />
+                <LottieAnimation source="streakFlame" size={20} />
                 <Text style={[styles.statNum, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                   {stats.currentStreak}
                 </Text>
@@ -184,7 +184,7 @@ export const HabitDetailModal: React.FC = () => {
               </View>
 
               <View style={[styles.statBox, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-                <LottieAnimation source="trophyAchievement" size={18} />
+                <LottieAnimation source="trophyAchievement" size={20} />
                 <Text style={[styles.statNum, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                   {stats.longestStreak}
                 </Text>

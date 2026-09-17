@@ -190,7 +190,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             </TouchableOpacity>
             {showBurst && (
               <View style={styles.burstOverlay} pointerEvents="none">
-                <LottieAnimation source="celebrationBurst" size={56} loop={false} />
+                <LottieAnimation source="celebrationBurst" size={88} loop={false} />
               </View>
             )}
           </View>
@@ -385,9 +385,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 60,
-    height: 60,
-    zIndex: 99,
+    width: 88,
+    height: 88,
+    top: -28,
+    left: -28,
+    zIndex: 999,
   },
   checkbox: {
     width: 32,
