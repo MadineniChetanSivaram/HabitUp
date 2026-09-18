@@ -477,8 +477,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const mascotPixelSize = size * 1.25;
 
   return (
-    <View style={[styles.outerWrapper, { width: size * 1.3, height: size * 1.25 }]}>
-      {/* 💬 Interactive Multilingual Speech Bubble (Positioned safely to left of Sparky) */}
+    <View style={[styles.outerWrapper, { width: mascotPixelSize, height: mascotPixelSize }]}>
+      {/* 💬 Interactive Multilingual Speech Bubble */}
       {showSpeechBubble && (
         <TouchableOpacity
           style={[
@@ -546,12 +546,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.92}
-        style={[styles.touchable, { width: size * 1.3, height: size * 1.25 }]}
+        style={[styles.touchable, { width: mascotPixelSize, height: mascotPixelSize }]}
       >
         <AnimatedView
           style={[
             styles.animatedContainer,
             {
+              width: mascotPixelSize,
+              height: mascotPixelSize,
               transform: [
                 { translateY: floatAnim },
                 { scale: bounceScale },
@@ -1091,17 +1093,15 @@ const styles = StyleSheet.create({
   },
   auraGlow: {
     position: 'absolute',
-    top: 10,
-    left: 10,
     zIndex: 0,
-    opacity: 0.9,
+    opacity: 0.65,
   },
   layerAbsolute: {
     position: 'absolute',
     top: 0,
     left: 0,
-    right: 0,
-    bottom: 0,
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
