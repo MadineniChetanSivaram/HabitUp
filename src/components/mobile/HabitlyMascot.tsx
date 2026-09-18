@@ -125,7 +125,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const zzzAnim1 = useRef(new Animated.Value(0)).current;
   const zzzAnim2 = useRef(new Animated.Value(0)).current;
   const zzzAnim3 = useRef(new Animated.Value(0)).current;
-  const auraPulse = useRef(new Animated.Value(1)).current;
 
   const prevCompletedRef = useRef<number>(completedCount);
   const useNative = Platform.OS !== 'web';
@@ -273,25 +272,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       zzz3.start();
     }
 
-    // 6. Aura glow pulse
-    const auraLoop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(auraPulse, {
-          toValue: 1.15,
-          duration: isSleep ? 2400 : 1500,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
-        }),
-        Animated.timing(auraPulse, {
-          toValue: 0.85,
-          duration: isSleep ? 2400 : 1500,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
-        }),
-      ])
-    );
-    auraLoop.start();
-
     return () => {
       floatLoop.stop();
       tailLoop.stop();
@@ -300,7 +280,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       zzz1.stop();
       zzz2.stop();
       zzz3.stop();
-      auraLoop.stop();
     };
   }, [mood, bambooStage]);
 
@@ -420,27 +399,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
   const AnimatedView = Animated.View as any;
 
-  // Aura colors based on mood
-  const getAuraColor = () => {
-    switch (mood) {
-      case 'sleeping':
-        return 'rgba(99, 102, 241, 0.22)';
-      case 'celebrating':
-        return 'rgba(234, 179, 8, 0.45)'; // Golden feast aura
-      case 'hyped':
-        return 'rgba(34, 197, 94, 0.38)'; // Emerald lush aura
-      case 'hopeful':
-        return 'rgba(16, 185, 129, 0.28)';
-      case 'awake':
-        return 'rgba(251, 146, 60, 0.30)';
-      case 'rest':
-      default:
-        return 'rgba(56, 189, 248, 0.25)';
-    }
-  };
-
-  const auraColor = getAuraColor();
-
   // Waving rotation (natural cute wrist/forearm tilt from shoulder joint)
   const pawWaveRotate = handWave.interpolate({
     inputRange: [-1, 1],
@@ -557,20 +515,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             },
           ]}
         >
-          {/* Radial Aura Glow */}
-          <AnimatedView
-            style={[
-              styles.auraGlow,
-              {
-                width: size * 1.05,
-                height: size * 1.05,
-                borderRadius: size,
-                backgroundColor: auraColor,
-                transform: [{ scale: auraPulse }],
-              },
-            ]}
-          />
-
           {/* ======================================================== */}
           {/* LAYER 1: ISOLATED HW-ACCELERATED TAIL (behind body)      */}
           {/* ======================================================== */}
@@ -1023,13 +967,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-  },
-  auraGlow: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    zIndex: 0,
-    opacity: 0.9,
   },
   layerAbsolute: {
     position: 'absolute',
