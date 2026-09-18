@@ -65,6 +65,22 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     }
   }, [completedCount]);
 
+  // Bamboo growth stages:
+  // 0: Sprout (0 habits done)
+  // 1: Young stalk (1 - 50% habits done)
+  // 2: Lush tall stalk (51 - 99% habits done)
+  // 3: Eating feast! (100% all habits completed)
+  let bambooStage = 0;
+  if (progressPercent === 100 && totalCount > 0) {
+    bambooStage = 3; // Eating feast!
+  } else if (progressPercent > 50) {
+    bambooStage = 2; // Lush tall stalk
+  } else if (completedCount > 0) {
+    bambooStage = 1; // Young stalk
+  } else {
+    bambooStage = 0; // Sprout
+  }
+
   // Determine active mood
   let mood: MascotMood = 'sleeping';
   if (forcedMood) {
@@ -73,14 +89,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     mood = 'rest';
   } else if (!isAwake && completedCount === 0) {
     mood = 'sleeping';
-  } else if (completedCount === 0) {
-    mood = 'awake'; // User woke up mascot before starting habits
-  } else if (progressPercent === 100) {
-    mood = 'celebrating';
-  } else if (progressPercent >= 50) {
+  } else if (bambooStage === 3) {
+    mood = 'celebrating'; // Munching bamboo feast!
+  } else if (bambooStage === 2) {
     mood = 'hyped';
-  } else {
+  } else if (completedCount > 0) {
     mood = 'hopeful';
+  } else {
+    mood = 'awake';
   }
 
   // Animation values
@@ -89,6 +105,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const earWiggle = useRef(new Animated.Value(0)).current;
   const tailWag = useRef(new Animated.Value(0)).current;
   const handWave = useRef(new Animated.Value(0)).current;
+  const chewAnim = useRef(new Animated.Value(0)).current;
+  const bambooScale = useRef(new Animated.Value(1)).current;
   const zzzAnim1 = useRef(new Animated.Value(0)).current;
   const zzzAnim2 = useRef(new Animated.Value(0)).current;
   const zzzAnim3 = useRef(new Animated.Value(0)).current;
@@ -96,21 +114,44 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
   const useNative = Platform.OS !== 'web';
 
+  // Bamboo Spring Growth Effect when completion count increases
+  const prevCompletedRef = useRef(completedCount);
+  useEffect(() => {
+    if (completedCount > prevCompletedRef.current) {
+      Animated.sequence([
+        Animated.spring(bambooScale, {
+          toValue: 1.35,
+          friction: 3,
+          tension: 40,
+          useNativeDriver: useNative,
+        }),
+        Animated.spring(bambooScale, {
+          toValue: 1,
+          friction: 4,
+          tension: 30,
+          useNativeDriver: useNative,
+        }),
+      ]).start();
+    }
+    prevCompletedRef.current = completedCount;
+  }, [completedCount]);
+
   useEffect(() => {
     const isSleep = mood === 'sleeping';
+    const isMunching = bambooStage === 3;
 
     // 1. Floating / Breathing loop
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, {
-          toValue: isSleep ? 2 : mood === 'hyped' || mood === 'celebrating' ? -5 : -3.5,
-          duration: isSleep ? 2200 : mood === 'hyped' ? 1100 : 1600,
+          toValue: isSleep ? 2 : isMunching ? -4 : mood === 'hyped' ? -5 : -3.5,
+          duration: isSleep ? 2200 : isMunching ? 900 : mood === 'hyped' ? 1100 : 1600,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(floatAnim, {
-          toValue: isSleep ? 5 : mood === 'hyped' || mood === 'celebrating' ? 4 : 3,
-          duration: isSleep ? 2200 : mood === 'hyped' ? 1100 : 1600,
+          toValue: isSleep ? 5 : isMunching ? 3 : mood === 'hyped' ? 4 : 3,
+          duration: isSleep ? 2200 : isMunching ? 900 : mood === 'hyped' ? 1100 : 1600,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
@@ -123,13 +164,13 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       Animated.sequence([
         Animated.timing(tailWag, {
           toValue: 1,
-          duration: isSleep ? 2000 : mood === 'celebrating' || mood === 'hyped' ? 420 : 750,
+          duration: isSleep ? 2000 : isMunching ? 360 : mood === 'hyped' ? 500 : 750,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(tailWag, {
           toValue: -1,
-          duration: isSleep ? 2000 : mood === 'celebrating' || mood === 'hyped' ? 420 : 750,
+          duration: isSleep ? 2000 : isMunching ? 360 : mood === 'hyped' ? 500 : 750,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
@@ -137,26 +178,49 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     );
     tailLoop.start();
 
-    // 3. Cheerful "Hi" Hand Wave Loop (natural cute speed & arc)
+    // 3. Cheerful "Hi" Hand Wave Loop (when not eating)
     const waveLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(handWave, {
           toValue: 1,
-          duration: mood === 'celebrating' ? 240 : 340,
+          duration: 340,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(handWave, {
           toValue: -1,
-          duration: mood === 'celebrating' ? 240 : 340,
+          duration: 340,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
       ])
     );
-    waveLoop.start();
+    if (!isMunching) {
+      waveLoop.start();
+    }
 
-    // 4. Floating Zzz Animation Loop (when sleeping)
+    // 4. Munching & Chewing Animation (when eating at 100%)
+    const chewLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(chewAnim, {
+          toValue: 1,
+          duration: 280,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: useNative,
+        }),
+        Animated.timing(chewAnim, {
+          toValue: 0,
+          duration: 280,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: useNative,
+        }),
+      ])
+    );
+    if (isMunching) {
+      chewLoop.start();
+    }
+
+    // 5. Floating Zzz Animation Loop (when sleeping)
     const zzz1 = Animated.loop(
       Animated.timing(zzzAnim1, {
         toValue: 1,
@@ -194,7 +258,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       zzz3.start();
     }
 
-    // 5. Aura glow pulse
+    // 6. Aura glow pulse
     const auraLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(auraPulse, {
@@ -217,14 +281,15 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       floatLoop.stop();
       tailLoop.stop();
       waveLoop.stop();
+      chewLoop.stop();
       zzz1.stop();
       zzz2.stop();
       zzz3.stop();
       auraLoop.stop();
     };
-  }, [mood]);
+  }, [mood, bambooStage]);
 
-  // Tap handler: Wakes up if sleeping, waves hello and plays spring bounce
+  // Tap handler: Wakes up if sleeping, cycles speech bubble & squashes
   const handlePress = () => {
     if (!isAwake) {
       setIsAwake(true);
@@ -270,8 +335,21 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       return t('mascot.mood_sleeping', 'Zzz... 😴 Tap me to wake up!');
     }
 
-    if (quoteIndex === 0 && mood === 'awake') {
-      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Ready to crush your first habit today? 🐾");
+    if (bambooStage === 3) {
+      return t('mascot.bamboo_munch', 'Nom nom nom! 🎋😋 All habits crushed today! That bamboo was delicious! 🏆🌟');
+    }
+
+    if (quoteIndex === 0) {
+      if (bambooStage === 0) {
+        return t('mascot.bamboo_sprout', 'A tiny bamboo shoot sprouted! 🌱 Complete habits to help it grow!');
+      }
+      if (bambooStage === 1) {
+        return t('mascot.bamboo_growing', 'The bamboo is growing taller! 🎋 Keep the momentum going!');
+      }
+      if (bambooStage === 2) {
+        return t('mascot.bamboo_almost', 'Almost fully grown! 🎋 Finish your habits for a delicious feast! 🔥');
+      }
+      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Complete habits to grow my bamboo! 🎋");
     }
 
     if (quoteIndex === 1) return t('mascot.tap_1', 'Consistency is your superpower! ⚡');
@@ -279,19 +357,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     if (quoteIndex === 3) return t('mascot.tap_3', 'High five! I believe in you! ✋');
     if (quoteIndex === 4) return t('mascot.tap_4', 'Keep showing up! You got this! 🌟');
 
-    switch (mood) {
-      case 'awake':
-        return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Ready to crush your first habit today? 🐾");
-      case 'hopeful':
-        return t('mascot.mood_hopeful', 'Great start! Keep the momentum going! 🌱');
-      case 'hyped':
-        return t('mascot.mood_hyped', "Over halfway there! You're unstoppable today! 🔥");
-      case 'celebrating':
-        return t('mascot.mood_celebrating', 'PERFECT DAY! 🏆 All habits crushed! You are a legend! 🌟');
-      case 'rest':
-      default:
-        return t('mascot.mood_rest', 'Rest & recharge! You earned it today! 🧘');
-    }
+    return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Complete habits to grow my bamboo! 🎋");
   };
 
   const AnimatedView = Animated.View as any;
@@ -301,14 +367,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     switch (mood) {
       case 'sleeping':
         return 'rgba(99, 102, 241, 0.22)';
-      case 'awake':
-        return 'rgba(251, 146, 60, 0.30)';
+      case 'celebrating':
+        return 'rgba(234, 179, 8, 0.45)'; // Golden feast aura
+      case 'hyped':
+        return 'rgba(34, 197, 94, 0.38)'; // Emerald lush aura
       case 'hopeful':
         return 'rgba(16, 185, 129, 0.28)';
-      case 'hyped':
-        return 'rgba(245, 158, 11, 0.38)';
-      case 'celebrating':
-        return 'rgba(236, 72, 153, 0.45)';
+      case 'awake':
+        return 'rgba(251, 146, 60, 0.30)';
       case 'rest':
       default:
         return 'rgba(56, 189, 248, 0.25)';
@@ -326,8 +392,13 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   // Lively Tail wagging rotation
   const tailWagRotate = tailWag.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-8deg', '12deg'],
+    outputRange: bambooStage === 3 ? ['-12deg', '16deg'] : ['-8deg', '12deg'],
   });
+
+  // Chewing / Munching interpolations
+  const chewScaleY = chewAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 0.85] });
+  const chewScaleX = chewAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.12] });
+  const bambooMunchRotate = chewAnim.interpolate({ inputRange: [0, 1], outputRange: ['-3deg', '4deg'] });
 
   // Zzz Interpolations
   const z1Y = zzzAnim1.interpolate({ inputRange: [0, 1], outputRange: [0, -38] });
@@ -345,7 +416,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const z3Op = zzzAnim3.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 1, 0.8, 0] });
   const z3Scale = zzzAnim3.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.5] });
 
-  const isWavingMood = mood === 'awake' || mood === 'celebrating' || mood === 'hyped';
+  const isWavingMood = (mood === 'awake' || mood === 'hopeful' || mood === 'hyped') && bambooStage !== 3;
+  const isMunchingStage = bambooStage === 3;
   const mascotPixelSize = size * 1.25;
 
   return (
@@ -357,7 +429,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             styles.speechBubble,
             {
               backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-              borderColor: mood === 'celebrating' ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#7C5CFF',
+              borderColor: isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#22C55E',
             },
           ]}
           onPress={() => setShowSpeechBubble(false)}
@@ -369,7 +441,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           <View
             style={[
               styles.speechArrow,
-              { borderTopColor: mood === 'celebrating' ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#7C5CFF' },
+              { borderTopColor: isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#22C55E' },
             ]}
           />
         </TouchableOpacity>
@@ -490,7 +562,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           </AnimatedView>
 
           {/* ======================================================== */}
-          {/* LAYER 2: CHUBBY BODY, EARS, HEAD & 4 PAWS (Base Layer) */}
+          {/* LAYER 2: CHUBBY BODY, EARS, HEAD & BAMBOO STALKS         */}
           {/* ======================================================== */}
           <View style={[styles.layerAbsolute, { zIndex: 5 }]} pointerEvents="none">
             <Svg width={mascotPixelSize} height={mascotPixelSize} viewBox="0 0 160 160">
@@ -508,11 +580,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                   <Stop offset="0%" stopColor="#FDE047" />
                   <Stop offset="60%" stopColor="#F59E0B" />
                   <Stop offset="100%" stopColor="#D97706" />
-                </LinearGradient>
-                <LinearGradient id="rpFire2" x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0%" stopColor="#FFA07A" />
-                  <Stop offset="50%" stopColor="#FF4500" />
-                  <Stop offset="100%" stopColor="#DC2626" />
                 </LinearGradient>
               </Defs>
 
@@ -549,6 +616,16 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 />
               </G>
 
+              {/* 👑 Golden Royal Crown (When 100% Feast) */}
+              {isMunchingStage && (
+                <G id="rp-crown">
+                  <Path d="M66 30 L70 14 L76 22 L80 10 L84 22 L90 14 L94 30 Z" fill="url(#rpCrown2)" stroke="#B45309" strokeWidth={1} />
+                  <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
+                  <Circle cx="72" cy="22" r="1.8" fill="#3B82F6" />
+                  <Circle cx="88" cy="22" r="1.8" fill="#10B981" />
+                </G>
+              )}
+
               {/* Chubby Seated Body & Belly */}
               <Ellipse cx="80" cy="100" rx="34" ry="26" fill="url(#rpFurGrad2)" />
               <Ellipse cx="80" cy="105" rx="21" ry="15" fill="url(#rpDarkFur2)" />
@@ -569,36 +646,64 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               <Circle cx="114" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
               <Circle cx="119" cy="119" r="1.6" fill="#FEF08A" opacity={0.95} />
 
-              {/* Front Left Paw (Paw 1 - Resting Cutely on Upper Chest) */}
-              <Ellipse cx="60" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(-15 60 94)" />
-              <Ellipse cx="60" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
-              <Circle cx="56" cy="90" r="1.1" fill="#FEF08A" opacity={0.9} />
-              <Circle cx="60" cy="88" r="1.1" fill="#FEF08A" opacity={0.9} />
-              <Circle cx="64" cy="89" r="1.1" fill="#FEF08A" opacity={0.9} />
+              {/* ==================================================== */}
+              {/* 🎋 PROGRESSIVE BAMBOO GROWTH (Held in Left Paw 1)    */}
+              {/* ==================================================== */}
 
-              {/* Front Right Paw Resting (When Sleeping or Rest Mode) */}
-              {(!isWavingMood && mood !== 'hopeful') && (
-                <G id="rp-front-paw-right-resting">
-                  <Ellipse cx="100" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(15 100 94)" />
-                  <Ellipse cx="100" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
-                  <Circle cx="96" cy="89" r="1.1" fill="#FEF08A" opacity={0.9} />
-                  <Circle cx="100" cy="88" r="1.1" fill="#FEF08A" opacity={0.9} />
-                  <Circle cx="104" cy="90" r="1.1" fill="#FEF08A" opacity={0.9} />
+              {/* Stage 0: Tiny Bamboo Sprout (0 habits done) */}
+              {bambooStage === 0 && (
+                <G id="bamboo-stage-0">
+                  <Path d="M 58 102 L 54 84" stroke="#22C55E" strokeWidth={3.2} strokeLinecap="round" />
+                  <Path d="M 54 84 Q 46 80 44 85 Q 50 87 54 84 Z" fill="#4ADE80" />
+                  <Path d="M 54 84 Q 58 76 64 78 Q 59 84 54 84 Z" fill="#16A34A" />
                 </G>
               )}
 
-              {/* Front Right Paw - Hopeful Mode (Holding Bamboo) */}
-              {mood === 'hopeful' && (
-                <G id="rp-front-paw-hopeful">
-                  <Path d="M102 120 L108 88" stroke="#16A34A" strokeWidth={4} strokeLinecap="round" />
-                  <Line x1="102.5" y1="108" x2="107.5" y2="106" stroke="#14532D" strokeWidth={1.6} strokeLinecap="round" />
-                  <Line x1="104.5" y1="98" x2="109.5" y2="96" stroke="#14532D" strokeWidth={1.6} strokeLinecap="round" />
-                  <Path d="M108 88 Q 118 82 124 87 Q 116 93 108 88 Z" fill="#22C55E" />
-                  <Path d="M106 94 Q 118 89 122 97 Q 114 99 106 94 Z" fill="#4ADE80" />
-                  <Path d="M107 84 Q 106 73 99 71 Q 102 79 107 84 Z" fill="#15803D" />
+              {/* Stage 1: Young Growing Bamboo Stalk (1 - 50% habits done) */}
+              {bambooStage === 1 && (
+                <G id="bamboo-stage-1">
+                  <Path d="M 60 114 L 52 70" stroke="#22C55E" strokeWidth={4.6} strokeLinecap="round" />
+                  <Line x1="58.5" y1="102" x2="55.5" y2="101" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                  <Line x1="56" y1="88" x2="53" y2="87" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                  <Path d="M 52 70 Q 40 64 36 70 Q 44 73 52 70 Z" fill="#22C55E" />
+                  <Path d="M 52 70 Q 56 58 64 60 Q 58 68 52 70 Z" fill="#16A34A" />
+                  <Path d="M 54 86 Q 42 82 39 88 Q 47 90 54 86 Z" fill="#4ADE80" />
+                  <Path d="M 57 98 Q 66 94 69 100 Q 61 101 57 98 Z" fill="#22C55E" />
+                </G>
+              )}
 
-                  <Path d="M 94 92 C 100 90, 105 94, 102 102 C 98 105, 91 102, 93 94 Z" fill="url(#rpDarkFur2)" />
-                  <Ellipse cx="99" cy="98" rx="3.5" ry="2.5" fill="#FEF08A" opacity={0.85} />
+              {/* Stage 2: Tall Lush Flourishing Bamboo (51 - 99% habits done) */}
+              {bambooStage === 2 && (
+                <G id="bamboo-stage-2">
+                  <Path d="M 60 118 L 48 54" stroke="#22C55E" strokeWidth={5.5} strokeLinecap="round" />
+                  <Line x1="58.5" y1="104" x2="55.5" y2="103" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+                  <Line x1="55" y1="88" x2="52" y2="87" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+                  <Line x1="51.5" y1="72" x2="48.5" y2="71" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+                  {/* Lush Foliage */}
+                  <Path d="M 48 54 Q 34 46 28 54 Q 38 58 48 54 Z" fill="#22C55E" />
+                  <Path d="M 48 54 Q 54 40 64 42 Q 56 52 48 54 Z" fill="#16A34A" />
+                  <Path d="M 50 72 Q 36 66 32 74 Q 42 77 50 72 Z" fill="#4ADE80" />
+                  <Path d="M 53 74 Q 64 68 68 76 Q 58 78 53 74 Z" fill="#22C55E" />
+                  <Path d="M 55 90 Q 42 84 38 92 Q 48 95 55 90 Z" fill="#15803D" />
+                  <Path d="M 57 104 Q 68 98 72 106 Q 62 108 57 104 Z" fill="#4ADE80" />
+                  {/* Golden Sparkle */}
+                  <Path d="M 44 48 L 46 51 L 49 51.5 L 46.5 54 L 47 57 L 44 55.5 L 41 57 L 41.5 54 L 39 51.5 L 42 51 Z" fill="#FDE047" />
+                </G>
+              )}
+
+              {/* Left Front Paw (holding the growing stalk) */}
+              {!isMunchingStage && (
+                <G id="rp-front-paw-left">
+                  <Ellipse cx="58" cy="98" rx="7.5" ry="6.5" fill="url(#rpDarkFur2)" transform="rotate(-15 58 98)" />
+                  <Ellipse cx="58" cy="98" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
+                </G>
+              )}
+
+              {/* Right Front Paw Resting (when sleeping or rest) */}
+              {mood === 'sleeping' && (
+                <G id="rp-front-paw-right-sleeping">
+                  <Ellipse cx="100" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(15 100 94)" />
+                  <Ellipse cx="100" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
                 </G>
               )}
 
@@ -614,26 +719,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               <Path d="M 76 65 Q 80 63 84 65 Q 80 70 76 65 Z" fill="#1C1917" />
               <Circle cx="78.5" cy="65.5" r="0.7" fill="#FFFFFF" />
 
-              {/* Crown for Celebrating */}
-              {mood === 'celebrating' && (
-                <G id="rp-crown">
-                  <Path d="M66 30 L70 14 L76 22 L80 10 L84 22 L90 14 L94 30 Z" fill="url(#rpCrown2)" stroke="#B45309" strokeWidth={1} />
-                  <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
-                  <Circle cx="72" cy="22" r="1.8" fill="#3B82F6" />
-                  <Circle cx="88" cy="22" r="1.8" fill="#10B981" />
-                </G>
-              )}
-
-              {/* Flame Band for Hyped */}
-              {mood === 'hyped' && (
-                <G id="rp-fire-band">
-                  <Path d="M80 12 C 84 18 90 20 86 28 C 84 26 82 28 80 26 C 78 28 76 26 74 28 C 70 20 76 18 80 12 Z" fill="url(#rpFire2)" />
-                  <Circle cx="80" cy="22" r="2.2" fill="#FEF08A" />
-                </G>
-              )}
-
               {/* Facial Expressions & Eyes */}
-              {/* 😴 Sleeping: Peaceful Closed Eyes ( ˘ω˘ ) */}
+
+              {/* 😴 Sleeping Face */}
               {mood === 'sleeping' && (
                 <G id="rp-face-sleeping">
                   <Path d="M 64 61 Q 69 66 74 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
@@ -644,9 +732,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 👋 Awake / Hopeful: Big Sparkly Anime Eyes */}
-              {(mood === 'awake' || mood === 'hopeful') && (
-                <G id="rp-face-awake">
+              {/* 👋 Normal / Awake / Growing Eyes */}
+              {!isMunchingStage && mood !== 'sleeping' && (
+                <G id="rp-face-growing">
                   <Circle cx="65" cy="59" r="4.8" fill="#1C1917" />
                   <Circle cx="63.5" cy="57.5" r="1.8" fill="#FFFFFF" />
                   <Circle cx="66.5" cy="60.5" r="0.8" fill="#FFFFFF" />
@@ -661,52 +749,56 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 🔥 Hyped: Starry Anime Eyes */}
-              {mood === 'hyped' && (
-                <G id="rp-face-hyped">
-                  <Path d="M65 54 L66.5 58 L70 59 L66.5 60 L65 64 L63.5 60 L60 59 L63.5 58 Z" fill="#78350F" />
-                  <Circle cx="66" cy="57" r="1.1" fill="#FFFFFF" />
-                  <Path d="M95 54 L96.5 58 L100 59 L96.5 60 L95 64 L93.5 60 L90 59 L93.5 58 Z" fill="#78350F" />
-                  <Circle cx="96" cy="57" r="1.1" fill="#FFFFFF" />
-
-                  <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EF4444" opacity={0.75} />
-                  <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EF4444" opacity={0.75} />
-
-                  <Path d="M75 70 Q 80 78 85 70 Q 80 73 75 70 Z" fill="#991B1B" />
-                  <Path d="M77 73 Q 80 76 83 73 Z" fill="#F87171" />
-                </G>
-              )}
-
-              {/* 👑 Celebrating: Laughing Joyful Arcs */}
-              {mood === 'celebrating' && (
-                <G id="rp-face-celebrating">
+              {/* 😋 100% FEAST: Laughing Joyful Eyes (^ω^) & Chewing Blush */}
+              {isMunchingStage && (
+                <G id="rp-face-munching">
                   <Path d="M 61 59 Q 66 53 71 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
                   <Path d="M 89 59 Q 94 53 99 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
 
                   <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
                   <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
-
-                  <Path d="M 74 69 Q 80 80 86 69 Z" fill="#3F1D0B" />
-                  <Path d="M 77 74 Q 80 78 83 74 Z" fill="#F472B6" />
-                  <Path d="M 76 70 L 84 70" stroke="#FFFFFF" strokeWidth={1.2} />
                 </G>
               )}
 
-              {/* 🧘 Rest: Peaceful Smile */}
-              {mood === 'rest' && (
-                <G id="rp-face-rest">
-                  <Path d="M 64 61 Q 69 66 74 61" stroke="#3F1D0B" strokeWidth={2.4} strokeLinecap="round" fill="none" />
-                  <Path d="M 86 61 Q 91 66 96 61" stroke="#3F1D0B" strokeWidth={2.4} strokeLinecap="round" fill="none" />
-                  <Ellipse cx="55" cy="67" rx="3.8" ry="2.2" fill="#FB923C" opacity={0.5} />
-                  <Ellipse cx="105" cy="67" rx="3.8" ry="2.2" fill="#FB923C" opacity={0.5} />
-                  <Path d="M 77 71 Q 80 74 83 71" stroke="#3F1D0B" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+              {/* ==================================================== */}
+              {/* 😋 STAGE 3: EATING & MUNCHING BAMBOO SNACK (100%)    */}
+              {/* ==================================================== */}
+              {isMunchingStage && (
+                <G id="rp-eating-bamboo-snack">
+                  {/* Bamboo Snack Stalk held right to mouth */}
+                  <Path d="M 74 72 L 108 102" stroke="#22C55E" strokeWidth={5.2} strokeLinecap="round" />
+                  <Line x1="84" y1="81" x2="88" y2="84" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                  <Line x1="97" y1="92" x2="101" y2="95" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                  {/* Nibbled Bite Marks at Top */}
+                  <Circle cx="74" cy="72" r="3" fill="#FEF08A" />
+                  <Circle cx="76" cy="70" r="1.5" fill="#4ADE80" />
+                  {/* Leaves on snack */}
+                  <Path d="M 92 88 Q 104 82 108 88 Q 98 94 92 88 Z" fill="#16A34A" />
+                  <Path d="M 102 96 Q 114 90 117 97 Q 107 101 102 96 Z" fill="#4ADE80" />
+                  {/* Tiny Munching Leaf Crumbs */}
+                  <Circle cx="70" cy="78" r="1.2" fill="#22C55E" />
+                  <Circle cx="78" cy="80" r="1" fill="#4ADE80" />
+                  <Circle cx="86" cy="74" r="1.4" fill="#16A34A" />
+
+                  {/* Chewing Mouth */}
+                  <Path d="M 74 69 Q 80 80 86 69 Z" fill="#3F1D0B" />
+                  <Path d="M 77 74 Q 80 78 83 74 Z" fill="#F472B6" />
+                  <Path d="M 76 70 L 84 70" stroke="#FFFFFF" strokeWidth={1.2} />
+
+                  {/* Left Paw holding snack to mouth */}
+                  <Ellipse cx="68" cy="84" rx="7.5" ry="6.5" fill="url(#rpDarkFur2)" transform="rotate(25 68 84)" />
+                  <Ellipse cx="68" cy="84" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
+
+                  {/* Right Paw holding snack to mouth */}
+                  <Ellipse cx="94" cy="88" rx="7.5" ry="6.5" fill="url(#rpDarkFur2)" transform="rotate(-30 94 88)" />
+                  <Ellipse cx="94" cy="88" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
                 </G>
               )}
             </Svg>
           </View>
 
           {/* ======================================================== */}
-          {/* LAYER 3: PLUSHIE CHUBBY WAVING ARM WITH OUTWARD ELBOW    */}
+          {/* LAYER 3: PLUSHIE CHUBBY WAVING ARM (When not in feast)   */}
           {/* ======================================================== */}
           {isWavingMood && (
             <AnimatedView
@@ -727,7 +819,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                     <Stop offset="100%" stopColor="#240F05" />
                   </LinearGradient>
                 </Defs>
-                {/* Organic Plushie Arm with cute elbow curve */}
+                {/* Organic Plushie Arm with cute curved elbow */}
                 <Path
                   d="M 96 92 C 102 96, 114 91, 115 80 C 116 73, 113 66, 109 63 C 104 62, 100 68, 99 76 C 98 83, 94 88, 96 92 Z"
                   fill="url(#darkFurPlush)"
