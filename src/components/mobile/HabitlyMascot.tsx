@@ -23,8 +23,8 @@ import { useHabit } from '../../context/HabitContext';
 import { isHabitScheduledOnDate } from '../../utils/streakCalculator';
 import { soundService } from '../../services/soundService';
 
-export type MascotMood = 'sleeping' | 'awake' | 'hopeful' | 'hyped' | 'celebrating' | 'rest';
-export type MascotExpression = 'neutral' | 'wink' | 'starry' | 'love' | 'playful' | 'happy';
+export type MascotMood = 'sleeping' | 'sad' | 'hopeful' | 'hyped' | 'celebrating' | 'rest' | 'awake';
+export type MascotExpression = 'neutral' | 'wink' | 'starry' | 'love' | 'playful' | 'happy' | 'sad' | 'determined';
 
 interface HabitlyMascotProps {
   onClick?: () => void;
@@ -96,7 +96,12 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     bambooStage = 0; // Sprout
   }
 
-  // Determine active mood
+  // Determine active mood:
+  // - Sleeping initially if 0 completed and not yet tapped
+  // - Sad / Pouting if awake and 0 completed
+  // - Hopeful / Determined if 1 - 50% (halfway)
+  // - Hyped / Starry if 51 - 99% (almost there)
+  // - Celebrating / Feast if 100% done
   let mood: MascotMood = 'sleeping';
   if (forcedMood) {
     mood = forcedMood;
@@ -104,14 +109,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     mood = 'rest';
   } else if (!isAwake && completedCount === 0) {
     mood = 'sleeping';
+  } else if (completedCount === 0) {
+    mood = 'sad'; // Awake with 0 habits done -> Sad / Pouting
   } else if (bambooStage === 3) {
     mood = 'celebrating'; // Munching bamboo feast!
   } else if (bambooStage === 2) {
-    mood = 'hyped';
-  } else if (completedCount > 0) {
-    mood = 'hopeful';
+    mood = 'hyped'; // 51 - 99%
   } else {
-    mood = 'awake';
+    mood = 'hopeful'; // 1 - 50% Halfway Done
   }
 
   // Animation values
@@ -143,7 +148,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
         Animated.spring(bambooScale, {
           toValue: 1,
           friction: 4,
-          tension: 40,
+          tension: 50,
           useNativeDriver: useNative,
         }),
       ]).start();
@@ -154,19 +159,20 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   useEffect(() => {
     const isSleep = mood === 'sleeping';
     const isMunching = bambooStage === 3;
+    const isSad = mood === 'sad';
 
-    // 1. Floating Breathing Loop
+    // 1. Gentle floating / breathing idle animation loop
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, {
-          toValue: isSleep ? -3 : isMunching ? -8 : -5,
-          duration: isSleep ? 2400 : isMunching ? 1000 : 1600,
+          toValue: isSleep ? -2 : isSad ? 1 : -6,
+          duration: isSleep ? 2200 : isMunching ? 700 : isSad ? 1800 : 1200,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(floatAnim, {
-          toValue: isSleep ? 2 : 0,
-          duration: isSleep ? 2400 : isMunching ? 1000 : 1600,
+          toValue: isSleep ? 2 : isSad ? -1 : 4,
+          duration: isSleep ? 2200 : isMunching ? 700 : isSad ? 1800 : 1200,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
@@ -174,18 +180,19 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     );
     floatLoop.start();
 
-    // 2. Active 60fps Bushy Tail Wagging
+    // 2. Continuous Tail wagging animation loop
+    const tailDuration = isMunching ? 380 : isSleep ? 1800 : isSad ? 1400 : 650;
     const tailLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(tailWag, {
           toValue: 1,
-          duration: isSleep ? 1800 : isMunching ? 450 : 700,
+          duration: tailDuration,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(tailWag, {
           toValue: -1,
-          duration: isSleep ? 1800 : isMunching ? 450 : 700,
+          duration: tailDuration,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
@@ -193,24 +200,24 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     );
     tailLoop.start();
 
-    // 3. Cute Waving Arm
+    // 3. Cute Hand waving loop (when hopeful/hyped and awake)
     const waveLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(handWave, {
           toValue: 1,
-          duration: 380,
+          duration: 480,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
         Animated.timing(handWave, {
           toValue: -1,
-          duration: 380,
+          duration: 480,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
       ])
     );
-    if ((mood === 'awake' || mood === 'hopeful' || mood === 'hyped') && !isMunching) {
+    if ((mood === 'hopeful' || mood === 'hyped' || mood === 'awake') && !isMunching) {
       waveLoop.start();
     }
 
@@ -304,51 +311,66 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     };
   }, [mood, bambooStage]);
 
-  // Tap handler: Wakes up if sleeping, plays cute expressions & sounds
+  // Tap handler: Wakes up if sleeping, plays authentic animal sounds & expressions
   const handlePress = () => {
     let nextExpr: MascotExpression = 'happy';
 
     if (!isAwake) {
+      // 😴 Waking up from sleep
       setIsAwake(true);
       setShowSpeechBubble(true);
       setQuoteIndex(0);
       nextExpr = 'happy';
       if (soundEnabled) {
-        soundService.playMascotCuteSound('wake');
+        soundService.playMascotCuteSound('sleepy_yawn');
+      }
+    } else if (completedCount === 0) {
+      // 🥺 Sad / Pleading tap (0 habits done)
+      setShowSpeechBubble(true);
+      setQuoteIndex(0);
+      nextExpr = 'sad';
+      if (soundEnabled) {
+        soundService.playMascotCuteSound('sad_whimper');
       }
     } else if (bambooStage === 3) {
+      // 🎋😋 100% Feast tap
       setShowSpeechBubble(true);
       nextExpr = 'happy';
       if (soundEnabled) {
-        soundService.playMascotCuteSound('feast');
+        soundService.playMascotCuteSound('bamboo_crunch');
       }
     } else {
+      // Active in-progress cycling
       setShowSpeechBubble(true);
       const nextIdx = (quoteIndex + 1) % 5;
       setQuoteIndex(nextIdx);
 
-      switch (nextIdx) {
-        case 0:
-          nextExpr = 'happy';
-          break;
-        case 1:
-          nextExpr = 'starry';
-          break;
-        case 2:
-          nextExpr = 'wink';
-          break;
-        case 3:
-          nextExpr = 'love';
-          break;
-        case 4:
-          nextExpr = 'playful';
-          break;
-        default:
-          nextExpr = 'happy';
-      }
-
-      if (soundEnabled) {
-        soundService.playMascotCuteSound(nextExpr);
+      if (progressPercent > 50) {
+        // Hyped / Excited range
+        switch (nextIdx) {
+          case 0: nextExpr = 'starry'; break;
+          case 1: nextExpr = 'wink'; break;
+          case 2: nextExpr = 'happy'; break;
+          case 3: nextExpr = 'love'; break;
+          case 4: nextExpr = 'playful'; break;
+          default: nextExpr = 'starry';
+        }
+        if (soundEnabled) {
+          soundService.playMascotCuteSound('excited_twitter');
+        }
+      } else {
+        // 1 - 50% Halfway / Determined range
+        switch (nextIdx) {
+          case 0: nextExpr = 'determined'; break;
+          case 1: nextExpr = 'happy'; break;
+          case 2: nextExpr = 'wink'; break;
+          case 3: nextExpr = 'love'; break;
+          case 4: nextExpr = 'playful'; break;
+          default: nextExpr = 'determined';
+        }
+        if (soundEnabled) {
+          soundService.playMascotCuteSound('half_done_chirp');
+        }
       }
     }
 
@@ -387,10 +409,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     }
   };
 
-  // Messages in speech bubble
+  // Messages in speech bubble across moods
   const getMoodMessage = () => {
     if (mood === 'sleeping') {
       return t('mascot.mood_sleeping', 'Zzz... 😴 Tap me to wake up!');
+    }
+
+    if (mood === 'sad') {
+      return t('mascot.mood_sad', "I'm waiting for your habits... 🥺 Let's complete habit #1 to water my sprout! 🌱");
     }
 
     if (bambooStage === 3) {
@@ -398,16 +424,13 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     }
 
     if (quoteIndex === 0) {
-      if (bambooStage === 0) {
-        return t('mascot.bamboo_sprout', 'A tiny bamboo shoot sprouted! 🌱 Complete habits to help it grow!');
-      }
       if (bambooStage === 1) {
-        return t('mascot.bamboo_growing', 'The bamboo is growing taller! 🎋 Keep the momentum going!');
+        return t('mascot.bamboo_growing', 'Great start! Halfway there, keep the momentum going! 🎋💪');
       }
       if (bambooStage === 2) {
-        return t('mascot.bamboo_almost', 'Almost fully grown! 🎋 Finish your habits for a delicious feast! 🔥');
+        return t('mascot.bamboo_almost', 'Almost fully grown! 🎋 Look how tall and juicy this bamboo is! 🔥✨');
       }
-      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Complete habits to grow my bamboo! 🎋");
+      return t('mascot.mood_hopeful', "Great start! Keep the momentum going! 🌱");
     }
 
     if (quoteIndex === 1) return t('mascot.tap_1', 'Consistency is your superpower! ⚡');
@@ -415,7 +438,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     if (quoteIndex === 3) return t('mascot.tap_3', 'High five! I believe in you! ✋');
     if (quoteIndex === 4) return t('mascot.tap_4', 'Keep showing up! You got this! 🌟');
 
-    return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Complete habits to grow my bamboo! 🎋");
+    return t('mascot.mood_hopeful', "Great start! Keep the momentum going! 🌱");
   };
 
   const AnimatedView = Animated.View as any;
@@ -425,12 +448,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     switch (mood) {
       case 'sleeping':
         return 'rgba(99, 102, 241, 0.22)';
+      case 'sad':
+        return 'rgba(148, 163, 184, 0.24)'; // Melancholic soft blue-gray aura
       case 'celebrating':
         return 'rgba(234, 179, 8, 0.45)'; // Golden feast aura
       case 'hyped':
         return 'rgba(34, 197, 94, 0.38)'; // Emerald lush aura
       case 'hopeful':
-        return 'rgba(16, 185, 129, 0.28)';
+        return 'rgba(16, 185, 129, 0.28)'; // Fresh green growth aura
       case 'awake':
         return 'rgba(251, 146, 60, 0.30)';
       case 'rest':
@@ -450,7 +475,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   // Lively Tail wagging rotation
   const tailWagRotate = tailWag.interpolate({
     inputRange: [-1, 1],
-    outputRange: bambooStage === 3 ? ['-12deg', '16deg'] : ['-8deg', '12deg'],
+    outputRange: bambooStage === 3 ? ['-12deg', '16deg'] : mood === 'sad' ? ['-4deg', '6deg'] : ['-8deg', '12deg'],
   });
 
   // Zzz Interpolations
@@ -469,7 +494,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const z3Op = zzzAnim3.interpolate({ inputRange: [0, 0.2, 0.8, 1], outputRange: [0, 1, 0.8, 0] });
   const z3Scale = zzzAnim3.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1.5] });
 
-  const isWavingMood = (mood === 'awake' || mood === 'hopeful' || mood === 'hyped') && bambooStage !== 3;
+  const isWavingMood = (mood === 'hopeful' || mood === 'hyped' || mood === 'awake') && bambooStage !== 3;
   const isMunchingStage = bambooStage === 3;
   const mascotPixelSize = size * 1.25;
 
@@ -482,7 +507,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             styles.speechBubble,
             {
               backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-              borderColor: isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#22C55E',
+              borderColor:
+                isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : mood === 'sad' ? '#94A3B8' : '#22C55E',
             },
           ]}
           onPress={() => setShowSpeechBubble(false)}
@@ -494,7 +520,10 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           <View
             style={[
               styles.speechArrow,
-              { borderLeftColor: isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#22C55E' },
+              {
+                borderLeftColor:
+                  isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : mood === 'sad' ? '#94A3B8' : '#22C55E',
+              },
             ]}
           />
         </TouchableOpacity>
@@ -641,35 +670,25 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               </Defs>
 
               {/* Teddy Bear Rounded Ears on top of head */}
-              <G id="rp-ears">
+              <G id="rp-ears" transform={mood === 'sad' ? 'translate(0, 3)' : undefined}>
                 {/* Left Ear */}
                 <Path
-                  d="M 36 50 C 26 30, 40 18, 56 30 C 60 36, 56 46, 48 52 Z"
+                  d={mood === 'sad' ? "M 36 54 C 24 38, 38 24, 54 34 C 58 40, 54 48, 46 54 Z" : "M 36 50 C 26 30, 40 18, 56 30 C 60 36, 56 46, 48 52 Z"}
                   fill="url(#rpFurGrad2)"
                 />
                 <Path
-                  d="M 38 48 C 30 34, 42 26, 52 34 Z"
+                  d={mood === 'sad' ? "M 38 52 C 28 40, 40 30, 50 38 Z" : "M 38 48 C 30 34, 42 26, 52 34 Z"}
                   fill="#FFFFFF"
-                />
-                <Path
-                  d="M 40 47 C 34 36, 42 30, 48 36 Z"
-                  fill="#FEF3C7"
-                  opacity={0.7}
                 />
 
                 {/* Right Ear */}
                 <Path
-                  d="M 124 50 C 134 30, 120 18, 104 30 C 100 36, 104 46, 112 52 Z"
+                  d={mood === 'sad' ? "M 124 54 C 136 38, 122 24, 106 34 C 102 40, 106 48, 114 54 Z" : "M 124 50 C 134 30, 120 18, 104 30 C 100 36, 104 46, 112 52 Z"}
                   fill="url(#rpFurGrad2)"
                 />
                 <Path
-                  d="M 122 48 C 130 34, 118 26, 108 34 Z"
+                  d={mood === 'sad' ? "M 122 52 C 132 40, 120 30, 110 38 Z" : "M 122 48 C 130 34, 118 26, 108 34 Z"}
                   fill="#FFFFFF"
-                />
-                <Path
-                  d="M 120 47 C 126 36, 118 30, 112 36 Z"
-                  fill="#FEF3C7"
-                  opacity={0.7}
                 />
               </G>
 
@@ -756,8 +775,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* Right Front Paw Resting (when sleeping or rest) */}
-              {mood === 'sleeping' && (
+              {/* Right Front Paw Resting (when sleeping or sad) */}
+              {(mood === 'sleeping' || mood === 'sad') && (
                 <G id="rp-front-paw-right-sleeping">
                   <Ellipse cx="100" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(15 100 94)" />
                   <Ellipse cx="100" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
@@ -780,7 +799,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               {/* DYNAMIC FACIAL EXPRESSIONS & INTERACTIVE EYE STATES  */}
               {/* ==================================================== */}
 
-              {/* 😴 1. Sleeping Face */}
+              {/* 😴 1. Sleeping Face (Initial / Uninteracted Morning) */}
               {mood === 'sleeping' && (
                 <G id="rp-face-sleeping">
                   <Path d="M 64 61 Q 69 66 74 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
@@ -791,7 +810,82 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 😋 2. 100% FEAST: Laughing Joyful Eyes (^ω^) & Chewing Blush */}
+              {/* 🥺 2. Sad / Pouting Face (Awake with 0 Habits Completed) */}
+              {mood === 'sad' && activeExpression === 'neutral' && (
+                <G id="rp-face-sad">
+                  {/* Sad Drooping Eyebrows */}
+                  <Path d="M 60 52 Q 65 50 70 54" stroke="#7C2D12" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+                  <Path d="M 100 52 Q 95 50 90 54" stroke="#7C2D12" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+
+                  {/* Sad Puppy Eyes with Glistening Teardrop Reflections */}
+                  <Ellipse cx="65" cy="60" rx="4.8" ry="4.4" fill="#1C1917" />
+                  <Circle cx="63.5" cy="58" r="2.2" fill="#FFFFFF" />
+                  <Circle cx="67" cy="62" r="1" fill="#93C5FD" />
+                  <Path d="M 59 62 Q 57 65 59 67 Q 61 65 59 62 Z" fill="#60A5FA" opacity={0.9} />
+
+                  <Ellipse cx="95" cy="60" rx="4.8" ry="4.4" fill="#1C1917" />
+                  <Circle cx="93.5" cy="58" r="2.2" fill="#FFFFFF" />
+                  <Circle cx="97" cy="62" r="1" fill="#93C5FD" />
+                  <Path d="M 101 62 Q 103 65 101 67 Q 99 65 101 62 Z" fill="#60A5FA" opacity={0.9} />
+
+                  {/* Cute Downturned Pout Mouth */}
+                  <Path d="M 76 72 Q 80 68 84 72" stroke="#1C1917" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+
+                  {/* Soft Pouting Blush */}
+                  <Ellipse cx="54" cy="66" rx="4.2" ry="2.2" fill="#FB7185" opacity={0.5} />
+                  <Ellipse cx="106" cy="66" rx="4.2" ry="2.2" fill="#FB7185" opacity={0.5} />
+                </G>
+              )}
+
+              {/* 🎋💪 3. Halfway Done / Determined Face (1 - 50%) */}
+              {mood === 'hopeful' && activeExpression === 'neutral' && (
+                <G id="rp-face-half-done">
+                  {/* Determined Eyebrows */}
+                  <Path d="M 61 53 Q 66 51 71 52" stroke="#7C2D12" strokeWidth={2} strokeLinecap="round" fill="none" />
+                  <Path d="M 99 53 Q 94 51 89 52" stroke="#7C2D12" strokeWidth={2} strokeLinecap="round" fill="none" />
+
+                  {/* Bright Focused Eyes */}
+                  <Circle cx="65" cy="59" r="4.8" fill="#1C1917" />
+                  <Circle cx="63.5" cy="57" r="2.2" fill="#FFFFFF" />
+                  <Circle cx="67" cy="60" r="1.1" fill="#4ADE80" />
+
+                  <Circle cx="95" cy="59" r="4.8" fill="#1C1917" />
+                  <Circle cx="93.5" cy="57" r="2.2" fill="#FFFFFF" />
+                  <Circle cx="97" cy="60" r="1.1" fill="#4ADE80" />
+
+                  {/* Confident Sweet Smile */}
+                  <Path d="M 75 69.5 Q 80 74 85 69.5" stroke="#1C1917" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+
+                  {/* Rosy Cheeks */}
+                  <Ellipse cx="54" cy="66" rx="4.8" ry="2.8" fill="#F43F5E" opacity={0.7} />
+                  <Ellipse cx="106" cy="66" rx="4.8" ry="2.8" fill="#F43F5E" opacity={0.7} />
+                </G>
+              )}
+
+              {/* 🔥✨ 4. Hyped / Starry Face (51 - 99%) */}
+              {mood === 'hyped' && activeExpression === 'neutral' && (
+                <G id="rp-face-hyped">
+                  {/* Star Sparkle Left Eye */}
+                  <Circle cx="65" cy="59" r="5.2" fill="#1C1917" />
+                  <Path d="M 65 54.5 L 66.2 57.8 L 69.5 59 L 66.2 60.2 L 65 63.5 L 63.8 60.2 L 60.5 59 L 63.8 57.8 Z" fill="#FDE047" />
+                  <Circle cx="65" cy="59" r="1.2" fill="#FFFFFF" />
+
+                  {/* Star Sparkle Right Eye */}
+                  <Circle cx="95" cy="59" r="5.2" fill="#1C1917" />
+                  <Path d="M 95 54.5 L 96.2 57.8 L 99.5 59 L 96.2 60.2 L 95 63.5 L 93.8 60.2 L 90.5 59 L 93.8 57.8 Z" fill="#FDE047" />
+                  <Circle cx="95" cy="59" r="1.2" fill="#FFFFFF" />
+
+                  {/* Excited Open Smile */}
+                  <Path d="M 75 69 Q 80 77 85 69 Z" fill="#1C1917" />
+                  <Path d="M 77 73 Q 80 76 83 73 Z" fill="#F472B6" />
+
+                  {/* Golden Glow Cheeks */}
+                  <Ellipse cx="54" cy="66" rx="4.8" ry="2.8" fill="#F59E0B" opacity={0.75} />
+                  <Ellipse cx="106" cy="66" rx="4.8" ry="2.8" fill="#F59E0B" opacity={0.75} />
+                </G>
+              )}
+
+              {/* 😋 5. 100% FEAST: Laughing Joyful Eyes (^ω^) & Chewing Blush */}
               {isMunchingStage && (
                 <G id="rp-face-munching">
                   <Path d="M 61 59 Q 66 53 71 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
@@ -801,132 +895,87 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* ✨ 3. Interactive Active Expression: WINK (^.~) */}
+              {/* ✨ 6. Interactive Active Expression: WINK (^.~) */}
               {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'wink' && (
                 <G id="rp-face-wink">
-                  {/* Left Eye: Open Sparkly Anime Eye */}
                   <Circle cx="65" cy="59" r="5" fill="#1C1917" />
                   <Circle cx="63.5" cy="57.2" r="2" fill="#FFFFFF" />
                   <Circle cx="67" cy="60.5" r="0.9" fill="#FFFFFF" />
 
-                  {/* Right Eye: Cute Winking Arc with Lashes */}
                   <Path d="M 90 59 Q 95 64 100 59" stroke="#1C1917" strokeWidth="2.8" strokeLinecap="round" fill="none" />
                   <Path d="M 98 58 L 101 55" stroke="#1C1917" strokeWidth="2" strokeLinecap="round" />
 
-                  {/* Cat / Chibi 'w' Smile */}
                   <Path d="M 74 69.5 Q 77 73 80 70 Q 83 73 86 69.5" stroke="#1C1917" strokeWidth="2.2" strokeLinecap="round" fill="none" />
 
-                  {/* Blushing Cheeks */}
                   <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.75} />
                   <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.75} />
                 </G>
               )}
 
-              {/* 🌟 4. Interactive Active Expression: STARRY SPARKLE (★ ★) */}
+              {/* 🌟 7. Interactive Active Expression: STARRY (★ ★) */}
               {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'starry' && (
                 <G id="rp-face-starry">
-                  {/* Left Eye: Star Sparkle */}
                   <Circle cx="65" cy="59" r="5.2" fill="#1C1917" />
                   <Path d="M 65 54.5 L 66.2 57.8 L 69.5 59 L 66.2 60.2 L 65 63.5 L 63.8 60.2 L 60.5 59 L 63.8 57.8 Z" fill="#FDE047" />
                   <Circle cx="65" cy="59" r="1.2" fill="#FFFFFF" />
 
-                  {/* Right Eye: Star Sparkle */}
                   <Circle cx="95" cy="59" r="5.2" fill="#1C1917" />
                   <Path d="M 95 54.5 L 96.2 57.8 L 99.5 59 L 96.2 60.2 L 95 63.5 L 93.8 60.2 L 90.5 59 L 93.8 57.8 Z" fill="#FDE047" />
                   <Circle cx="95" cy="59" r="1.2" fill="#FFFFFF" />
 
-                  {/* Excited Open Smile */}
                   <Path d="M 75 69 Q 80 77 85 69 Z" fill="#1C1917" />
                   <Path d="M 77 73 Q 80 76 83 73 Z" fill="#F472B6" />
 
-                  {/* Golden Sparkle Cheeks */}
                   <Ellipse cx="54" cy="66" rx="4.8" ry="2.8" fill="#F59E0B" opacity={0.7} />
                   <Ellipse cx="106" cy="66" rx="4.8" ry="2.8" fill="#F59E0B" opacity={0.7} />
-                  <Circle cx="54" cy="66" r="1" fill="#FEF08A" />
-                  <Circle cx="106" cy="66" r="1" fill="#FEF08A" />
                 </G>
               )}
 
-              {/* 💖 5. Interactive Active Expression: LOVE HEART EYES (♥ ♥) */}
+              {/* 💖 8. Interactive Active Expression: LOVE HEART EYES (♥ ♥) */}
               {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'love' && (
                 <G id="rp-face-love">
-                  {/* Left Heart Eye */}
                   <Path d="M 65 63.5 C 60 59, 59 55, 62 53.5 C 64.5 52.2, 65 54.5, 65 54.5 C 65 54.5, 65.5 52.2, 68 53.5 C 71 55, 70 59, 65 63.5 Z" fill="#EC4899" />
                   <Circle cx="64" cy="55.5" r="0.8" fill="#FFFFFF" />
 
-                  {/* Right Heart Eye */}
                   <Path d="M 95 63.5 C 90 59, 89 55, 92 53.5 C 94.5 52.2, 95 54.5, 95 54.5 C 95 54.5, 95.5 52.2, 98 53.5 C 101 55, 100 59, 95 63.5 Z" fill="#EC4899" />
                   <Circle cx="94" cy="55.5" r="0.8" fill="#FFFFFF" />
 
-                  {/* Sweet Shy Smile */}
                   <Path d="M 76 70 Q 80 74 84 70" stroke="#1C1917" strokeWidth={2.2} strokeLinecap="round" fill="none" />
 
-                  {/* Glowing Rose Blush */}
                   <Ellipse cx="54" cy="66" rx="5" ry="3" fill="#EC4899" opacity={0.8} />
                   <Ellipse cx="106" cy="66" rx="5" ry="3" fill="#EC4899" opacity={0.8} />
-
-                  {/* Floating mini heart */}
-                  <Path d="M 120 42 C 117 39, 116 36, 118 35 C 119.5 34, 120 35.5, 120 35.5 C 120 35.5, 120.5 34, 122 35 C 124 36, 123 39, 120 42 Z" fill="#F43F5E" />
                 </G>
               )}
 
-              {/* 😜 6. Interactive Active Expression: PLAYFUL TONGUE-OUT (>.< :P) */}
+              {/* 😜 9. Interactive Active Expression: PLAYFUL TONGUE-OUT (>.< :P) */}
               {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'playful' && (
                 <G id="rp-face-playful">
-                  {/* Left Laughing Eye > */}
                   <Path d="M 61 56 L 68 59 L 61 62" stroke="#1C1917" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
-
-                  {/* Right Laughing Eye < */}
                   <Path d="M 99 56 L 92 59 L 99 62" stroke="#1C1917" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
 
-                  {/* Smile with Tongue Out */}
                   <Path d="M 75 69 Q 80 73 85 69" stroke="#1C1917" strokeWidth={2.2} strokeLinecap="round" fill="none" />
                   <Path d="M 78 70 Q 80 76 82 70 Z" fill="#FB7185" stroke="#E11D48" strokeWidth={0.8} />
 
-                  {/* Cheerful Blush */}
                   <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.7} />
                   <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.7} />
                 </G>
               )}
 
-              {/* 😄 7. Interactive Active Expression: ULTRA CHEERFUL ANIME BEAM */}
+              {/* 😄 10. Interactive Active Expression: ULTRA CHEERFUL ANIME BEAM */}
               {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'happy' && (
                 <G id="rp-face-happy">
-                  {/* Left Sparkling Anime Eye */}
                   <Circle cx="65" cy="59" r="5" fill="#1C1917" />
                   <Circle cx="63.5" cy="57" r="2.2" fill="#FFFFFF" />
                   <Circle cx="67" cy="60.5" r="1.1" fill="#FFFFFF" />
-                  <Circle cx="64" cy="61.5" r="0.7" fill="#67E8F9" />
 
-                  {/* Right Sparkling Anime Eye */}
                   <Circle cx="95" cy="59" r="5" fill="#1C1917" />
                   <Circle cx="93.5" cy="57" r="2.2" fill="#FFFFFF" />
                   <Circle cx="97" cy="60.5" r="1.1" fill="#FFFFFF" />
-                  <Circle cx="94" cy="61.5" r="0.7" fill="#67E8F9" />
 
-                  {/* Beaming Smile */}
                   <Path d="M 75 69.5 Q 77.5 73.5 80 70.5 Q 82.5 73.5 85 69.5" stroke="#1C1917" strokeWidth="2.2" strokeLinecap="round" fill="none" />
 
-                  {/* Warm Radiant Blush */}
                   <Ellipse cx="54" cy="66" rx="4.6" ry="2.7" fill="#FB7185" opacity={0.75} />
                   <Ellipse cx="106" cy="66" rx="4.6" ry="2.7" fill="#FB7185" opacity={0.75} />
-                </G>
-              )}
-
-              {/* 🐾 8. Default Neutral / Growing Expression */}
-              {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'neutral' && (
-                <G id="rp-face-neutral">
-                  <Circle cx="65" cy="59" r="4.8" fill="#1C1917" />
-                  <Circle cx="63.5" cy="57.5" r="1.8" fill="#FFFFFF" />
-                  <Circle cx="66.5" cy="60.5" r="0.8" fill="#FFFFFF" />
-
-                  <Circle cx="95" cy="59" r="4.8" fill="#1C1917" />
-                  <Circle cx="93.5" cy="57.5" r="1.8" fill="#FFFFFF" />
-                  <Circle cx="96.5" cy="60.5" r="0.8" fill="#FFFFFF" />
-
-                  <Path d="M 75 70 Q 77.5 73 80 70.5 Q 82.5 73 85 70" stroke="#1C1917" strokeWidth={2} strokeLinecap="round" fill="none" />
-                  <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.65} />
-                  <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#F43F5E" opacity={0.65} />
                 </G>
               )}
 
@@ -935,7 +984,6 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               {/* ==================================================== */}
               {isMunchingStage && (
                 <G id="rp-eating-bamboo-snack">
-                  {/* Bamboo Snack Stalk held right to mouth */}
                   <Path d="M 74 72 L 108 102" stroke="#22C55E" strokeWidth={5.2} strokeLinecap="round" />
                   <Line x1="84" y1="81" x2="88" y2="84" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
                   <Line x1="97" y1="92" x2="101" y2="95" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
@@ -948,27 +996,20 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                   {/* Tiny Munching Leaf Crumbs */}
                   <Circle cx="70" cy="78" r="1.2" fill="#22C55E" />
                   <Circle cx="78" cy="80" r="1" fill="#4ADE80" />
-                  <Circle cx="86" cy="74" r="1.4" fill="#16A34A" />
-
-                  {/* Chewing Mouth */}
-                  <Path d="M 74 69 Q 80 80 86 69 Z" fill="#3F1D0B" />
-                  <Path d="M 77 74 Q 80 78 83 74 Z" fill="#F472B6" />
-                  <Path d="M 76 70 L 84 70" stroke="#FFFFFF" strokeWidth={1.2} />
-
-                  {/* Left Paw holding snack to mouth */}
-                  <Ellipse cx="68" cy="84" rx="7.5" ry="6.5" fill="url(#rpDarkFur2)" transform="rotate(25 68 84)" />
-                  <Ellipse cx="68" cy="84" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
-
-                  {/* Right Paw holding snack to mouth */}
-                  <Ellipse cx="94" cy="88" rx="7.5" ry="6.5" fill="url(#rpDarkFur2)" transform="rotate(-30 94 88)" />
-                  <Ellipse cx="94" cy="88" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
                 </G>
               )}
+
+              {/* Chewing Animated Mouth (when eating at 100%) */}
+              {isMunchingStage ? (
+                <G id="rp-chewing-mouth">
+                  <Path d="M 76 69 Q 80 74 84 69" stroke="#1C1917" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+                </G>
+              ) : mood === 'sleeping' ? null : null}
             </Svg>
           </View>
 
           {/* ======================================================== */}
-          {/* LAYER 3: PLUSHIE CHUBBY WAVING ARM (When not in feast)   */}
+          {/* LAYER 3: WAVING RIGHT ARM (PAW 2)                         */}
           {/* ======================================================== */}
           {isWavingMood && (
             <AnimatedView
@@ -977,30 +1018,26 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 {
                   transform: [{ rotate: pawWaveRotate }],
                   transformOrigin: '61.25% 57.5%' as any,
-                  zIndex: 10,
+                  zIndex: 8,
                 },
               ]}
               pointerEvents="none"
             >
               <Svg width={mascotPixelSize} height={mascotPixelSize} viewBox="0 0 160 160">
                 <Defs>
-                  <LinearGradient id="darkFurPlush" x1="0" y1="0" x2="0" y2="1">
+                  <LinearGradient id="rpDarkFurArm" x1="0" y1="0" x2="0" y2="1">
                     <Stop offset="0%" stopColor="#3F1D0B" />
                     <Stop offset="100%" stopColor="#240F05" />
                   </LinearGradient>
                 </Defs>
-                {/* Organic Plushie Arm with cute curved elbow */}
                 <Path
                   d="M 96 92 C 102 96, 114 91, 115 80 C 116 73, 113 66, 109 63 C 104 62, 100 68, 99 76 C 98 83, 94 88, 96 92 Z"
-                  fill="url(#darkFurPlush)"
+                  fill="url(#rpDarkFurArm)"
                 />
-                {/* Chubby Palm at Cheek Level */}
-                <Ellipse cx="109" cy="64" rx="7.5" ry="7" fill="url(#darkFurPlush)" />
-                {/* 🐾 Paw Pads: 1 Central + 4 Arched Golden Toe Beans */}
-                <Ellipse cx="109" cy="65" rx="3.5" ry="2.8" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="104" cy="60.5" r="1.3" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="108" cy="57.5" r="1.3" fill="#FEF08A" opacity={0.95} />
-                <Circle cx="112.5" cy="58" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Ellipse cx="109" cy="64" rx="4.8" ry="3.8" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="104" cy="61" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="108" cy="58.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="112" cy="59.5" r="1.3" fill="#FEF08A" opacity={0.95} />
                 <Circle cx="115.5" cy="62" r="1.3" fill="#FEF08A" opacity={0.95} />
               </Svg>
             </AnimatedView>
