@@ -142,10 +142,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   mascotCol: {
-    width: 150,
+    width: 156,
+    height: 150,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'visible',
+    position: 'relative',
     zIndex: 10,
   },
 });

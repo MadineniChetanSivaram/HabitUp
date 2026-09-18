@@ -549,6 +549,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           style={[
             styles.animatedContainer,
             {
+              width: size * 1.3,
+              height: size * 1.25,
               transform: [
                 { translateY: floatAnim },
                 { scale: bounceScale },
@@ -565,6 +567,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 width: size * 1.05,
                 height: size * 1.05,
                 borderRadius: size,
+                top: (size * 1.25 - size * 1.05) / 2,
+                left: (size * 1.3 - size * 1.05) / 2,
                 backgroundColor: auraColor,
                 transform: [{ scale: auraPulse }],
               },
@@ -1026,8 +1030,6 @@ const styles = StyleSheet.create({
   },
   auraGlow: {
     position: 'absolute',
-    top: 10,
-    left: 10,
     zIndex: 0,
     opacity: 0.9,
   },
@@ -1037,6 +1039,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
