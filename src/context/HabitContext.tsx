@@ -2566,7 +2566,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           if (user?.id) {
             publishUserHabits(user, habits, updated);
           }
-          showToast('Marked uncompleted', undefined, 'info');
           return updated;
         } else {
           // Add completion locally and to backend
@@ -2606,12 +2605,11 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           if (user?.id) {
             publishUserHabits(user, habits, updated);
           }
-          showToast('Habit completed! 🎉 Keep going!', undefined, 'success');
           return updated;
         }
       });
     },
-    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, showToast, addMutationToQueue]
+    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, addMutationToQueue]
   );
 
   const createHabit = useCallback(
