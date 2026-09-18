@@ -65,6 +65,16 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     }
   }, [completedCount]);
 
+  // Auto-dismiss speech bubble after 5 seconds so it doesn't linger
+  useEffect(() => {
+    if (showSpeechBubble) {
+      const timer = setTimeout(() => {
+        setShowSpeechBubble(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSpeechBubble, quoteIndex]);
+
   // Bamboo growth stages:
   // 0: Sprout (0 habits done)
   // 1: Young stalk (1 - 50% habits done)
@@ -441,7 +451,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           <View
             style={[
               styles.speechArrow,
-              { borderTopColor: isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#22C55E' },
+              { borderLeftColor: isMunchingStage ? '#F59E0B' : mood === 'sleeping' ? '#818CF8' : '#22C55E' },
             ]}
           />
         </TouchableOpacity>
@@ -889,37 +899,39 @@ const styles = StyleSheet.create({
   },
   speechBubble: {
     position: 'absolute',
-    top: -52,
-    zIndex: 30,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
+    right: 124,
+    top: 10,
+    zIndex: 25,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 14,
     borderWidth: 1.5,
-    maxWidth: 240,
-    minWidth: 140,
+    maxWidth: 180,
+    minWidth: 110,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 6,
   },
   speechText: {
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: '700',
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 15,
   },
   speechArrow: {
     position: 'absolute',
-    bottom: -6,
+    right: -6,
+    top: 14,
     width: 0,
     height: 0,
-    borderLeftWidth: 6,
-    borderRightWidth: 6,
     borderTopWidth: 6,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
+    borderBottomWidth: 6,
+    borderLeftWidth: 6,
+    borderTopColor: 'transparent',
+    borderBottomColor: 'transparent',
   },
 });

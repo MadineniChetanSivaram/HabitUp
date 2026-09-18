@@ -99,6 +99,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
+    position: 'relative',
+    zIndex: 50,
   },
   greeting: {
     fontSize: 14,
@@ -120,12 +122,15 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 10,
     position: 'relative',
+    zIndex: 60,
   },
   bodyRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     overflow: 'visible',
+    position: 'relative',
+    zIndex: 10,
   },
   headlineCol: {
     flex: 1,
