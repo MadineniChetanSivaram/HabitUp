@@ -24,7 +24,7 @@ import { isHabitScheduledOnDate } from '../../utils/streakCalculator';
 import { soundService } from '../../services/soundService';
 
 export type MascotMood = 'sleeping' | 'awake' | 'hopeful' | 'hyped' | 'celebrating' | 'rest';
-export type MascotExpression = 'neutral' | 'wink' | 'starry' | 'love' | 'playful' | 'happy';
+export type MascotExpression = 'neutral' | 'sleepy' | 'wink' | 'starry' | 'love' | 'playful' | 'happy' | 'cheer' | 'feast';
 
 interface HabitlyMascotProps {
   onClick?: () => void;
@@ -125,6 +125,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const zzzAnim1 = useRef(new Animated.Value(0)).current;
   const zzzAnim2 = useRef(new Animated.Value(0)).current;
   const zzzAnim3 = useRef(new Animated.Value(0)).current;
+  const auraPulse = useRef(new Animated.Value(1)).current;
 
   const prevCompletedRef = useRef<number>(completedCount);
   const useNative = Platform.OS !== 'web';
@@ -272,6 +273,25 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       zzz3.start();
     }
 
+    // 6. Aura glow pulse
+    const auraLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(auraPulse, {
+          toValue: 1.15,
+          duration: isSleep ? 2400 : 1500,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: useNative,
+        }),
+        Animated.timing(auraPulse, {
+          toValue: 0.85,
+          duration: isSleep ? 2400 : 1500,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: useNative,
+        }),
+      ])
+    );
+    auraLoop.start();
+
     return () => {
       floatLoop.stop();
       tailLoop.stop();
@@ -280,54 +300,56 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       zzz1.stop();
       zzz2.stop();
       zzz3.stop();
+      auraLoop.stop();
     };
   }, [mood, bambooStage]);
 
-  // Tap handler: Wakes up if sleeping, plays cute expressions & sounds
+  // Tap handler: Wakes up if sleeping, plays cute expressions & sounds tailored to habit progress
   const handlePress = () => {
     let nextExpr: MascotExpression = 'happy';
 
-    if (!isAwake) {
+    if (completedCount === 0 || !isAwake) {
+      // 0% Habits Completed: Drowsy wakeup with sweet purr/yawn chirp
       setIsAwake(true);
       setShowSpeechBubble(true);
       setQuoteIndex(0);
-      nextExpr = 'happy';
+      nextExpr = 'sleepy';
       if (soundEnabled) {
         soundService.playMascotCuteSound('wake');
       }
     } else if (bambooStage === 3) {
+      // 100% Habits Completed: Royal Feast Celebration! Crunch-munch & victory fanfare
       setShowSpeechBubble(true);
-      nextExpr = 'happy';
+      const feastExpressions: MascotExpression[] = ['feast', 'starry', 'happy'];
+      const nextIdx = (quoteIndex + 1) % feastExpressions.length;
+      setQuoteIndex(nextIdx);
+      nextExpr = feastExpressions[nextIdx];
       if (soundEnabled) {
         soundService.playMascotCuteSound('feast');
       }
-    } else {
+    } else if (bambooStage === 2) {
+      // 51% - 99% Habits Completed: Hyped & Determined! Starry eyes & cheerful trills
       setShowSpeechBubble(true);
-      const nextIdx = (quoteIndex + 1) % 5;
+      const stage2Expressions: MascotExpression[] = ['starry', 'cheer', 'love'];
+      const nextIdx = (quoteIndex + 1) % stage2Expressions.length;
       setQuoteIndex(nextIdx);
-
-      switch (nextIdx) {
-        case 0:
-          nextExpr = 'happy';
-          break;
-        case 1:
-          nextExpr = 'starry';
-          break;
-        case 2:
-          nextExpr = 'wink';
-          break;
-        case 3:
-          nextExpr = 'love';
-          break;
-        case 4:
-          nextExpr = 'playful';
-          break;
-        default:
-          nextExpr = 'happy';
-      }
-
+      nextExpr = stage2Expressions[nextIdx];
       if (soundEnabled) {
-        soundService.playMascotCuteSound(nextExpr);
+        soundService.playMascotCuteSound(
+          nextExpr === 'starry' ? 'starry' : nextExpr === 'cheer' ? 'cheer' : 'love'
+        );
+      }
+    } else {
+      // 1% - 50% Habits Completed: Young Sprout! Happy anime glints & playful chirps
+      setShowSpeechBubble(true);
+      const stage1Expressions: MascotExpression[] = ['happy', 'wink', 'playful'];
+      const nextIdx = (quoteIndex + 1) % stage1Expressions.length;
+      setQuoteIndex(nextIdx);
+      nextExpr = stage1Expressions[nextIdx];
+      if (soundEnabled) {
+        soundService.playMascotCuteSound(
+          nextExpr === 'wink' ? 'wink' : nextExpr === 'playful' ? 'playful' : 'happy'
+        );
       }
     }
 
@@ -366,9 +388,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
     }
   };
 
-  // Messages in speech bubble
+  // Messages in speech bubble tailored to habit completion stages
   const getMoodMessage = () => {
-    if (mood === 'sleeping') {
+    if (mood === 'sleeping' && completedCount === 0) {
       return t('mascot.mood_sleeping', 'Zzz... 😴 Tap me to wake up!');
     }
 
@@ -376,28 +398,51 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       return t('mascot.bamboo_munch', 'Nom nom nom! 🎋😋 All habits crushed today! That bamboo was delicious! 🏆🌟');
     }
 
-    if (quoteIndex === 0) {
-      if (bambooStage === 0) {
-        return t('mascot.bamboo_sprout', 'A tiny bamboo shoot sprouted! 🌱 Complete habits to help it grow!');
-      }
-      if (bambooStage === 1) {
-        return t('mascot.bamboo_growing', 'The bamboo is growing taller! 🎋 Keep the momentum going!');
-      }
-      if (bambooStage === 2) {
-        return t('mascot.bamboo_almost', 'Almost fully grown! 🎋 Finish your habits for a delicious feast! 🔥');
-      }
-      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Complete habits to grow my bamboo! 🎋");
+    if (completedCount === 0) {
+      return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Ready to crush your first habit today? 🐾");
     }
 
-    if (quoteIndex === 1) return t('mascot.tap_1', 'Consistency is your superpower! ⚡');
-    if (quoteIndex === 2) return t('mascot.tap_2', "One habit at a time, you're building a great future! 🚀");
-    if (quoteIndex === 3) return t('mascot.tap_3', 'High five! I believe in you! ✋');
-    if (quoteIndex === 4) return t('mascot.tap_4', 'Keep showing up! You got this! 🌟');
+    if (bambooStage === 1) {
+      if (quoteIndex === 0) {
+        return t('mascot.bamboo_growing', 'The bamboo is growing taller! 🎋 Keep the momentum going!');
+      }
+      if (quoteIndex === 1) return t('mascot.tap_1', 'Consistency is your superpower! ⚡');
+      return t('mascot.tap_2', "One habit at a time, you're building a great future! 🚀");
+    }
 
-    return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Complete habits to grow my bamboo! 🎋");
+    if (bambooStage === 2) {
+      if (quoteIndex === 0) {
+        return t('mascot.bamboo_almost', 'Almost fully grown! 🎋 Finish your habits for a delicious feast! 🔥');
+      }
+      if (quoteIndex === 1) return t('mascot.tap_3', 'High five! I believe in you! ✋');
+      return t('mascot.tap_4', 'Keep showing up! You got this! 🌟');
+    }
+
+    return t('mascot.mood_awake_hi', "Hi there! 👋 I'm Sparky! Ready to crush your habits today? 🐾");
   };
 
   const AnimatedView = Animated.View as any;
+
+  // Aura colors based on mood
+  const getAuraColor = () => {
+    switch (mood) {
+      case 'sleeping':
+        return 'rgba(99, 102, 241, 0.22)';
+      case 'celebrating':
+        return 'rgba(234, 179, 8, 0.45)'; // Golden feast aura
+      case 'hyped':
+        return 'rgba(34, 197, 94, 0.38)'; // Emerald lush aura
+      case 'hopeful':
+        return 'rgba(16, 185, 129, 0.28)';
+      case 'awake':
+        return 'rgba(251, 146, 60, 0.30)';
+      case 'rest':
+      default:
+        return 'rgba(56, 189, 248, 0.25)';
+    }
+  };
+
+  const auraColor = getAuraColor();
 
   // Waving rotation (natural cute wrist/forearm tilt from shoulder joint)
   const pawWaveRotate = handWave.interpolate({
@@ -515,6 +560,20 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
             },
           ]}
         >
+          {/* Radial Aura Glow */}
+          <AnimatedView
+            style={[
+              styles.auraGlow,
+              {
+                width: size * 1.05,
+                height: size * 1.05,
+                borderRadius: size,
+                backgroundColor: auraColor,
+                transform: [{ scale: auraPulse }],
+              },
+            ]}
+          />
+
           {/* ======================================================== */}
           {/* LAYER 1: ISOLATED HW-ACCELERATED TAIL (behind body)      */}
           {/* ======================================================== */}
@@ -720,7 +779,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               {/* DYNAMIC FACIAL EXPRESSIONS & INTERACTIVE EYE STATES  */}
               {/* ==================================================== */}
 
-              {/* 😴 1. Sleeping Face */}
+              {/* 😴 1. Sleeping Face (Idle when 0 habits done) */}
               {mood === 'sleeping' && (
                 <G id="rp-face-sleeping">
                   <Path d="M 64 61 Q 69 66 74 61" stroke="#1C1917" strokeWidth={2.6} strokeLinecap="round" fill="none" />
@@ -731,13 +790,55 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 😋 2. 100% FEAST: Laughing Joyful Eyes (^ω^) & Chewing Blush */}
+              {/* 🥱 2. Sleepy / Drowsy Wakeup Face (When tapped at 0% habits done) */}
+              {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'sleepy' && (
+                <G id="rp-face-sleepy">
+                  {/* Left Eye: Big cute half-lidded drowsy eye */}
+                  <Circle cx="65" cy="59" r="4.8" fill="#1C1917" />
+                  <Circle cx="63.5" cy="58" r="1.6" fill="#FFFFFF" />
+                  <Path d="M 59 55 Q 65 60 71 55" stroke="#C2410C" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+                  
+                  {/* Right Eye: Big cute half-lidded drowsy eye */}
+                  <Circle cx="95" cy="59" r="4.8" fill="#1C1917" />
+                  <Circle cx="93.5" cy="58" r="1.6" fill="#FFFFFF" />
+                  <Path d="M 89 55 Q 95 60 101 55" stroke="#C2410C" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+
+                  {/* Gentle sleepy smile */}
+                  <Path d="M 76 70.5 Q 80 74 84 70.5" stroke="#1C1917" strokeWidth={2} strokeLinecap="round" fill="none" />
+                  
+                  {/* Cozy Sleepy Cheeks */}
+                  <Ellipse cx="54" cy="66" rx="4.8" ry="2.6" fill="#F43F5E" opacity={0.65} />
+                  <Ellipse cx="106" cy="66" rx="4.8" ry="2.6" fill="#F43F5E" opacity={0.65} />
+                </G>
+              )}
+
+              {/* 😋 3. 100% FEAST: Laughing Joyful Eyes (^ω^) or Starry Victory Eyes & Chewing Blush */}
               {isMunchingStage && (
                 <G id="rp-face-munching">
-                  <Path d="M 61 59 Q 66 53 71 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
-                  <Path d="M 89 59 Q 94 53 99 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
-                  <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
-                  <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
+                  {activeExpression === 'starry' ? (
+                    <>
+                      {/* Left Star Eye */}
+                      <Circle cx="65" cy="59" r="5.2" fill="#1C1917" />
+                      <Path d="M 65 54.5 L 66.2 57.8 L 69.5 59 L 66.2 60.2 L 65 63.5 L 63.8 60.2 L 60.5 59 L 63.8 57.8 Z" fill="#FDE047" />
+                      <Circle cx="65" cy="59" r="1.2" fill="#FFFFFF" />
+                      {/* Right Star Eye */}
+                      <Circle cx="95" cy="59" r="5.2" fill="#1C1917" />
+                      <Path d="M 95 54.5 L 96.2 57.8 L 99.5 59 L 96.2 60.2 L 95 63.5 L 93.8 60.2 L 90.5 59 L 93.8 57.8 Z" fill="#FDE047" />
+                      <Circle cx="95" cy="59" r="1.2" fill="#FFFFFF" />
+                    </>
+                  ) : (
+                    <>
+                      <Path d="M 61 59 Q 66 52 71 59" stroke="#3F1D0B" strokeWidth={3.2} strokeLinecap="round" fill="none" />
+                      <Path d="M 89 59 Q 94 52 99 59" stroke="#3F1D0B" strokeWidth={3.2} strokeLinecap="round" fill="none" />
+                    </>
+                  )}
+                  <Ellipse cx="54" cy="66" rx="4.8" ry="2.8" fill="#EC4899" opacity={0.85} />
+                  <Ellipse cx="106" cy="66" rx="4.8" ry="2.8" fill="#EC4899" opacity={0.85} />
+                  {/* Floating celebration gold glints */}
+                  <Circle cx="44" cy="48" r="1.6" fill="#FDE047" />
+                  <Circle cx="116" cy="48" r="1.6" fill="#FDE047" />
+                  <Circle cx="38" cy="62" r="1.2" fill="#FEF08A" />
+                  <Circle cx="122" cy="62" r="1.2" fill="#FEF08A" />
                 </G>
               )}
 
@@ -829,7 +930,27 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 😄 7. Interactive Active Expression: ULTRA CHEERFUL ANIME BEAM */}
+              {/* 🔥 7. Interactive Active Expression: DETERMINED CHEERING FACE (>.<) */}
+              {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'cheer' && (
+                <G id="rp-face-cheer">
+                  {/* Left Eye: Cheering Arc > */}
+                  <Path d="M 60 55 L 68 59 L 60 63" stroke="#1C1917" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  {/* Right Eye: Cheering Arc < */}
+                  <Path d="M 100 55 L 92 59 L 100 63" stroke="#1C1917" strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+
+                  {/* Wide Enthusiastic Open Smile */}
+                  <Path d="M 74 68 Q 80 77 86 68 Z" fill="#1C1917" />
+                  <Path d="M 76 72 Q 80 76 84 72 Z" fill="#FB7185" />
+
+                  {/* Flushed Golden Energetic Cheeks with Sparks */}
+                  <Ellipse cx="54" cy="66" rx="5" ry="2.8" fill="#F59E0B" opacity={0.75} />
+                  <Ellipse cx="106" cy="66" rx="5" ry="2.8" fill="#F59E0B" opacity={0.75} />
+                  <Circle cx="54" cy="66" r="1.2" fill="#FEF08A" />
+                  <Circle cx="106" cy="66" r="1.2" fill="#FEF08A" />
+                </G>
+              )}
+
+              {/* 😄 8. Interactive Active Expression: ULTRA CHEERFUL ANIME BEAM */}
               {!isMunchingStage && mood !== 'sleeping' && activeExpression === 'happy' && (
                 <G id="rp-face-happy">
                   {/* Left Sparkling Anime Eye */}
@@ -967,6 +1088,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+  },
+  auraGlow: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    zIndex: 0,
+    opacity: 0.9,
   },
   layerAbsolute: {
     position: 'absolute',

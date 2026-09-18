@@ -111,155 +111,6 @@ class SoundService {
     }
   }
 
-  /**
-   * Plays charming interactive cute mascot sounds based on active facial expression
-   */
-  playMascotCuteSound(type: 'wink' | 'starry' | 'love' | 'playful' | 'happy' | 'wake' | 'feast' = 'happy'): void {
-    if (Platform.OS === 'web' && typeof window !== 'undefined') {
-      try {
-        const AudioContextClass =
-          window.AudioContext || (window as any).webkitAudioContext;
-        if (AudioContextClass) {
-          if (!this.audioCtx || this.audioCtx.state === 'closed') {
-            this.audioCtx = new AudioContextClass();
-          }
-          if (this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume().catch(() => {});
-          }
-          const ctx = this.audioCtx;
-          const now = ctx.currentTime;
-
-          if (type === 'wink') {
-            // Cute bubbly ascending squeak
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(620, now);
-            osc.frequency.exponentialRampToValueAtTime(1240, now + 0.1);
-            gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.22, now + 0.015);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.14);
-          } else if (type === 'starry') {
-            // Magic sparkle chime arpeggio
-            const freqs = [880, 1318.5, 1760];
-            freqs.forEach((freq, idx) => {
-              const start = now + idx * 0.045;
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, start);
-              gain.gain.setValueAtTime(0.001, start);
-              gain.gain.linearRampToValueAtTime(0.18, start + 0.012);
-              gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.22);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(start);
-              osc.stop(start + 0.22);
-            });
-          } else if (type === 'love') {
-            // Sweet warm double heart boop
-            const notes = [
-              { f: 523.25, offset: 0, dur: 0.16 },
-              { f: 783.99, offset: 0.06, dur: 0.22 },
-            ];
-            notes.forEach(({ f, offset, dur }) => {
-              const start = now + offset;
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(f, start);
-              gain.gain.setValueAtTime(0.001, start);
-              gain.gain.linearRampToValueAtTime(0.2, start + 0.015);
-              gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(start);
-              osc.stop(start + dur);
-            });
-          } else if (type === 'playful') {
-            // Bouncy dual-chirp giggle
-            const chirps = [
-              { startFreq: 750, endFreq: 1100, offset: 0, dur: 0.08 },
-              { startFreq: 950, endFreq: 1400, offset: 0.08, dur: 0.1 },
-            ];
-            chirps.forEach(({ startFreq, endFreq, offset, dur }) => {
-              const start = now + offset;
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'triangle';
-              osc.frequency.setValueAtTime(startFreq, start);
-              osc.frequency.exponentialRampToValueAtTime(endFreq, start + dur * 0.8);
-              gain.gain.setValueAtTime(0.001, start);
-              gain.gain.linearRampToValueAtTime(0.22, start + 0.01);
-              gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(start);
-              osc.stop(start + dur);
-            });
-          } else if (type === 'wake') {
-            // Sunrise 4-note wake-up chime
-            const wakeNotes = [523.25, 659.25, 783.99, 1046.5];
-            wakeNotes.forEach((freq, idx) => {
-              const start = now + idx * 0.06;
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, start);
-              gain.gain.setValueAtTime(0.001, start);
-              gain.gain.linearRampToValueAtTime(0.24, start + 0.015);
-              gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(start);
-              osc.stop(start + 0.28);
-            });
-          } else if (type === 'feast') {
-            // Celebratory major chord feast chime
-            const feastNotes = [587.33, 739.99, 880.0, 1174.66];
-            feastNotes.forEach((freq, idx) => {
-              const start = now + idx * 0.04;
-              const osc = ctx.createOscillator();
-              const gain = ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(freq, start);
-              gain.gain.setValueAtTime(0.001, start);
-              gain.gain.linearRampToValueAtTime(0.25, start + 0.015);
-              gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
-              osc.connect(gain);
-              gain.connect(ctx.destination);
-              osc.start(start);
-              osc.stop(start + 0.35);
-            });
-          } else {
-            // Default bright cheerful pop
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(700, now);
-            osc.frequency.exponentialRampToValueAtTime(1400, now + 0.1);
-            gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.24, now + 0.012);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.12);
-          }
-        }
-      } catch {
-        // ignore
-      }
-    } else {
-      // Mobile fallback
-      this.playCompletionChime().catch(() => {});
-    }
-  }
-
   playClickSound(): void {
     if (Platform.OS === 'web') {
       try {
@@ -288,7 +139,185 @@ class SoundService {
       }
     }
   }
+
+  /**
+   * Plays cute, high-pitched red panda vocalizations & sound effects
+   * mapped to habit progress stages & facial expressions.
+   */
+  playMascotCuteSound(
+    type: 'wake' | 'sleepy' | 'happy' | 'starry' | 'wink' | 'love' | 'feast' | 'cheer' | 'playful'
+  ): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const AudioContextClass =
+        window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      if (!this.audioCtx || this.audioCtx.state === 'closed') {
+        this.audioCtx = new AudioContextClass();
+      }
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume().catch(() => {});
+      }
+
+      const ctx = this.audioCtx;
+      const now = ctx.currentTime;
+
+      if (type === 'wake' || type === 'sleepy') {
+        // Sleepy wakeup purr & sweet yawn chirp (~480Hz -> 680Hz -> 520Hz)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(460, now);
+        osc.frequency.exponentialRampToValueAtTime(720, now + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(540, now + 0.28);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1200, now);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.22, now + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.29);
+      } else if (type === 'happy' || type === 'playful') {
+        // Cheerful double panda chirp (tweep-tweep!)
+        const chirps = [
+          { freqStart: 1100, freqEnd: 1650, start: 0, dur: 0.07, gainVal: 0.22 },
+          { freqStart: 1350, freqEnd: 1950, start: 0.09, dur: 0.09, gainVal: 0.26 },
+        ];
+
+        chirps.forEach(({ freqStart, freqEnd, start, dur, gainVal }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freqStart, now + start);
+          osc.frequency.exponentialRampToValueAtTime(freqEnd, now + start + dur * 0.85);
+
+          gain.gain.setValueAtTime(0.001, now + start);
+          gain.gain.linearRampToValueAtTime(gainVal, now + start + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + start);
+          osc.stop(now + start + dur);
+        });
+      } else if (type === 'wink') {
+        // Playful upward bounce squeak
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(980, now);
+        osc.frequency.exponentialRampToValueAtTime(1750, now + 0.12);
+
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.linearRampToValueAtTime(0.24, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (type === 'starry' || type === 'cheer') {
+        // Sparkly high-pitched 3-tone trill (C6 -> E6 -> A6 + sparkle overtone)
+        const tones = [
+          { freq: 1046.5, start: 0, dur: 0.07, gainVal: 0.22 },
+          { freq: 1318.5, start: 0.06, dur: 0.08, gainVal: 0.25 },
+          { freq: 1760.0, start: 0.13, dur: 0.14, gainVal: 0.28 },
+        ];
+
+        tones.forEach(({ freq, start, dur, gainVal }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + start);
+
+          gain.gain.setValueAtTime(0.001, now + start);
+          gain.gain.linearRampToValueAtTime(gainVal, now + start + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + start);
+          osc.stop(now + start + dur);
+        });
+      } else if (type === 'love') {
+        // Sweet melodic warm bell purr
+        const notes = [
+          { freq: 880.0, start: 0, dur: 0.14, gainVal: 0.20 },
+          { freq: 1174.66, start: 0.08, dur: 0.22, gainVal: 0.24 },
+        ];
+        notes.forEach(({ freq, start, dur, gainVal }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + start);
+
+          gain.gain.setValueAtTime(0.001, now + start);
+          gain.gain.linearRampToValueAtTime(gainVal, now + start + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + start);
+          osc.stop(now + start + dur);
+        });
+      } else if (type === 'feast') {
+        // Bamboo crunch munch sound pops + victory chime celebration!
+        // 1. Two rapid crunch-pops (woody munch texture)
+        const munchPops = [0, 0.11];
+        munchPops.forEach((offset) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(520, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(220, now + offset + 0.05);
+
+          gain.gain.setValueAtTime(0.22, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.05);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.06);
+        });
+
+        // 2. High victory harmonic sparkle chime
+        const fanfares = [
+          { freq: 1046.5, start: 0.18, dur: 0.14, gainVal: 0.22 },
+          { freq: 1318.5, start: 0.26, dur: 0.16, gainVal: 0.25 },
+          { freq: 1567.98, start: 0.35, dur: 0.18, gainVal: 0.28 },
+          { freq: 2093.0, start: 0.44, dur: 0.32, gainVal: 0.32 },
+        ];
+
+        fanfares.forEach(({ freq, start, dur, gainVal }) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + start);
+
+          gain.gain.setValueAtTime(0.001, now + start);
+          gain.gain.linearRampToValueAtTime(gainVal, now + start + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + start);
+          osc.stop(now + start + dur);
+        });
+      }
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export const soundService = new SoundService();
-
