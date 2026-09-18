@@ -996,6 +996,26 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                   {/* Tiny Munching Leaf Crumbs */}
                   <Circle cx="70" cy="78" r="1.2" fill="#22C55E" />
                   <Circle cx="78" cy="80" r="1" fill="#4ADE80" />
+
+                  {/* 🐾 PAW 1: Left Hand Holding Bamboo Snack */}
+                  <G id="rp-feast-paw-left">
+                    <Path d="M 52 94 C 54 88, 66 84, 76 86 C 80 87, 82 92, 78 96 C 70 99, 60 102, 52 94 Z" fill="url(#rpDarkFur2)" />
+                    <Ellipse cx="76" cy="88" rx="5" ry="4.2" fill="url(#rpDarkFur2)" transform="rotate(-15 76 88)" />
+                    <Ellipse cx="76" cy="88" rx="2.5" ry="2" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="72" cy="85.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="75.5" cy="83.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="79" cy="84.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                  </G>
+
+                  {/* 🐾 PAW 2: Right Hand Holding Bamboo Snack */}
+                  <G id="rp-feast-paw-right">
+                    <Path d="M 108 94 C 106 88, 94 84, 86 88 C 82 90, 82 95, 86 98 C 94 100, 102 102, 108 94 Z" fill="url(#rpDarkFur2)" />
+                    <Ellipse cx="88" cy="90" rx="5" ry="4.2" fill="url(#rpDarkFur2)" transform="rotate(15 88 90)" />
+                    <Ellipse cx="88" cy="90" rx="2.5" ry="2" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="85" cy="86.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="88.5" cy="85.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="92" cy="87.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                  </G>
                 </G>
               )}
 
