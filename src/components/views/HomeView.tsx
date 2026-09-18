@@ -17,7 +17,6 @@ export const HomeView: React.FC = () => {
     theme,
     setIsCreateModalOpen,
     setIsOnboardingModalOpen,
-    setIsPlantGardenModalOpen,
     t,
     language,
   } = useHabit();
@@ -48,7 +47,7 @@ export const HomeView: React.FC = () => {
       style={[styles.container, { backgroundColor: isDark ? '#0B1120' : '#F8FAFC' }]}
       contentContainerStyle={styles.contentContainer}
     >
-      <HomeHero onMascotClick={() => setIsPlantGardenModalOpen(true)} />
+      <HomeHero />
       <DateStrip />
       <TodayProgressCard />
 
