@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
 import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
 import { PlantVisualizer } from './PlantVisualizer';
@@ -53,11 +53,24 @@ export const TodayProgressCard: React.FC = () => {
       style={[
         styles.card,
         {
-          backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
+          backgroundColor: isDark ? '#131B2E' : '#FFFFFF',
           borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
         },
       ]}
     >
+      {/* Top Subtle Accent Strip */}
+      <View
+        style={[
+          styles.accentBar,
+          {
+            backgroundColor: isPerfectDay
+              ? '#10B981'
+              : progressPercent > 0
+              ? '#7C5CFF'
+              : 'transparent',
+          },
+        ]}
+      />
       <View style={styles.contentRow}>
         {/* Left Stats Info */}
         <View style={styles.leftInfo}>
@@ -142,13 +155,19 @@ export const TodayProgressCard: React.FC = () => {
           activeOpacity={0.8}
         >
           <Svg width={92} height={92} viewBox="0 0 100 100">
+            <Defs>
+              <LinearGradient id="todayProgressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <Stop offset="0%" stopColor={isPerfectDay ? '#10B981' : '#7C5CFF'} />
+                <Stop offset="100%" stopColor={isPerfectDay ? '#34D399' : '#A78BFA'} />
+              </LinearGradient>
+            </Defs>
             {/* Background Track Circle */}
             <Circle
               cx="50"
               cy="50"
               r={radius}
               fill="none"
-              stroke={isDark ? '#1E293B' : '#F1F5F9'}
+              stroke={isDark ? 'rgba(255, 255, 255, 0.08)' : '#F1F5F9'}
               strokeWidth={strokeWidth}
             />
 
@@ -158,7 +177,7 @@ export const TodayProgressCard: React.FC = () => {
               cy="50"
               r={radius}
               fill="none"
-              stroke={isPerfectDay ? '#10B981' : '#7C5CFF'}
+              stroke="url(#todayProgressGrad)"
               strokeWidth={strokeWidth}
               strokeDasharray={`${circumference} ${circumference}`}
               strokeDashoffset={strokeDashoffset}
@@ -185,6 +204,7 @@ export const TodayProgressCard: React.FC = () => {
 
 const styles = StyleSheet.create({
   card: {
+    position: 'relative',
     marginHorizontal: 20,
     marginVertical: 8,
     padding: 18,
@@ -195,6 +215,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 10,
     elevation: 3,
+    overflow: 'hidden',
+  },
+  accentBar: {
+    position: 'absolute',
+    top: 0,
+    left: 24,
+    right: 24,
+    height: 3,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
   },
   contentRow: {
     flexDirection: 'row',

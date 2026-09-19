@@ -172,6 +172,12 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     flex: 1,
     position: 'relative',
+    ...(Platform.OS === 'web'
+      ? {
+          cursor: 'pointer',
+          transition: 'opacity 0.15s ease',
+        }
+      : {}),
   },
   tabLabel: {
     fontSize: 10.5,
@@ -208,5 +214,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.45,
     shadowRadius: 10,
     elevation: 8,
+    ...(Platform.OS === 'web'
+      ? {
+          boxShadow: '0 8px 20px -3px rgba(124, 92, 255, 0.5), 0 0 12px 1px rgba(124, 92, 255, 0.3)',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+          cursor: 'pointer',
+        }
+      : {}),
   },
 });

@@ -12,6 +12,10 @@
     user-select: none;
     -webkit-user-select: none;
   }
+
+  button, [role="button"], a {
+    cursor: pointer;
+  }
 }
 
 /* Custom smooth mobile scrollbars */

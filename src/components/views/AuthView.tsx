@@ -391,13 +391,25 @@ export const AuthView: React.FC = () => {
   const bottomPadding = Math.max(insets.bottom, 16);
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: isDark ? '#080E1A' : '#F8FAFC' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    <View
+      style={[
+        styles.outerAuthContainer,
+        { backgroundColor: isDark ? '#050914' : '#E2E8F0' },
+      ]}
     >
-      <StatusBar style={isDark ? 'light' : 'dark'} translucent />
+      <KeyboardAvoidingView
+        style={[
+          styles.authPhoneFrame,
+          {
+            backgroundColor: isDark ? '#080E1A' : '#F8FAFC',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#CBD5E1',
+          },
+        ]}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <StatusBar style={isDark ? 'light' : 'dark'} translucent />
         <ScrollView
-          style={{ flex: 1 }}
+          style={{ flex: 1, width: '100%' }}
           contentContainerStyle={[
             styles.scrollContainer,
             {
@@ -1074,10 +1086,37 @@ export const AuthView: React.FC = () => {
         )}
       </ScrollView>
     </KeyboardAvoidingView>
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
+  outerAuthContainer: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...(Platform.OS === 'web'
+      ? ({
+          minHeight: '100vh',
+          backgroundImage:
+            'radial-gradient(ellipse at 50% 0%, rgba(124, 92, 255, 0.15) 0%, transparent 65%), radial-gradient(ellipse at 85% 85%, rgba(16, 185, 129, 0.09) 0%, transparent 50%)',
+        } as any)
+      : {}),
+  },
+  authPhoneFrame: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 480,
+    ...(Platform.OS === 'web'
+      ? ({
+          height: '100vh',
+          maxHeight: '100vh',
+          boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08)',
+          overflow: 'hidden',
+        } as any)
+      : {}),
+  },
   scrollContainer: {
     paddingHorizontal: 24,
     flexGrow: 1,
