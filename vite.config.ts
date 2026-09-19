@@ -47,18 +47,55 @@ export default defineConfig(() => {
     ],
     optimizeDeps: {
       esbuildOptions: {
+        resolveExtensions: [
+          '.web.js',
+          '.web.jsx',
+          '.web.ts',
+          '.web.tsx',
+          '.mjs',
+          '.js',
+          '.mts',
+          '.ts',
+          '.jsx',
+          '.tsx',
+          '.json',
+        ],
         loader: {
           '.js': 'jsx',
         },
       },
+      exclude: ['@react-native/assets-registry'],
     },
     resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-        'react-native$': 'react-native-web',
-        'react-native': 'react-native-web',
-      },
-      extensions: ['.web.js', '.web.jsx', '.web.ts', '.web.tsx', '.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
+      extensions: [
+        '.web.js',
+        '.web.jsx',
+        '.web.ts',
+        '.web.tsx',
+        '.mjs',
+        '.js',
+        '.mts',
+        '.ts',
+        '.jsx',
+        '.tsx',
+        '.json',
+      ],
+      alias: [
+        { find: '@', replacement: path.resolve(__dirname, '.') },
+        {
+          find: 'react-native/Libraries/Utilities/codegenNativeComponent',
+          replacement: path.resolve(__dirname, './src/mocks/codegenNativeComponent.js'),
+        },
+        {
+          find: '@react-native/assets-registry/registry',
+          replacement: path.resolve(__dirname, './src/mocks/assetsRegistry.js'),
+        },
+        {
+          find: '@react-native/assets-registry',
+          replacement: path.resolve(__dirname, './src/mocks/assetsRegistry.js'),
+        },
+        { find: /^react-native$/, replacement: 'react-native-web' },
+      ],
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
