@@ -8,6 +8,7 @@ import {
   Animated,
   Easing,
   Platform,
+  Dimensions,
 } from 'react-native';
 import Svg, {
   Defs,
@@ -25,7 +26,7 @@ import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useHabit } from '../../context/HabitContext';
 import { soundService } from '../../services/soundService';
-import { Flame, Check, Trophy } from 'lucide-react-native';
+import { Sparkles, Flame, Check, Trophy } from 'lucide-react-native';
 
 const CELEBRATION_MESSAGES = [
   'Hi! You did it! 🎉 All habits completed today!',
@@ -49,12 +50,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   const isDark = theme === 'dark';
 
-  // Modal fade & float
-  const contentFadeAnim = useRef(new Animated.Value(0)).current;
-  const contentScaleAnim = useRef(new Animated.Value(0.85)).current;
+  // Modal slide from bottom
+  const sheetSlideAnim = useRef(new Animated.Value(450)).current;
+  const sheetScaleAnim = useRef(new Animated.Value(0.8)).current;
 
   // Panda sliding DOWN the bamboo stalk from top
-  const pandaSlideDownAnim = useRef(new Animated.Value(-260)).current;
+  const pandaSlideDownAnim = useRef(new Animated.Value(-240)).current;
   const pandaBounceAnim = useRef(new Animated.Value(1)).current;
 
   // Waving Paw Animation
@@ -72,9 +73,9 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   useEffect(() => {
     if (!isDayCompletionModalOpen) {
-      contentFadeAnim.setValue(0);
-      contentScaleAnim.setValue(0.85);
-      pandaSlideDownAnim.setValue(-260);
+      sheetSlideAnim.setValue(450);
+      sheetScaleAnim.setValue(0.8);
+      pandaSlideDownAnim.setValue(-240);
       pandaBounceAnim.setValue(1);
       rewardsPopAnim.setValue(0);
       speechBubblePopAnim.setValue(0);
@@ -84,33 +85,33 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     const useNative = Platform.OS !== 'web';
     setMessageIndex(Math.floor(Math.random() * CELEBRATION_MESSAGES.length));
 
-    // 1. Fade in on screen & Panda slides DOWN the bamboo
+    // 1. Sheet slide-up & Panda slide DOWN the bamboo simultaneously!
     Animated.parallel([
-      Animated.timing(contentFadeAnim, {
-        toValue: 1,
-        duration: 350,
-        easing: Easing.out(Easing.quad),
-        useNativeDriver: useNative,
-      }),
-      Animated.spring(contentScaleAnim, {
-        toValue: 1,
-        friction: 6,
+      Animated.spring(sheetSlideAnim, {
+        toValue: 0,
+        friction: 6.5,
         tension: 50,
         useNativeDriver: useNative,
       }),
-      // Panda slides smoothly down the bamboo pole from top (-260 -> 0)
+      Animated.spring(sheetScaleAnim, {
+        toValue: 1,
+        friction: 5.5,
+        tension: 45,
+        useNativeDriver: useNative,
+      }),
+      // Panda slides smoothly down the bamboo pole from top (-240 -> 0)
       Animated.sequence([
         Animated.delay(100),
         Animated.timing(pandaSlideDownAnim, {
           toValue: 0,
-          duration: 700,
-          easing: Easing.out(Easing.back(1.5)),
+          duration: 650,
+          easing: Easing.out(Easing.back(1.4)),
           useNativeDriver: useNative,
         }),
         // Landing bounce on bamboo
         Animated.sequence([
           Animated.timing(pandaBounceAnim, {
-            toValue: 1.14,
+            toValue: 1.12,
             duration: 90,
             useNativeDriver: useNative,
           }),
@@ -171,7 +172,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
-        Animated.delay(350),
+        Animated.delay(300),
       ])
     );
     waveLoop.start();
@@ -199,7 +200,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(breatheAnim, {
-          toValue: -5,
+          toValue: -4,
           duration: 1100,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
@@ -253,14 +254,14 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
     const useNative = Platform.OS !== 'web';
     Animated.parallel([
-      Animated.timing(contentFadeAnim, {
-        toValue: 0,
+      Animated.timing(sheetSlideAnim, {
+        toValue: 500,
         duration: 250,
-        easing: Easing.in(Easing.quad),
+        easing: Easing.in(Easing.back(1.5)),
         useNativeDriver: useNative,
       }),
-      Animated.timing(contentScaleAnim, {
-        toValue: 0.8,
+      Animated.timing(sheetScaleAnim, {
+        toValue: 0.75,
         duration: 250,
         useNativeDriver: useNative,
       }),
@@ -276,12 +277,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   const waveRotation = waveAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: ['-20deg', '0deg', '24deg'],
+    outputRange: ['-18deg', '0deg', '22deg'],
   });
 
   const tailRotation = tailAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: ['-15deg', '0deg', '15deg'],
+    outputRange: ['-14deg', '0deg', '14deg'],
   });
 
   return (
@@ -291,28 +292,28 @@ export const DayCompletionCelebrationModal: React.FC = () => {
       animationType="fade"
       onRequestClose={handleDismiss}
     >
-      {/* Dimmed Screen Backdrop without any boxed white container */}
       <View style={styles.modalBackdrop}>
         <Animated.View
           style={[
-            styles.screenContentWrapper,
+            styles.sheetContainer,
             {
-              opacity: contentFadeAnim,
-              transform: [{ scale: contentScaleAnim }],
+              backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+              borderColor: isDark ? '#1E293B' : '#E2E8F0',
+              transform: [{ translateY: sheetSlideAnim }, { scale: sheetScaleAnim }],
             },
           ]}
         >
           {/* Top Trophy Banner */}
           <View style={styles.topBadgeRow}>
             <View style={styles.trophyBadge}>
-              <Trophy size={15} color="#F59E0B" />
+              <Trophy size={14} color="#F59E0B" />
               <Text style={styles.trophyBadgeText}>
                 {t('celebration.perfect_day', 'PERFECT 100% DAY!')}
               </Text>
             </View>
           </View>
 
-          {/* Floating Speech Bubble (Duolingo Style) */}
+          {/* Speech Bubble (Duolingo Style) */}
           <Animated.View
             style={[
               styles.speechBubbleWrapper,
@@ -333,8 +334,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.speechBubble,
                 {
-                  backgroundColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.98)',
-                  borderColor: isDark ? '#334155' : '#E2E8F0',
+                  backgroundColor: isDark ? '#1E293B' : '#F1F5F9',
+                  borderColor: isDark ? '#334155' : '#CBD5E1',
                 },
               ]}
             >
@@ -346,7 +347,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 style={[
                   styles.speechArrow,
                   {
-                    borderTopColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                    borderTopColor: isDark ? '#1E293B' : '#F1F5F9',
                   },
                 ]}
               />
@@ -355,7 +356,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
           {/* BAMBOO TREE CLIMB & SLIDE STAGE */}
           <View style={styles.bambooStage}>
-            {/* Ambient Aura Glow behind Bamboo */}
+            {/* Aura Glow */}
             <Animated.View
               style={[
                 styles.auraCircle,
@@ -365,8 +366,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               ]}
             />
 
-            {/* Tall Vertical Bamboo Stalk */}
-            <Svg width={240} height={210} viewBox="0 0 240 210" style={styles.bambooSvg}>
+            {/* Static Bamboo Trunk (Vertical Stalk) */}
+            <Svg width={220} height={200} viewBox="0 0 220 200" style={styles.bambooSvg}>
               <Defs>
                 <LinearGradient id="bambooTrunkGrad" x1="0" y1="0" x2="1" y2="0">
                   <Stop offset="0%" stopColor="#15803D" />
@@ -381,21 +382,21 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               </Defs>
 
               {/* Main Thick Bamboo Stalk */}
-              <Rect x="130" y="0" width="22" height="210" rx="5" fill="url(#bambooTrunkGrad)" />
-              {/* Bamboo Segment Joint Rings */}
-              <Line x1="128" y1="35" x2="154" y2="35" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="128" y1="85" x2="154" y2="85" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="128" y1="145" x2="154" y2="145" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="128" y1="195" x2="154" y2="195" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Rect x="120" y="0" width="22" height="200" rx="4" fill="url(#bambooTrunkGrad)" />
+              {/* Bamboo Segment Rings */}
+              <Line x1="118" y1="35" x2="144" y2="35" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Line x1="118" y1="85" x2="144" y2="85" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Line x1="118" y1="140" x2="144" y2="140" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Line x1="118" y1="190" x2="144" y2="190" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
 
-              {/* Sprouting Bamboo Shoots & Leaves on sides */}
-              <Path d="M 152 35 Q 180 20 198 30 Q 175 44 152 38 Z" fill="url(#leafGrad)" />
-              <Path d="M 152 37 Q 178 46 190 62 Q 165 60 152 41 Z" fill="url(#leafGrad)" />
-              <Path d="M 130 145 Q 100 130 82 140 Q 105 154 130 148 Z" fill="url(#leafGrad)" />
-              <Path d="M 152 145 Q 182 134 195 146 Q 172 158 152 148 Z" fill="url(#leafGrad)" />
+              {/* Sprouting Bamboo Shoots & Leaves on top & bottom */}
+              <Path d="M 142 35 Q 170 20 185 30 Q 165 42 142 38 Z" fill="url(#leafGrad)" />
+              <Path d="M 142 37 Q 165 45 178 60 Q 155 58 142 41 Z" fill="url(#leafGrad)" />
+              <Path d="M 120 140 Q 95 125 80 135 Q 100 148 120 143 Z" fill="url(#leafGrad)" />
+              <Path d="M 142 140 Q 168 130 180 142 Q 160 152 142 143 Z" fill="url(#leafGrad)" />
             </Svg>
 
-            {/* SLIDING PANDA (Hugging bamboo & Sliding down with waving paw) */}
+            {/* SLIDING PANDA (Exact HabitlyMascot 100% Feast Red Panda) */}
             <Animated.View
               style={[
                 styles.slidingPandaWrapper,
@@ -408,221 +409,350 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 },
               ]}
             >
-              {/* Fluffy Red-Panda Tail (Wagging behind bamboo) */}
+              {/* ======================================================== */}
+              {/* LAYER 1: ISOLATED HW-ACCELERATED TAIL (behind body)      */}
+              {/* ======================================================== */}
               <Animated.View
                 style={[
-                  styles.tailLayer,
+                  styles.layerAbsolute,
                   {
                     transform: [{ rotate: tailRotation }],
-                    transformOrigin: '80% 80%' as any,
+                    transformOrigin: '58% 68%' as any,
+                    zIndex: 1,
                   },
                 ]}
+                pointerEvents="none"
               >
-                <Svg width={76} height={76} viewBox="0 0 76 76">
+                <Svg width={160} height={160} viewBox="0 0 160 160">
                   <Defs>
-                    <LinearGradient id="tailGrad" x1="0" y1="0" x2="1" y2="1">
+                    <LinearGradient id="tailGradFullModal" x1="0" y1="0" x2="1" y2="1">
                       <Stop offset="0%" stopColor="#FB923C" />
                       <Stop offset="50%" stopColor="#EA580C" />
-                      <Stop offset="100%" stopColor="#C2410C" />
+                      <Stop offset="100%" stopColor="#9A3412" />
                     </LinearGradient>
                   </Defs>
-                  <Path d="M 54 60 C 22 66, 2 50, 8 22 C 12 6, 32 12, 46 32 Z" fill="url(#tailGrad)" />
-                  <Path d="M 8 22 C 10 10, 26 8, 30 18 C 20 22, 10 26, 8 22 Z" fill="#FFF7ED" />
-                  <Path d="M 16 30 C 24 27, 30 30, 35 38 C 28 42, 20 40, 16 30 Z" fill="#3B1A0E" opacity={0.7} />
-                  <Path d="M 26 42 C 32 40, 38 43, 43 50 C 37 54, 30 52, 26 42 Z" fill="#3B1A0E" opacity={0.7} />
+                  <Path
+                    d="M 94 104 C 122 114, 150 100, 146 72 C 142 50, 120 54, 108 76 Z"
+                    fill="url(#tailGradFullModal)"
+                  />
+                  <Path
+                    d="M 146 72 C 144 54, 128 52, 122 62 C 134 68, 142 76, 146 72 Z"
+                    fill="#FEF3C7"
+                  />
+                  <Path
+                    d="M 139 80 C 130 77, 122 80, 116 88 C 122 92, 132 90, 139 80 Z"
+                    fill="#240F05"
+                    opacity={0.8}
+                  />
+                  <Path
+                    d="M 128 92 C 120 90, 114 93, 110 100 C 115 103, 122 101, 128 92 Z"
+                    fill="#240F05"
+                    opacity={0.8}
+                  />
                 </Svg>
               </Animated.View>
 
-              {/* Main Red Panda Body (Turned Right, Showing Left Body & Clinging to Bamboo) */}
-              <Svg width={180} height={180} viewBox="0 0 180 180">
-                <Defs>
-                  <RadialGradient id="pandaHeadFur" cx="45%" cy="35%" r="65%">
-                    <Stop offset="0%" stopColor="#FB923C" />
-                    <Stop offset="55%" stopColor="#EA580C" />
-                    <Stop offset="100%" stopColor="#C2410C" />
-                  </RadialGradient>
-                  <LinearGradient id="pandaBodyFur" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0%" stopColor="#FB923C" />
-                    <Stop offset="45%" stopColor="#EA580C" />
-                    <Stop offset="100%" stopColor="#9A3412" />
-                  </LinearGradient>
-                  <LinearGradient id="chestFurGrad" x1="0" y1="0" x2="1" y2="0">
-                    <Stop offset="0%" stopColor="#FFF7ED" />
-                    <Stop offset="100%" stopColor="#FFEDD5" />
-                  </LinearGradient>
-                  <LinearGradient id="goldCrown" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0%" stopColor="#FDE047" />
-                    <Stop offset="60%" stopColor="#F59E0B" />
-                    <Stop offset="100%" stopColor="#D97706" />
-                  </LinearGradient>
-                </Defs>
+              {/* ======================================================== */}
+              {/* LAYER 2: CHUBBY BODY, EARS, HEAD & BAMBOO FEAST SNACK    */}
+              {/* ======================================================== */}
+              <View style={[styles.layerAbsolute, { zIndex: 5 }]} pointerEvents="none">
+                <Svg width={160} height={160} viewBox="0 0 160 160">
+                  <Defs>
+                    <RadialGradient id="rpFurGradModal" cx="50%" cy="35%" r="65%">
+                      <Stop offset="0%" stopColor="#FB923C" />
+                      <Stop offset="60%" stopColor="#EA580C" />
+                      <Stop offset="100%" stopColor="#C2410C" />
+                    </RadialGradient>
+                    <LinearGradient id="rpDarkFurModal" x1="0" y1="0" x2="0" y2="1">
+                      <Stop offset="0%" stopColor="#3F1D0B" />
+                      <Stop offset="100%" stopColor="#240F05" />
+                    </LinearGradient>
+                    <LinearGradient id="rpCrownModal" x1="0" y1="0" x2="0" y2="1">
+                      <Stop offset="0%" stopColor="#FDE047" />
+                      <Stop offset="60%" stopColor="#F59E0B" />
+                      <Stop offset="100%" stopColor="#D97706" />
+                    </LinearGradient>
+                  </Defs>
 
-                {/* 1. FAR HIND LEG (Right Leg - Wrapping around right side of bamboo) */}
-                <G id="far-hind-leg">
-                  <Path
-                    d="M 94 122 C 104 122, 115 120, 122 125 C 126 128, 125 134, 119 136 C 111 136, 101 133, 94 129 Z"
-                    fill="#9A3412"
-                  />
-                  <Circle cx="121" cy="129" r="5.5" fill="#38180C" />
-                  <Circle cx="121" cy="129" r="2.3" fill="#F472B6" />
-                </G>
+                  {/* Teddy Bear Rounded Ears on top of head */}
+                  <G id="rp-ears-modal">
+                    {/* Left Ear */}
+                    <Path
+                      d="M 36 50 C 26 30, 40 18, 56 30 C 60 36, 56 46, 48 52 Z"
+                      fill="url(#rpFurGradModal)"
+                    />
+                    <Path
+                      d="M 38 48 C 30 34, 42 26, 52 34 Z"
+                      fill="#FFFFFF"
+                    />
 
-                {/* 2. FAR FRONT ARM (Right Arm - Gripping around right side of bamboo) */}
-                <G id="far-front-arm">
-                  <Path
-                    d="M 80 77 C 94 73, 112 73, 122 77 C 126 79, 125 85, 119 87 C 109 87, 95 85, 80 82 Z"
-                    fill="#EA580C"
-                  />
-                  <Circle cx="121" cy="81" r="5.8" fill="#38180C" />
-                  <Circle cx="120.5" cy="81" r="2.4" fill="#F472B6" />
-                </G>
-
-                {/* 3. CHUBBY RED-PANDA TORSO (Turned right, showing Left Body Profile & Flank) */}
-                <Path
-                  d="M 54 76 C 42 92, 44 120, 56 134 C 72 140, 92 138, 102 131 C 108 115, 106 92, 95 78 C 82 72, 66 72, 54 76 Z"
-                  fill="url(#pandaBodyFur)"
-                />
-
-                {/* Soft Creamy Chest & Belly Patch (Facing right against bamboo) */}
-                <Path
-                  d="M 76 80 C 68 98, 70 124, 82 133 C 94 135, 101 129, 103 119 C 105 101, 99 84, 89 80 C 83 78, 78 78, 76 80 Z"
-                  fill="url(#chestFurGrad)"
-                />
-
-                {/* 4. NEAR HIND LEG (Left Leg - Bent naturally & firmly gripping front of bamboo) */}
-                <G id="near-hind-leg">
-                  <Path
-                    d="M 54 120 C 52 131, 62 139, 78 139 C 91 139, 101 135, 104 129 C 102 123, 86 121, 72 119 C 62 117, 56 117, 54 120 Z"
-                    fill="url(#pandaBodyFur)"
-                  />
-                  {/* Espresso Paw & Pink Pads on Bamboo */}
-                  <Ellipse cx="101" cy="129" rx="6.5" ry="5.5" fill="#38180C" transform="rotate(-10, 101, 129)" />
-                  <Ellipse cx="101" cy="129" rx="3.2" ry="2.2" fill="#F472B6" />
-                  <Circle cx="97" cy="125.5" r="1.1" fill="#F472B6" />
-                  <Circle cx="101" cy="123.5" r="1.1" fill="#F472B6" />
-                  <Circle cx="105" cy="125.5" r="1.1" fill="#F472B6" />
-                </G>
-
-                {/* Fluffy Round Ears (3/4 Right Perspective) */}
-                <G id="ears">
-                  {/* Left Ear (Near/Closer) */}
-                  <Path d="M 46 36 C 34 20, 48 8, 62 18 C 66 24, 62 32, 56 38 Z" fill="url(#pandaHeadFur)" />
-                  <Path d="M 48 34 C 38 22, 48 14, 58 22 Z" fill="#FFFFFF" />
-
-                  {/* Right Ear (Far/Receding) */}
-                  <Path d="M 98 34 C 108 18, 96 8, 84 18 C 80 24, 84 32, 90 38 Z" fill="url(#pandaHeadFur)" />
-                  <Path d="M 96 32 C 104 22, 94 14, 86 22 Z" fill="#FFFFFF" />
-                </G>
-
-                {/* Equipped Hat (Rendered ONLY if user equipped one - No default crown) */}
-                {equippedHat === 'detective' && (
-                  <G id="hat-detective">
-                    <Path d="M 54 28 C 52 14, 64 8, 80 8 C 96 8, 106 14, 104 28 Z" fill="#78350F" />
-                    <Path d="M 46 28 Q 78 36 110 28 Q 78 24 46 28 Z" fill="#451A03" />
+                    {/* Right Ear */}
+                    <Path
+                      d="M 124 50 C 134 30, 120 18, 104 30 C 100 36, 104 46, 112 52 Z"
+                      fill="url(#rpFurGradModal)"
+                    />
+                    <Path
+                      d="M 122 48 C 130 34, 118 26, 108 34 Z"
+                      fill="#FFFFFF"
+                    />
                   </G>
-                )}
-                {equippedHat === 'wizard' && (
-                  <G id="hat-wizard">
-                    <Path d="M 56 28 C 66 14, 72 2, 80 0 C 86 6, 90 16, 102 28 Z" fill="#312E81" stroke="#4338CA" strokeWidth={1} />
-                    <Ellipse cx="78" cy="28" rx="24" ry="5.5" fill="#1E1B4B" />
-                    <Path d="M 74 14 L 75.5 17 L 79 17.5 L 76.5 20 L 77 23 L 74 21.5 L 71 23 L 71.5 20 L 69 17.5 L 72.5 17 Z" fill="#FDE047" />
+
+                  {/* ======================================================== */}
+                  {/* 🎩 EQUIPPED HATS & HEADGEAR (Equipped Only - NO default) */}
+                  {/* ======================================================== */}
+                  {/* 🕵️ Detective Cap */}
+                  {equippedHat === 'detective' && (
+                    <G id="rp-hat-detective">
+                      <Path d="M 52 40 C 50 24, 62 18, 80 18 C 98 18, 110 24, 108 40 Z" fill="#78350F" />
+                      <Path d="M 54 34 Q 80 30 106 34" stroke="#92400E" strokeWidth={2.5} fill="none" />
+                      <Path d="M 46 40 Q 80 48 114 40 Q 80 36 46 40 Z" fill="#451A03" />
+                      <Circle cx="80" cy="26" r="4" stroke="#FDE047" strokeWidth={1.5} fill="#38BDF8" opacity={0.8} />
+                      <Line x1="83" y1="29" x2="86" y2="33" stroke="#FDE047" strokeWidth={1.5} strokeLinecap="round" />
+                    </G>
+                  )}
+
+                  {/* 🧙 Wizard Star Hat */}
+                  {equippedHat === 'wizard' && (
+                    <G id="rp-hat-wizard">
+                      <Path d="M 54 40 C 65 24, 72 8, 82 4 C 88 10, 92 24, 106 40 Z" fill="#312E81" stroke="#4338CA" strokeWidth={1} />
+                      <Path d="M 82 4 Q 90 0 92 6 Q 85 7 82 4 Z" fill="#1E1B4B" />
+                      <Ellipse cx="80" cy="40" rx="30" ry="6.5" fill="#1E1B4B" />
+                      <Path d="M 58 37 Q 80 43 102 37" stroke="#F59E0B" strokeWidth={3} fill="none" />
+                      <Path d="M 76 22 L 77.5 25 L 81 25.5 L 78.5 28 L 79 31 L 76 29.5 L 73 31 L 73.5 28 L 71 25.5 L 74.5 25 Z" fill="#FDE047" />
+                    </G>
+                  )}
+
+                  {/* 👨‍🍳 Chef Toque */}
+                  {equippedHat === 'chef' && (
+                    <G id="rp-hat-chef">
+                      <Path d="M 58 36 C 52 24, 62 12, 70 14 C 74 8, 86 8, 90 14 C 98 12, 108 24, 102 36 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth={1.2} />
+                      <Path d="M 70 16 Q 72 28 72 34 M 80 12 Q 80 26 80 34 M 90 16 Q 88 28 88 34" stroke="#E2E8F0" strokeWidth={1.2} />
+                      <Rect x="58" y="34" width="44" height="7" rx="2" fill="#E2E8F0" />
+                    </G>
+                  )}
+
+                  {/* 👑 Royal Crown (Equipped Only - NO default) */}
+                  {equippedHat === 'crown' && (
+                    <G id="rp-crown">
+                      <Path d="M66 32 L70 14 L76 23 L80 10 L84 23 L90 14 L94 32 Z" fill="url(#rpCrownModal)" stroke="#B45309" strokeWidth={1} />
+                      <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
+                      <Circle cx="72" cy="22" r="1.8" fill="#3B82F6" />
+                      <Circle cx="88" cy="22" r="1.8" fill="#10B981" />
+                    </G>
+                  )}
+
+                  {/* 🎅 Santa Cap */}
+                  {equippedHat === 'santa' && (
+                    <G id="rp-hat-santa">
+                      <Path d="M 54 38 C 58 22, 74 12, 94 14 C 104 18, 108 26, 114 34 Z" fill="#DC2626" />
+                      <Circle cx="116" cy="36" r="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={1} />
+                      <Rect x="50" y="34" width="60" height="9" rx="4.5" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={0.8} />
+                    </G>
+                  )}
+
+                  {/* 🥋 Ninja Headband */}
+                  {equippedHat === 'ninja_band' && (
+                    <G id="rp-hat-ninja">
+                      <Path d="M 44 48 Q 80 43 116 48 L 115 54 Q 80 49 45 54 Z" fill="#DC2626" />
+                      <Rect x="70" y="46" width="20" height="6" rx="2" fill="#E2E8F0" stroke="#94A3B8" strokeWidth={0.8} />
+                      <Path d="M 115 50 Q 124 54 128 64 Q 122 62 114 53 Z M 115 52 Q 126 60 124 72 Q 120 66 113 55 Z" fill="#B91C1C" />
+                    </G>
+                  )}
+
+                  {/* 🌸 Flower Crown */}
+                  {equippedHat === 'flower_crown' && (
+                    <G id="rp-hat-flower">
+                      <Path d="M 48 42 Q 80 36 112 42" stroke="#15803D" strokeWidth={2.5} fill="none" />
+                      <Circle cx="54" cy="40" r="4.5" fill="#F472B6" /> <Circle cx="54" cy="40" r="1.8" fill="#FDE047" />
+                      <Circle cx="67" cy="37" r="4.5" fill="#FB7185" /> <Circle cx="67" cy="37" r="1.8" fill="#FDE047" />
+                      <Circle cx="80" cy="35" r="5" fill="#F472B6" /> <Circle cx="80" cy="35" r="2" fill="#FDE047" />
+                      <Circle cx="93" cy="37" r="4.5" fill="#FB7185" /> <Circle cx="93" cy="37" r="1.8" fill="#FDE047" />
+                      <Circle cx="106" cy="40" r="4.5" fill="#F472B6" /> <Circle cx="106" cy="40" r="1.8" fill="#FDE047" />
+                    </G>
+                  )}
+
+                  {/* 🥳 Party Hat */}
+                  {equippedHat === 'party_hat' && (
+                    <G id="rp-hat-party">
+                      <Path d="M 64 38 L 80 12 L 96 38 Z" fill="#F43F5E" />
+                      <Path d="M 68 32 L 80 12 L 92 32 Z" fill="#F59E0B" />
+                      <Path d="M 72 26 L 80 12 L 88 26 Z" fill="#10B981" />
+                      <Path d="M 76 20 L 80 12 L 84 20 Z" fill="#3B82F6" />
+                      <Circle cx="80" cy="11" r="3.5" fill="#FDE047" />
+                    </G>
+                  )}
+
+                  {/* 🧢 Beanie */}
+                  {equippedHat === 'beanie' && (
+                    <G id="rp-hat-beanie">
+                      <Path d="M 52 40 C 50 24, 62 16, 80 16 C 98 16, 110 24, 108 40 Z" fill="#0D9488" />
+                      <Rect x="48" y="34" width="64" height="9" rx="3" fill="#115E59" />
+                      <Circle cx="80" cy="14" r="4.5" fill="#F59E0B" />
+                    </G>
+                  )}
+
+                  {/* Chubby Seated Body & Belly */}
+                  <Ellipse cx="80" cy="100" rx="34" ry="26" fill="url(#rpFurGradModal)" />
+                  <Ellipse cx="80" cy="105" rx="21" ry="15" fill="url(#rpDarkFurModal)" />
+                  <Path d="M 72 88 Q 80 95 88 88 Q 80 92 72 88 Z" fill="#FFFFFF" opacity={0.9} />
+
+                  {/* Bottom Hind Feet (Paws 3 & 4 of 4 Paws with Gold Pads) */}
+                  {/* Left Foot */}
+                  <Ellipse cx="48" cy="123" rx="11" ry="8" fill="url(#rpDarkFurModal)" transform="rotate(-10 48 123)" />
+                  <Ellipse cx="48" cy="123" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(-10 48 123)" />
+                  <Circle cx="41" cy="119" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="46" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="52" cy="117" r="1.6" fill="#FEF08A" opacity={0.95} />
+
+                  {/* Right Foot */}
+                  <Ellipse cx="112" cy="123" rx="11" ry="8" fill="url(#rpDarkFurModal)" transform="rotate(10 112 123)" />
+                  <Ellipse cx="112" cy="123" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(10 112 123)" />
+                  <Circle cx="108" cy="117" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="114" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="119" cy="119" r="1.6" fill="#FEF08A" opacity={0.95} />
+
+                  {/* Round Chubby Head & Markings */}
+                  <Ellipse cx="80" cy="62" rx="36" ry="29" fill="url(#rpFurGradModal)" />
+                  <Ellipse cx="80" cy="69" rx="15" ry="11" fill="#FFFFFF" />
+                  <Circle cx="63" cy="49" r="4.2" fill="#FFFFFF" />
+                  <Circle cx="97" cy="49" r="4.2" fill="#FFFFFF" />
+                  <Path d="M 48 64 C 45 72, 52 77, 57 73 C 55 67, 51 64, 48 64 Z" fill="#FFFFFF" />
+                  <Path d="M 112 64 C 115 72, 108 77, 103 73 C 105 67, 109 64, 112 64 Z" fill="#FFFFFF" />
+
+                  {/* Cute Black Button Nose with Highlight */}
+                  <Path d="M 76 65 Q 80 63 84 65 Q 80 70 76 65 Z" fill="#1C1917" />
+                  <Circle cx="78.5" cy="65.5" r="0.7" fill="#FFFFFF" />
+
+                  {/* 😋 100% FEAST: Laughing Joyful Eyes (^ω^) & Chewing Blush */}
+                  <G id="rp-face-munching">
+                    <Path d="M 61 59 Q 66 53 71 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
+                    <Path d="M 89 59 Q 94 53 99 59" stroke="#3F1D0B" strokeWidth={2.8} strokeLinecap="round" fill="none" />
+                    <Ellipse cx="54" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
+                    <Ellipse cx="106" cy="66" rx="4.5" ry="2.6" fill="#EC4899" opacity={0.8} />
                   </G>
-                )}
-                {equippedHat === 'chef' && (
-                  <G id="hat-chef">
-                    <Path d="M 60 24 C 54 12, 64 2, 72 4 C 76 -2, 88 -2, 92 4 C 100 2, 108 12, 102 24 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth={1.2} />
-                    <Rect x="60" y="22" width="38" height="6" rx="2" fill="#E2E8F0" />
+
+                  {/* ======================================================== */}
+                  {/* 🕶️ EQUIPPED GLASSES & EYEWEAR                            */}
+                  {/* ======================================================== */}
+                  {/* 😎 Cool Aviators */}
+                  {equippedGlasses === 'aviators' && (
+                    <G id="rp-glasses-aviators">
+                      <Path d="M 52 54 L 108 54 M 74 58 Q 80 55 86 58" stroke="#F59E0B" strokeWidth={1.8} strokeLinecap="round" />
+                      <Path d="M 54 54 C 54 66, 62 70, 72 68 C 76 66, 76 56, 74 54 Z" fill="#0F172A" stroke="#F59E0B" strokeWidth={1.5} />
+                      <Line x1="58" y1="56" x2="68" y2="66" stroke="#FFFFFF" strokeWidth={1.2} opacity={0.65} />
+                      <Path d="M 86 54 C 84 56, 84 66, 88 68 C 98 70, 106 66, 106 54 Z" fill="#0F172A" stroke="#F59E0B" strokeWidth={1.5} />
+                      <Line x1="90" y1="56" x2="100" y2="66" stroke="#FFFFFF" strokeWidth={1.2} opacity={0.65} />
+                    </G>
+                  )}
+
+                  {/* 👓 Scholar Round Specs */}
+                  {equippedGlasses === 'round_specs' && (
+                    <G id="rp-glasses-round">
+                      <Path d="M 73 59 Q 80 56 87 59" stroke="#334155" strokeWidth={2} strokeLinecap="round" fill="none" />
+                      <Circle cx="63" cy="59" r="9" stroke="#334155" strokeWidth={2.2} fill="#38BDF8" opacity={0.2} />
+                      <Circle cx="97" cy="59" r="9" stroke="#334155" strokeWidth={2.2} fill="#38BDF8" opacity={0.2} />
+                    </G>
+                  )}
+
+                  {/* 🧐 Golden Monocle */}
+                  {equippedGlasses === 'monocle' && (
+                    <G id="rp-glasses-monocle">
+                      <Circle cx="95" cy="59" r="8.5" stroke="#F59E0B" strokeWidth={2} fill="#38BDF8" opacity={0.25} />
+                      <Path d="M 98 65 Q 106 75 102 88" stroke="#D97706" strokeWidth={1.2} strokeLinecap="round" fill="none" strokeDasharray="2,2" />
+                    </G>
+                  )}
+
+                  {/* 🤩 Star Rocker Glasses */}
+                  {equippedGlasses === 'star_glasses' && (
+                    <G id="rp-glasses-star">
+                      <Line x1="72" y1="58" x2="88" y2="58" stroke="#EAB308" strokeWidth={2} strokeLinecap="round" />
+                      <Path d="M 64 50 L 66.5 56 L 73 57 L 68 62 L 69.5 68 L 64 65 L 58.5 68 L 60 62 L 55 57 L 61.5 56 Z" fill="#FDE047" stroke="#EAB308" strokeWidth={1.2} />
+                      <Path d="M 96 50 L 98.5 56 L 105 57 L 100 62 L 101.5 68 L 96 65 L 90.5 68 L 92 62 L 87 57 L 93.5 56 Z" fill="#FDE047" stroke="#EAB308" strokeWidth={1.2} />
+                    </G>
+                  )}
+
+                  {/* 🕶️ 8-Bit Pixel Shades */}
+                  {equippedGlasses === 'pixel_shades' && (
+                    <G id="rp-glasses-pixel">
+                      <Rect x="54" y="55" width="22" height="10" fill="#0F172A" />
+                      <Rect x="84" y="55" width="22" height="10" fill="#0F172A" />
+                      <Rect x="76" y="55" width="8" height="4" fill="#0F172A" />
+                      <Rect x="58" y="57" width="3" height="3" fill="#FFFFFF" />
+                      <Rect x="88" y="57" width="3" height="3" fill="#FFFFFF" />
+                    </G>
+                  )}
+
+                  {/* ==================================================== */}
+                  {/* 😋 STAGE 3: EATING & MUNCHING BAMBOO SNACK (100%)    */}
+                  {/* ==================================================== */}
+                  <G id="rp-eating-bamboo-snack">
+                    <Path d="M 74 72 L 108 102" stroke="#22C55E" strokeWidth={5.2} strokeLinecap="round" />
+                    <Line x1="84" y1="81" x2="88" y2="84" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                    <Line x1="97" y1="92" x2="101" y2="95" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                    {/* Nibbled Bite Marks at Top */}
+                    <Circle cx="74" cy="72" r="3" fill="#FEF08A" />
+                    <Circle cx="76" cy="70" r="1.5" fill="#4ADE80" />
+                    {/* Leaves on snack */}
+                    <Path d="M 92 88 Q 104 82 108 88 Q 98 94 92 88 Z" fill="#16A34A" />
+                    <Path d="M 102 96 Q 114 90 117 97 Q 107 101 102 96 Z" fill="#4ADE80" />
+                    {/* Tiny Munching Leaf Crumbs */}
+                    <Circle cx="70" cy="78" r="1.2" fill="#22C55E" />
+                    <Circle cx="78" cy="80" r="1" fill="#4ADE80" />
+
+                    {/* 🐾 PAW 1: Left Hand Holding Bamboo Snack */}
+                    <G id="rp-feast-paw-left">
+                      <Path d="M 52 94 C 54 88, 66 84, 76 86 C 80 87, 82 92, 78 96 C 70 99, 60 102, 52 94 Z" fill="url(#rpDarkFurModal)" />
+                      <Ellipse cx="76" cy="88" rx="5" ry="4.2" fill="url(#rpDarkFurModal)" transform="rotate(-15 76 88)" />
+                      <Ellipse cx="76" cy="88" rx="2.5" ry="2" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="72" cy="85.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="75.5" cy="83.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="79" cy="84.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                    </G>
                   </G>
-                )}
-                {equippedHat === 'crown' && (
-                  <G id="hat-crown">
-                    <Path d="M 64 24 L 68 8 L 74 16 L 78 4 L 82 16 L 88 8 L 92 24 Z" fill="url(#goldCrown)" stroke="#B45309" strokeWidth={1} />
-                    <Circle cx="78" cy="11" r="2" fill="#EF4444" />
-                    <Circle cx="69" cy="15" r="1.5" fill="#3B82F6" />
-                    <Circle cx="87" cy="15" r="1.5" fill="#10B981" />
+
+                  {/* Chewing Animated Mouth */}
+                  <G id="rp-chewing-mouth">
+                    <Path d="M 76 69 Q 80 74 84 69" stroke="#1C1917" strokeWidth={2.4} strokeLinecap="round" fill="none" />
                   </G>
-                )}
+                </Svg>
+              </View>
 
-                {/* Round Cute Head (3/4 Angle) */}
-                <Circle cx="76" cy="56" r="32" fill="url(#pandaHeadFur)" />
-
-                {/* Soft White Cheek Fur Patches */}
-                <Ellipse cx="54" cy="62" rx="11" ry="8.5" fill="#FFFFFF" />
-                <Ellipse cx="96" cy="60" rx="10" ry="8" fill="#FFFFFF" />
-                <Ellipse cx="62" cy="42" rx="3.8" ry="5.5" fill="#FFFFFF" transform="rotate(-15, 62, 42)" />
-                <Ellipse cx="88" cy="40" rx="3.5" ry="5" fill="#FFFFFF" transform="rotate(15, 88, 40)" />
-
-                {/* Tear Stripes */}
-                <Path d="M 60 56 C 58 62, 57 69, 53 72" stroke="#9A3412" strokeWidth={2.6} strokeLinecap="round" fill="none" />
-                <Path d="M 92 55 C 94 61, 95 68, 98 71" stroke="#9A3412" strokeWidth={2.6} strokeLinecap="round" fill="none" />
-
-                {/* Big Shiny Anime / Duolingo Eyes */}
-                {/* Left Eye (Near) */}
-                <Circle cx="66" cy="53" r="5.8" fill="#1E1B4B" />
-                <Circle cx="68.2" cy="50.8" r="2.2" fill="#FFFFFF" />
-                <Circle cx="65" cy="55" r="1.0" fill="#FFFFFF" />
-
-                {/* Right Eye (Far) */}
-                <Circle cx="88" cy="52" r="5.4" fill="#1E1B4B" />
-                <Circle cx="90.2" cy="49.8" r="2.0" fill="#FFFFFF" />
-                <Circle cx="87" cy="54" r="0.9" fill="#FFFFFF" />
-
-                {/* Equipped Glasses */}
-                {equippedGlasses === 'shades' && (
-                  <G id="glasses-shades">
-                    <Path d="M 54 50 Q 66 48 76 52 L 75 59 Q 65 61 55 57 Z" fill="#090D16" />
-                    <Path d="M 80 52 Q 91 48 100 50 L 99 57 Q 90 61 81 59 Z" fill="#090D16" />
-                    <Line x1="75" y1="52" x2="81" y2="52" stroke="#090D16" strokeWidth={2.5} />
-                  </G>
-                )}
-                {equippedGlasses === 'nerd' && (
-                  <G id="glasses-nerd">
-                    <Circle cx="66" cy="53" r="7.5" stroke="#000000" strokeWidth={2} fill="none" />
-                    <Circle cx="88" cy="52" r="7.2" stroke="#000000" strokeWidth={2} fill="none" />
-                    <Line x1="73.5" y1="53" x2="81" y2="52.5" stroke="#000000" strokeWidth={2.2} />
-                  </G>
-                )}
-
-                {/* Snout & Nose */}
-                <Ellipse cx="78" cy="64" rx="11" ry="7.5" fill="#FFFFFF" />
-                <Path d="M 75 61 C 75 59, 81 59, 81 61 C 81 63, 78 65, 78 65 C 78 65, 75 63, 75 61 Z" fill="#1F2937" />
-                <Circle cx="76.8" cy="60.5" r="0.6" fill="#FFFFFF" />
-
-                {/* Happy Big Smile */}
-                <Path d="M 73 66 Q 78 72 83 66" stroke="#991B1B" strokeWidth={2.4} fill="#EF4444" strokeLinecap="round" />
-
-                {/* Whiskers */}
-                <Line x1="46" y1="62" x2="32" y2="60" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
-                <Line x1="46" y1="66" x2="33" y2="69" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
-                <Line x1="104" y1="60" x2="116" y2="58" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
-                <Line x1="104" y1="64" x2="115" y2="67" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
-              </Svg>
-
-              {/* SEPARATE ANIMATED WAVING LEFT FRONT PAW ("Hi! 👋") */}
+              {/* ======================================================== */}
+              {/* LAYER 3: WAVING RIGHT ARM (PAW 2) Saying "Hi!" 👋       */}
+              {/* ======================================================== */}
               <Animated.View
                 style={[
-                  styles.wavingPawWrapper,
+                  styles.layerAbsolute,
                   {
                     transform: [{ rotate: waveRotation }],
-                    transformOrigin: '25% 75%' as any,
+                    transformOrigin: '61.25% 57.5%' as any,
+                    zIndex: 8,
                   },
                 ]}
+                pointerEvents="none"
               >
-                <Svg width={46} height={46} viewBox="0 0 46 46">
-                  {/* Waving Near Left Arm & Paw */}
-                  <Path d="M 12 36 C 10 24, 20 12, 32 8 C 38 12, 40 20, 32 28 C 24 34, 18 38, 12 36 Z" fill="#EA580C" />
-                  <Circle cx="32" cy="12" r="7.5" fill="#38180C" />
-                  {/* Pink Paw Pads */}
-                  <Circle cx="31" cy="12" r="3.2" fill="#F472B6" />
-                  <Circle cx="26" cy="10" r="1.4" fill="#F472B6" />
-                  <Circle cx="29" cy="6" r="1.4" fill="#F472B6" />
-                  <Circle cx="34" cy="6" r="1.4" fill="#F472B6" />
+                <Svg width={160} height={160} viewBox="0 0 160 160">
+                  <Defs>
+                    <LinearGradient id="rpDarkFurArmModal" x1="0" y1="0" x2="0" y2="1">
+                      <Stop offset="0%" stopColor="#3F1D0B" />
+                      <Stop offset="100%" stopColor="#240F05" />
+                    </LinearGradient>
+                  </Defs>
+                  <Path
+                    d="M 96 92 C 102 96, 114 91, 115 80 C 116 73, 113 66, 109 63 C 104 62, 100 68, 99 76 C 98 83, 94 88, 96 92 Z"
+                    fill="url(#rpDarkFurArmModal)"
+                  />
+                  <Ellipse cx="109" cy="64" rx="4.8" ry="3.8" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="104" cy="61" r="1.3" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="108" cy="58.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="112" cy="59.5" r="1.3" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="115.5" cy="62" r="1.3" fill="#FEF08A" opacity={0.95} />
                 </Svg>
               </Animated.View>
             </Animated.View>
           </View>
 
-          {/* Floating Rewards Grid (Glassmorphic) */}
+          {/* Rewards Grid */}
           <Animated.View
             style={[
               styles.rewardsGrid,
@@ -644,8 +774,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.rewardCard,
                 {
-                  backgroundColor: isDark ? 'rgba(16, 185, 129, 0.18)' : 'rgba(255, 255, 255, 0.95)',
-                  borderColor: isDark ? 'rgba(16, 185, 129, 0.4)' : '#86EFAC',
+                  backgroundColor: isDark ? 'rgba(16, 185, 129, 0.12)' : '#DCFCE7',
+                  borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : '#86EFAC',
                 },
               ]}
             >
@@ -663,8 +793,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.rewardCard,
                 {
-                  backgroundColor: isDark ? 'rgba(245, 158, 11, 0.18)' : 'rgba(255, 255, 255, 0.95)',
-                  borderColor: isDark ? 'rgba(245, 158, 11, 0.4)' : '#FCD34D',
+                  backgroundColor: isDark ? 'rgba(245, 158, 11, 0.12)' : '#FEF3C7',
+                  borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : '#FCD34D',
                 },
               ]}
             >
@@ -678,7 +808,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
             </View>
           </Animated.View>
 
-          {/* Floating Duolingo-style Action Dismiss Button */}
+          {/* Duolingo-style Action Dismiss Button */}
           <TouchableOpacity
             style={styles.awesomeBtn}
             onPress={handleDismiss}
@@ -690,7 +820,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               end={{ x: 1, y: 1 }}
               style={styles.awesomeBtnGradient}
             >
-              <Check size={22} color="#FFFFFF" strokeWidth={3} />
+              <Check size={20} color="#FFFFFF" strokeWidth={3} />
               <Text style={styles.awesomeBtnText}>
                 {t('celebration.continue_btn', 'AWESOME!')}
               </Text>
@@ -705,97 +835,100 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(5, 10, 20, 0.82)',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(11, 17, 32, 0.82)',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 16,
+    paddingHorizontal: 16,
   },
-  screenContentWrapper: {
+  sheetContainer: {
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 440,
+    borderRadius: 32,
+    borderWidth: 1.5,
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 22,
     alignItems: 'center',
-    justifyContent: 'center',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.35,
+    shadowRadius: 24,
+    elevation: 12,
   },
   topBadgeRow: {
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   trophyBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.22)',
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    borderRadius: 22,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 20,
     gap: 6,
-    borderWidth: 1.5,
-    borderColor: '#F59E0B',
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.3)',
   },
   trophyBadgeText: {
     color: '#F59E0B',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '900',
     letterSpacing: 0.8,
   },
   speechBubbleWrapper: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 2,
     zIndex: 20,
   },
   speechBubble: {
     position: 'relative',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 22,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20,
     borderWidth: 1.5,
     maxWidth: '92%',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   speechBubbleText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
     textAlign: 'center',
-    lineHeight: 22,
+    lineHeight: 20,
   },
   speechArrow: {
     position: 'absolute',
-    bottom: -11,
+    bottom: -10,
     alignSelf: 'center',
     width: 0,
     height: 0,
-    borderLeftWidth: 11,
-    borderRightWidth: 11,
-    borderTopWidth: 11,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderTopWidth: 10,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
   },
   bambooStage: {
     position: 'relative',
-    width: 240,
-    height: 205,
+    width: 220,
+    height: 190,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    marginVertical: 6,
   },
   auraCircle: {
     position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(16, 185, 129, 0.22)',
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    backgroundColor: 'rgba(16, 185, 129, 0.18)',
   },
   bambooSvg: {
     position: 'absolute',
@@ -805,78 +938,68 @@ const styles = StyleSheet.create({
   },
   slidingPandaWrapper: {
     position: 'relative',
-    width: 180,
-    height: 180,
+    width: 160,
+    height: 160,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 5,
   },
-  tailLayer: {
+  layerAbsolute: {
     position: 'absolute',
-    left: 2,
-    bottom: 24,
-    zIndex: 1,
-  },
-  wavingPawWrapper: {
-    position: 'absolute',
-    left: 42,
-    top: 38,
-    zIndex: 10,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   rewardsGrid: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 10,
     width: '100%',
-    marginVertical: 16,
+    marginVertical: 12,
   },
   rewardCard: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderWidth: 1.5,
+    paddingVertical: 10,
+    borderRadius: 18,
+    borderWidth: 1.2,
     gap: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
   },
   rewardEmoji: {
-    fontSize: 24,
+    fontSize: 22,
   },
   rewardTitle: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: '900',
   },
   rewardSub: {
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '700',
-    marginTop: 2,
+    marginTop: 1,
   },
   awesomeBtn: {
     width: '100%',
-    borderRadius: 22,
+    borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 5,
   },
   awesomeBtnGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: 15,
     gap: 8,
   },
   awesomeBtnText: {
     color: '#FFFFFF',
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '900',
-    letterSpacing: 0.8,
+    letterSpacing: 0.6,
   },
 });

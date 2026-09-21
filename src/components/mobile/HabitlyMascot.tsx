@@ -743,8 +743,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 👑 Royal Crown (Equipped or default in 100% feast) */}
-              {(activeHat === 'crown' || (isMunchingStage && !activeHat)) && (
+              {/* 👑 Royal Crown (Equipped Only) */}
+              {activeHat === 'crown' && (
                 <G id="rp-crown">
                   <Path d="M66 32 L70 14 L76 23 L80 10 L84 23 L90 14 L94 32 Z" fill="url(#rpCrown2)" stroke="#B45309" strokeWidth={1} />
                   <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
