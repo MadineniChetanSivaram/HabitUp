@@ -2643,6 +2643,15 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           }
 
           triggerCelebration();
+          // Check if all active habits for targetDate are now completed -> auto trigger Sparky celebration
+          const activeScheduled = habits.filter((h) => !h.archived_at && !h.deleted_at && !h.paused_at);
+          const allCompleted = activeScheduled.length > 0 && activeScheduled.every((h) =>
+            updated.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === targetDate)
+          );
+          if (allCompleted) {
+            notificationService.triggerMascot('celebration', notificationTone);
+          }
+
           // Award +10 Bamboo Coins for completing habit!
           setBambooCoins((c) => {
             const added = c + 10;
@@ -2670,7 +2679,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       });
     },
-    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, addMutationToQueue]
+    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, addMutationToQueue, notificationTone]
   );
 
   const earnBambooCoins = useCallback((amount: number, reason?: string) => {
