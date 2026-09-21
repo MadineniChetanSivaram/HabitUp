@@ -190,8 +190,6 @@ export const WidgetPreviewModal: React.FC = () => {
 
           {/* Simulated Home Screen Wallpaper Canvas */}
           <View style={styles.canvasContainer}>
-            <Text style={styles.canvasLiveTag}>Interactive Live Preview</Text>
-
             {/* 1. SMALL 2x2 MASCOT WIDGET */}
             {activeWidgetType === 'small' && (
               <View
@@ -485,16 +483,6 @@ const styles = StyleSheet.create({
     minHeight: 180,
     position: 'relative',
     marginBottom: 16,
-  },
-  canvasLiveTag: {
-    position: 'absolute',
-    top: 8,
-    right: 12,
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#34D399',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   smallWidgetCard: {
     width: 148,
