@@ -18,7 +18,7 @@ import * as Sharing from 'expo-sharing';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useHabit } from '../../context/HabitContext';
 import { soundService } from '../../services/soundService';
-import { requestNotificationPermission, notificationService } from '../../services/notificationService';
+import { requestNotificationPermission } from '../../services/notificationService';
 import { HabitUpLogo } from '../common/HabitUpLogo';
 import { UserAvatar } from '../common/UserAvatar';
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n/translations';
@@ -48,7 +48,6 @@ import {
   Zap,
   Heart,
   Smile,
-  Play,
 } from 'lucide-react-native';
 
 export const SettingsView: React.FC = () => {
@@ -77,7 +76,6 @@ export const SettingsView: React.FC = () => {
     bambooCoins,
     ownedAccessories,
     setIsShopModalOpen,
-    sendMascotNotification,
   } = useHabit();
 
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState<boolean>(false);
@@ -548,143 +546,6 @@ export const SettingsView: React.FC = () => {
             <Text style={styles.actionPillBtnText}>Open Shop</Text>
           </View>
         </TouchableOpacity>
-      </View>
-
-      {/* DEV / TEST SPARKY NOTIFICATIONS SECTION (Temporary for Testing) */}
-      <View
-        style={[
-          styles.sectionCard,
-          {
-            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(124, 92, 255, 0.3)' : '#DDD6FE',
-          },
-        ]}
-      >
-        <View style={styles.sectionHeaderRow}>
-          <Text style={[styles.sectionTitle, { color: '#7C5CFF' }]}>
-            TEST SPARKY NOTIFICATIONS (DEV)
-          </Text>
-          <View style={[styles.bambooPill, { backgroundColor: isDark ? 'rgba(124, 92, 255, 0.2)' : '#EDE9FE' }]}>
-            <Text style={{ fontSize: 11, fontWeight: '800', color: '#7C5CFF' }}>TEST OPTIONS</Text>
-          </View>
-        </View>
-        <Text style={[styles.sectionSubDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          Tap any button to immediately test how Sparky and the in-app notification banner appear:
-        </Text>
-
-        <View style={styles.testButtonsGrid}>
-          {[
-            {
-              id: 'evening_danger' as const,
-              label: 'Sparky is Feeling Sad',
-              sub: 'Streak Danger Alert • Sad Crying Panda',
-              color: '#EF4444',
-              bg: 'rgba(239, 68, 68, 0.12)',
-            },
-            {
-              id: 'night_alert' as const,
-              label: 'Sparky is Heartbroken',
-              sub: 'Midnight Snooze Alert • Sad Crying Panda',
-              color: '#DC2626',
-              bg: 'rgba(220, 38, 38, 0.12)',
-            },
-            {
-              id: 'celebration' as const,
-              label: 'Sparky is Super Happy!',
-              sub: '100% Habits Complete • Celebrating Panda',
-              color: '#10B981',
-              bg: 'rgba(16, 185, 129, 0.12)',
-            },
-            {
-              id: 'morning' as const,
-              label: 'Sparky is Waking Up',
-              sub: 'Morning Routine • Smiling Awake Panda',
-              color: '#F59E0B',
-              bg: 'rgba(245, 158, 11, 0.12)',
-            },
-            {
-              id: 'midday' as const,
-              label: 'Sparky is Cheering You On',
-              sub: 'Midday Progress • Winking Panda',
-              color: '#3B82F6',
-              bg: 'rgba(59, 130, 246, 0.12)',
-            },
-            {
-              id: 'freeze_shield' as const,
-              label: 'Sparky is Relieved',
-              sub: 'Streak Shield • Winking Rested Panda',
-              color: '#06B6D4',
-              bg: 'rgba(6, 182, 212, 0.12)',
-            },
-          ].map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={[
-                styles.testEmotionCard,
-                {
-                  backgroundColor: isDark ? '#0C1322' : '#F8FAFC',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-                },
-              ]}
-              onPress={() => {
-                sendMascotNotification(item.id);
-                if (soundEnabled) soundService.playClickSound();
-              }}
-              activeOpacity={0.75}
-            >
-              <View style={[styles.testEmotionBadge, { backgroundColor: item.bg }]}>
-                <View style={[styles.testEmotionDot, { backgroundColor: item.color }]} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={[styles.testEmotionTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                  {item.label}
-                </Text>
-                <Text style={[styles.testEmotionSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  {item.sub}
-                </Text>
-              </View>
-              <View style={[styles.testPlayPill, { backgroundColor: item.color }]}>
-                <Play size={10} color="#FFFFFF" fill="#FFFFFF" />
-                <Text style={styles.testPlayPillText}>Trigger</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-
-          {/* Friend Nudge Test */}
-          <TouchableOpacity
-            style={[
-              styles.testEmotionCard,
-              {
-                backgroundColor: isDark ? '#0C1322' : '#F8FAFC',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-              },
-            ]}
-            onPress={() => {
-              notificationService.triggerNudge({
-                senderName: 'Alex',
-                habitName: 'Morning Meditation',
-              });
-              if (soundEnabled) soundService.playClickSound();
-            }}
-            activeOpacity={0.75}
-          >
-            <View style={[styles.testEmotionBadge, { backgroundColor: 'rgba(168, 85, 247, 0.12)' }]}>
-              <View style={[styles.testEmotionDot, { backgroundColor: '#A855F7' }]} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.testEmotionTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Friend Nudge Notification
-              </Text>
-              <Text style={[styles.testEmotionSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Alex sent a habit reminder • Winking Panda
-              </Text>
-            </View>
-            <View style={[styles.testPlayPill, { backgroundColor: '#A855F7' }]}>
-              <Play size={10} color="#FFFFFF" fill="#FFFFFF" />
-              <Text style={styles.testPlayPillText}>Trigger</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
       </View>
 
       {/* Standalone Export CSV Button */}
@@ -1465,49 +1326,55 @@ const styles = StyleSheet.create({
     lineHeight: 17,
     marginBottom: 12,
   },
-  testButtonsGrid: {
+  toneSelectorRow: {
     gap: 8,
+    marginBottom: 14,
   },
-  testEmotionCard: {
+  toneCard: {
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1.5,
+  },
+  toneHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 10,
+    justifyContent: 'space-between',
+    marginBottom: 3,
   },
-  testEmotionBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  testEmotionDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  testEmotionTitle: {
+  toneLabel: {
     fontSize: 13,
     fontWeight: '800',
   },
-  testEmotionSub: {
+  toneCheckBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#7C5CFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toneDescText: {
     fontSize: 11,
     fontWeight: '500',
-    marginTop: 1,
   },
-  testPlayPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
+  simulatorTitle: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    marginBottom: 8,
   },
-  testPlayPillText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '800',
+  testAlertsRow: {
+    gap: 8,
+    paddingBottom: 4,
+  },
+  testAlertBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  testAlertBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

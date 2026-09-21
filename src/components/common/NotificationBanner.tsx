@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
-import { X, Clock } from 'lucide-react-native';
+import { Bell, Check, X, Clock } from 'lucide-react-native';
 import { InAppNotification, addInAppNotificationListener } from '../../services/notificationService';
 import { useHabit } from '../../context/HabitContext';
-import { HabitlyMascot } from '../mobile/HabitlyMascot';
+import { IconRenderer } from './IconRenderer';
 import { formatTo12Hour } from '../../utils/streakCalculator';
 
 export const NotificationBanner: React.FC = () => {
@@ -71,17 +71,6 @@ export const NotificationBanner: React.FC = () => {
 
   const AnimatedView = Animated.View as any;
 
-  // Clean any remaining emoji glyphs for pure, high-clarity typography
-  const cleanTitle = (currentNotification.title || '')
-    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  const cleanBody = (currentNotification.body || '')
-    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
   return (
     <AnimatedView
       style={[
@@ -101,36 +90,39 @@ export const NotificationBanner: React.FC = () => {
           },
         ]}
       >
-        {/* Left: Animated Panda Mascot with Current Expression */}
+        {/* Left Squircle Icon */}
         <View
           style={[
-            styles.mascotBadge,
-            {
-              backgroundColor: isDark ? 'rgba(124, 92, 255, 0.12)' : '#F5F3FF',
-              borderColor: isDark ? 'rgba(124, 92, 255, 0.25)' : 'rgba(124, 92, 255, 0.2)',
-            },
+            styles.iconWrapper,
+            { backgroundColor: currentNotification.color || '#7C5CFF' },
           ]}
         >
-          <HabitlyMascot
-            size={36}
-            forcedMood={currentNotification.mascotMood}
-            forcedExpression={currentNotification.mascotExpression}
-            hideSpeechBubble
-            disableAura
-            disableZzz
-          />
+          {currentNotification.icon ? (
+            <IconRenderer name={currentNotification.icon} size={22} color="#FFFFFF" />
+          ) : (
+            <Bell size={22} color="#FFFFFF" />
+          )}
         </View>
 
-        {/* Center Text Info: Only Sparky Emotion Title */}
+        {/* Center Text Info */}
         <View style={styles.textWrapper}>
           <Text
             style={[
               styles.title,
               { color: isDark ? '#FFFFFF' : '#0F172A' },
             ]}
+            numberOfLines={1}
+          >
+            {currentNotification.title}
+          </Text>
+          <Text
+            style={[
+              styles.body,
+              { color: isDark ? '#94A3B8' : '#64748B' },
+            ]}
             numberOfLines={2}
           >
-            {cleanTitle}
+            {currentNotification.body}
           </Text>
         </View>
 
@@ -148,7 +140,7 @@ export const NotificationBanner: React.FC = () => {
             </View>
           )}
 
-          <TouchableOpacity style={styles.dismissBtn} onPress={dismiss} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <TouchableOpacity style={styles.dismissBtn} onPress={dismiss}>
             <X size={15} color={isDark ? '#94A3B8' : '#64748B'} />
           </TouchableOpacity>
         </View>
@@ -178,27 +170,30 @@ const styles = StyleSheet.create({
     elevation: 12,
     gap: 12,
   },
-  mascotBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 18,
-    borderWidth: 1.5,
-    overflow: 'hidden',
+  iconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#7C5CFF',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
   },
   textWrapper: {
     flex: 1,
   },
   title: {
-    fontSize: 15,
-    fontWeight: '800',
+    fontSize: 14,
+    fontWeight: '900',
     letterSpacing: -0.2,
+  },
+  body: {
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 2,
   },
   rightColumn: {
     alignItems: 'flex-end',
