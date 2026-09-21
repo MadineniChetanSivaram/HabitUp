@@ -176,17 +176,15 @@ interface HabitContextType {
   experimentVariant: string | null;
   recordFriendsExposure: () => Promise<void>;
 
-  // Feature 2: Sparky's Bamboo Shop & Outfits Customization
+  // Feature 2: Sparky's Bamboo Shop & Outfits Customization (Hats & Glasses)
   bambooCoins: number;
   ownedAccessories: string[];
   equippedHat: string | null;
   equippedGlasses: string | null;
-  equippedNeckwear: string | null;
-  equippedHandheld: string | null;
   isShopModalOpen: boolean;
   setIsShopModalOpen: (open: boolean) => void;
   buyAccessory: (id: string, price: number) => boolean;
-  equipAccessory: (category: 'hat' | 'glasses' | 'neckwear' | 'handheld', id: string | null) => void;
+  equipAccessory: (category: 'hat' | 'glasses', id: string | null) => void;
   earnBambooCoins: (amount: number, reason?: string) => void;
 
   // Feature 3: Smart Widgets & Lock Screen Studio
@@ -1106,13 +1104,11 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
   const [fcmPushToken, setFcmPushToken] = useState<string | null>(null);
 
-  // Feature 2: Bamboo Coins & Sparky Wardrobe State
+  // Feature 2: Bamboo Coins & Sparky Wardrobe State (Hats & Glasses)
   const [bambooCoins, setBambooCoins] = useState<number>(100);
   const [ownedAccessories, setOwnedAccessories] = useState<string[]>(['default_bamboo']);
   const [equippedHat, setEquippedHat] = useState<string | null>(null);
   const [equippedGlasses, setEquippedGlasses] = useState<string | null>(null);
-  const [equippedNeckwear, setEquippedNeckwear] = useState<string | null>(null);
-  const [equippedHandheld, setEquippedHandheld] = useState<string | null>(null);
   const [isShopModalOpen, setIsShopModalOpen] = useState<boolean>(false);
 
   // Feature 3: Smart Widgets & Lock Screen Studio State
@@ -1493,12 +1489,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
     AsyncStorage.getItem('habitup_equipped_glasses_v1').then((val) => {
       if (val !== null) setEquippedGlasses(JSON.parse(val));
-    });
-    AsyncStorage.getItem('habitup_equipped_neckwear_v1').then((val) => {
-      if (val !== null) setEquippedNeckwear(JSON.parse(val));
-    });
-    AsyncStorage.getItem('habitup_equipped_handheld_v1').then((val) => {
-      if (val !== null) setEquippedHandheld(JSON.parse(val));
     });
     AsyncStorage.getItem('habitup_widget_theme_v1').then((val) => {
       if (val) setWidgetTheme(val as any);
@@ -2715,19 +2705,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return true;
   }, [bambooCoins, showToast, triggerCelebration]);
 
-  const equipAccessory = useCallback((category: 'hat' | 'glasses' | 'neckwear' | 'handheld', id: string | null) => {
+  const equipAccessory = useCallback((category: 'hat' | 'glasses', id: string | null) => {
     if (category === 'hat') {
       setEquippedHat(id);
       AsyncStorage.setItem('habitup_equipped_hat_v1', JSON.stringify(id)).catch(() => {});
     } else if (category === 'glasses') {
       setEquippedGlasses(id);
       AsyncStorage.setItem('habitup_equipped_glasses_v1', JSON.stringify(id)).catch(() => {});
-    } else if (category === 'neckwear') {
-      setEquippedNeckwear(id);
-      AsyncStorage.setItem('habitup_equipped_neckwear_v1', JSON.stringify(id)).catch(() => {});
-    } else if (category === 'handheld') {
-      setEquippedHandheld(id);
-      AsyncStorage.setItem('habitup_equipped_handheld_v1', JSON.stringify(id)).catch(() => {});
     }
     if (soundEnabled) {
       soundService.playClickSound();
@@ -4288,8 +4272,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ownedAccessories,
         equippedHat,
         equippedGlasses,
-        equippedNeckwear,
-        equippedHandheld,
         isShopModalOpen,
         setIsShopModalOpen,
         buyAccessory,

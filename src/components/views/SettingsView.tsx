@@ -546,7 +546,7 @@ export const SettingsView: React.FC = () => {
                 Shop Outfits & Accessories
               </Text>
               <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                {ownedAccessories.length} items unlocked • Hats, Glasses, Capes & Wands
+                {ownedAccessories.length} items unlocked • Hats & Glasses 🎩🕶️
               </Text>
             </View>
           </View>

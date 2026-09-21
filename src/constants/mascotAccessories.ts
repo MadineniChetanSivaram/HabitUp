@@ -1,4 +1,4 @@
-export type AccessoryCategory = 'hat' | 'glasses' | 'neckwear' | 'handheld';
+export type AccessoryCategory = 'hat' | 'glasses';
 export type AccessoryRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
 export interface MascotAccessoryItem {
@@ -94,6 +94,16 @@ export const MASCOT_ACCESSORIES: MascotAccessoryItem[] = [
     rarity: 'common',
     badgeColor: '#06B6D4',
   },
+  {
+    id: 'beanie',
+    name: 'Cozy Teal Beanie',
+    category: 'hat',
+    price: 45,
+    icon: '🧢',
+    description: 'Warm and comfortable for cool morning check-ins.',
+    rarity: 'common',
+    badgeColor: '#0D9488',
+  },
 
   // 🕶️ GLASSES & EYEWEAR
   {
@@ -145,90 +155,6 @@ export const MASCOT_ACCESSORIES: MascotAccessoryItem[] = [
     description: 'Deal with it! Stepped retro arcade pixel sunglasses.',
     rarity: 'epic',
     badgeColor: '#14B8A6',
-  },
-
-  // 🧣 NECKWEAR & CLOTHES
-  {
-    id: 'red_scarf',
-    name: 'Cozy Knitted Scarf',
-    category: 'neckwear',
-    price: 65,
-    icon: '🧣',
-    description: 'Warm, cuddly winter protection! Thick red knitted wrap with fringes.',
-    rarity: 'common',
-    badgeColor: '#E11D48',
-  },
-  {
-    id: 'dapper_bowtie',
-    name: 'Dapper Silk Bowtie',
-    category: 'neckwear',
-    price: 70,
-    icon: '🎀',
-    description: 'Looking sharp for habit milestones! Crimson satin gentleman bowtie.',
-    rarity: 'rare',
-    badgeColor: '#F43F5E',
-  },
-  {
-    id: 'gold_medal',
-    name: 'Champion Gold Medal',
-    category: 'neckwear',
-    price: 160,
-    icon: '🥇',
-    description: 'Proof of legendary consistency! Olympic gold medallion on blue ribbon.',
-    rarity: 'epic',
-    badgeColor: '#EAB308',
-  },
-  {
-    id: 'hero_cape',
-    name: 'Heroic Red Cape',
-    category: 'neckwear',
-    price: 200,
-    icon: '🦸',
-    description: 'Fly over laziness! Billowing crimson superhero cape.',
-    rarity: 'legendary',
-    badgeColor: '#EF4444',
-  },
-
-  // ✨ HANDHELD ITEMS
-  {
-    id: 'magic_wand',
-    name: 'Star Magic Wand',
-    category: 'handheld',
-    price: 95,
-    icon: '✨',
-    description: 'Magical streak sparkles! Emits glowing fairy dust stars.',
-    rarity: 'rare',
-    badgeColor: '#A855F7',
-  },
-  {
-    id: 'boba_tea',
-    name: 'Boba Milk Tea',
-    category: 'handheld',
-    price: 60,
-    icon: '🧋',
-    description: 'Sweet habit reward! Iced brown sugar milk tea with chewy pearls.',
-    rarity: 'common',
-    badgeColor: '#D97706',
-  },
-  {
-    id: 'coffee_mug',
-    name: "Sparky's Morning Mug",
-    category: 'handheld',
-    price: 55,
-    icon: '☕',
-    description: 'Fueled for the morning rush! Steaming dark roast coffee mug.',
-    rarity: 'common',
-    badgeColor: '#854D0E',
-  },
-  {
-    id: 'golden_trophy',
-    name: 'Grand Champion Cup',
-    category: 'handheld',
-    price: 220,
-    icon: '🏆',
-    description: 'Awarded to supreme habit masters! Gleaming golden victory trophy.',
-    rarity: 'legendary',
-    badgeColor: '#F59E0B',
   },
 ];
 

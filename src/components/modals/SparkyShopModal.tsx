@@ -33,8 +33,6 @@ export const SparkyShopModal: React.FC = () => {
     ownedAccessories,
     equippedHat,
     equippedGlasses,
-    equippedNeckwear,
-    equippedHandheld,
     buyAccessory,
     equipAccessory,
     earnBambooCoins,
@@ -57,14 +55,10 @@ export const SparkyShopModal: React.FC = () => {
   // Determine what Sparky is wearing in the fitting room preview
   const displayHat = previewItem?.category === 'hat' ? previewItem.id : equippedHat;
   const displayGlasses = previewItem?.category === 'glasses' ? previewItem.id : equippedGlasses;
-  const displayNeckwear = previewItem?.category === 'neckwear' ? previewItem.id : equippedNeckwear;
-  const displayHandheld = previewItem?.category === 'handheld' ? previewItem.id : equippedHandheld;
 
   const isEquipped = (item: MascotAccessoryItem) => {
     if (item.category === 'hat') return equippedHat === item.id;
     if (item.category === 'glasses') return equippedGlasses === item.id;
-    if (item.category === 'neckwear') return equippedNeckwear === item.id;
-    if (item.category === 'handheld') return equippedHandheld === item.id;
     return false;
   };
 
@@ -152,8 +146,6 @@ export const SparkyShopModal: React.FC = () => {
                 forcedMood="hopeful"
                 equippedHat={displayHat}
                 equippedGlasses={displayGlasses}
-                equippedNeckwear={displayNeckwear}
-                equippedHandheld={displayHandheld}
               />
             </View>
 
@@ -167,7 +159,7 @@ export const SparkyShopModal: React.FC = () => {
               <Text style={[styles.fittingRoomHelp, { color: isDark ? '#CBD5E1' : '#475569' }]}>
                 {previewItem
                   ? `Trying on: ${previewItem.name}`
-                  : 'Tap an accessory to try on or equip!'}
+                  : 'Tap a hat or pair of glasses to try on or equip!'}
               </Text>
 
               {/* Free Daily Coins Bonus */}
@@ -191,8 +183,6 @@ export const SparkyShopModal: React.FC = () => {
                 { key: 'all', label: 'All Items', icon: '✨' },
                 { key: 'hat', label: 'Hats', icon: '🎩' },
                 { key: 'glasses', label: 'Glasses', icon: '🕶️' },
-                { key: 'neckwear', label: 'Outfits', icon: '🧣' },
-                { key: 'handheld', label: 'Handheld', icon: '✨' },
               ].map((cat) => {
                 const isActive = selectedCategory === cat.key;
                 return (
