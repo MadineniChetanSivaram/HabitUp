@@ -55,7 +55,7 @@ export const SparkyCelebrationModal: React.FC = () => {
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const bambooShootAnim = useRef(new Animated.Value(SCREEN_HEIGHT * 0.75)).current;
 
-  // Step 2: Realistic 3-Step Scamper Climbing Animation
+  // Step 2: Panda Holding Bamboo & 3-Step Scamper Climbing
   const pandaYAnim = useRef(new Animated.Value(340)).current;
   const pandaScaleYAnim = useRef(new Animated.Value(1)).current;
   const pandaScaleXAnim = useRef(new Animated.Value(1)).current;
@@ -109,13 +109,13 @@ export const SparkyCelebrationModal: React.FC = () => {
         Animated.sequence([
           Animated.timing(tailAnim, {
             toValue: 1,
-            duration: 380,
+            duration: 360,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: useNative,
           }),
           Animated.timing(tailAnim, {
             toValue: -1,
-            duration: 380,
+            duration: 360,
             easing: Easing.inOut(Easing.sin),
             useNativeDriver: useNative,
           }),
@@ -142,13 +142,13 @@ export const SparkyCelebrationModal: React.FC = () => {
         useNativeDriver: useNative,
       }).start(() => {
         // -----------------------------------------------------------
-        // PHASE 2: AUTHENTIC 3-STEP SCAMPER CLIMB (Panda climbs up bamboo)
+        // PHASE 2: PANDA HOLDS THE BAMBOO & CLIMBS UP IN 3 SCAMPER HOPS
         // -----------------------------------------------------------
         if (soundEnabled) {
           soundService.playMascotCuteSound('happy');
         }
 
-        // Paw climbing reach alternation
+        // Alternating paw reach while climbing
         const pawLoop = Animated.loop(
           Animated.sequence([
             Animated.timing(pawClimbAnim, {
@@ -165,33 +165,33 @@ export const SparkyCelebrationModal: React.FC = () => {
         );
         pawLoop.start();
 
-        // Staggered 3-Step Scamper Climbing Sequence with Squash & Stretch Hops
+        // 3-Step Scamper Climbing Sequence with Real Tree-Hugging Physics
         Animated.sequence([
-          // === HOP 1: Ground to Lower Stalk (340 -> 220) ===
+          // === HOP 1: Bottom to Lower Stalk (340 -> 220) ===
           Animated.parallel([
             Animated.sequence([
-              // Anticipation crouch / squash
+              // Windup / Crouch squash
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
-                  toValue: 0.85,
+                  toValue: 0.84,
                   duration: 80,
                   useNativeDriver: useNative,
                 }),
                 Animated.timing(pandaScaleXAnim, {
-                  toValue: 1.15,
+                  toValue: 1.16,
                   duration: 80,
                   useNativeDriver: useNative,
                 }),
               ]),
-              // Launch upward stretch
+              // Spring upward stretch along bamboo
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
-                  toValue: 1.16,
+                  toValue: 1.18,
                   duration: 160,
                   useNativeDriver: useNative,
                 }),
                 Animated.timing(pandaScaleXAnim, {
-                  toValue: 0.88,
+                  toValue: 0.86,
                   duration: 160,
                   useNativeDriver: useNative,
                 }),
@@ -201,7 +201,7 @@ export const SparkyCelebrationModal: React.FC = () => {
                   useNativeDriver: useNative,
                 }),
               ]),
-              // Cushion / grip land
+              // Grip land on lower node
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
                   toValue: 0.92,
@@ -244,20 +244,20 @@ export const SparkyCelebrationModal: React.FC = () => {
           // === HOP 2: Lower Stalk to Upper Stalk (220 -> 100) ===
           Animated.parallel([
             Animated.sequence([
-              // Anticipation crouch / squash
+              // Windup / Crouch squash
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
-                  toValue: 0.86,
+                  toValue: 0.85,
                   duration: 80,
                   useNativeDriver: useNative,
                 }),
                 Animated.timing(pandaScaleXAnim, {
-                  toValue: 1.14,
+                  toValue: 1.15,
                   duration: 80,
                   useNativeDriver: useNative,
                 }),
               ]),
-              // Launch upward stretch
+              // Spring upward stretch along bamboo
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
                   toValue: 1.18,
@@ -275,7 +275,7 @@ export const SparkyCelebrationModal: React.FC = () => {
                   useNativeDriver: useNative,
                 }),
               ]),
-              // Cushion / grip land
+              // Grip land on upper node
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
                   toValue: 0.92,
@@ -315,10 +315,10 @@ export const SparkyCelebrationModal: React.FC = () => {
             }),
           ]),
 
-          // === HOP 3: Final Victory Scramble to Perch Top (100 -> 0) ===
+          // === HOP 3: Final Scramble to Perch Top (100 -> 0) ===
           Animated.parallel([
             Animated.sequence([
-              // Anticipation crouch / squash
+              // Windup
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
                   toValue: 0.84,
@@ -331,7 +331,7 @@ export const SparkyCelebrationModal: React.FC = () => {
                   useNativeDriver: useNative,
                 }),
               ]),
-              // Launch upward stretch
+              // Big victory leap
               Animated.parallel([
                 Animated.timing(pandaScaleYAnim, {
                   toValue: 1.2,
@@ -349,7 +349,7 @@ export const SparkyCelebrationModal: React.FC = () => {
                   useNativeDriver: useNative,
                 }),
               ]),
-              // Overshoot and bouncy settle onto the node perch
+              // Bouncy settle onto the perch
               Animated.parallel([
                 Animated.spring(pandaScaleYAnim, {
                   toValue: 1.0,
@@ -391,7 +391,7 @@ export const SparkyCelebrationModal: React.FC = () => {
           setHasReachedTop(true);
 
           // ---------------------------------------------------------
-          // PHASE 3: SPARKY PERCHED AT TOP, WAVES & SAYS HI! (Fanfare + Speech)
+          // PHASE 3: PERCHED AT TOP, SPARKY WAVES & CELEBRATES!
           // ---------------------------------------------------------
           if (soundEnabled) {
             soundService.playDuolingoCelebrationFanfare();
@@ -500,17 +500,12 @@ export const SparkyCelebrationModal: React.FC = () => {
 
   const tiltDeg = pandaTiltAnim.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-6deg', '6deg'],
+    outputRange: ['-5deg', '5deg'],
   });
 
   const handWaveDeg = waveAnim.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-24deg', '24deg'],
-  });
-
-  const pawClimbOffset = pawClimbAnim.interpolate({
-    inputRange: [-1, 1],
-    outputRange: [-8, 8],
+    outputRange: ['-22deg', '22deg'],
   });
 
   const tailWagDeg = tailAnim.interpolate({
@@ -571,7 +566,7 @@ export const SparkyCelebrationModal: React.FC = () => {
           </AnimatedView>
 
           {/* ========================================================= */}
-          {/* 2. THE STAGE: BAMBOO STALK + CLIMBING RED PANDA SPARKY   */}
+          {/* 2. THE STAGE: BAMBOO STALK + RED PANDA HOLDING & CLIMBING */}
           {/* ========================================================= */}
           <View style={styles.stageWrapper}>
             {/* LAYER A: TALL BAMBOO STALK (Shoots Up FIRST!) */}
@@ -588,8 +583,8 @@ export const SparkyCelebrationModal: React.FC = () => {
                   <LinearGradient id="bambooCylinderGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                     <Stop offset="0%" stopColor="#047857" />
                     <Stop offset="25%" stopColor="#10B981" />
-                    <Stop offset="60%" stopColor="#34D399" />
-                    <Stop offset="85%" stopColor="#10B981" />
+                    <Stop offset="55%" stopColor="#34D399" />
+                    <Stop offset="80%" stopColor="#10B981" />
                     <Stop offset="100%" stopColor="#064E3B" />
                   </LinearGradient>
                   <LinearGradient id="bambooNodeRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -605,34 +600,33 @@ export const SparkyCelebrationModal: React.FC = () => {
                 </Defs>
 
                 {/* Stalk Segment 1 (Bottom) */}
-                <Rect x="97" y="240" width="26" height="100" rx="4" fill="url(#bambooCylinderGrad)" />
-                <Rect x="92" y="240" width="36" height="7" rx="3.5" fill="url(#bambooNodeRingGrad)" />
+                <Rect x="75" y="230" width="28" height="110" rx="4" fill="url(#bambooCylinderGrad)" />
+                <Rect x="70" y="230" width="38" height="7" rx="3.5" fill="url(#bambooNodeRingGrad)" />
 
                 {/* Stalk Segment 2 (Middle) */}
-                <Rect x="97" y="140" width="26" height="100" rx="4" fill="url(#bambooCylinderGrad)" />
-                <Rect x="92" y="140" width="36" height="7" rx="3.5" fill="url(#bambooNodeRingGrad)" />
+                <Rect x="75" y="130" width="28" height="100" rx="4" fill="url(#bambooCylinderGrad)" />
+                <Rect x="70" y="130" width="38" height="7" rx="3.5" fill="url(#bambooNodeRingGrad)" />
 
-                {/* Stalk Segment 3 (Upper Perch Segment) */}
-                <Rect x="98" y="40" width="24" height="100" rx="4" fill="url(#bambooCylinderGrad)" />
-                <Rect x="93" y="40" width="34" height="7" rx="3.5" fill="url(#bambooNodeRingGrad)" />
+                {/* Stalk Segment 3 (Upper Perch Node) */}
+                <Rect x="76" y="35" width="26" height="95" rx="4" fill="url(#bambooCylinderGrad)" />
+                <Rect x="71" y="35" width="36" height="7" rx="3.5" fill="url(#bambooNodeRingGrad)" />
 
                 {/* Stalk Segment 4 (Top Shoot Tip) */}
-                <Rect x="99" y="0" width="22" height="40" rx="3" fill="url(#bambooCylinderGrad)" />
+                <Rect x="77" y="0" width="24" height="35" rx="3" fill="url(#bambooCylinderGrad)" />
 
                 {/* Lush Bamboo Leaves sprouting along the stalk */}
                 {/* Left side branches */}
-                <Path d="M97,48 Q50,28 20,54 Q56,70 97,55 Z" fill="url(#bambooLeafGrad)" />
-                <Path d="M97,46 Q40,16 12,38 Q50,54 97,50 Z" fill="url(#bambooLeafGrad)" />
-                <Path d="M97,148 Q46,132 18,158 Q58,174 97,156 Z" fill="url(#bambooLeafGrad)" />
+                <Path d="M75,45 Q35,25 5,50 Q45,66 75,52 Z" fill="url(#bambooLeafGrad)" />
+                <Path d="M75,43 Q25,15 0,35 Q35,50 75,47 Z" fill="url(#bambooLeafGrad)" />
+                <Path d="M75,135 Q30,120 5,145 Q45,160 75,142 Z" fill="url(#bambooLeafGrad)" />
 
                 {/* Right side branches */}
-                <Path d="M123,88 Q170,68 202,94 Q165,108 123,96 Z" fill="url(#bambooLeafGrad)" />
-                <Path d="M123,86 Q180,56 210,78 Q174,94 123,90 Z" fill="url(#bambooLeafGrad)" />
-                <Path d="M123,198 Q172,182 204,208 Q162,224 123,206 Z" fill="url(#bambooLeafGrad)" />
+                <Path d="M103,80 Q145,60 175,85 Q140,100 103,88 Z" fill="url(#bambooLeafGrad)" />
+                <Path d="M103,170 Q150,155 180,180 Q140,195 103,178 Z" fill="url(#bambooLeafGrad)" />
               </Svg>
             </AnimatedView>
 
-            {/* LAYER B: RED PANDA SPARKY (Hugs & climbs up the bamboo!) */}
+            {/* LAYER B: RED PANDA SPARKY (Holding the bamboo tree & climbing up!) */}
             <AnimatedView
               style={[
                 styles.pandaClimberWrapper,
@@ -646,7 +640,7 @@ export const SparkyCelebrationModal: React.FC = () => {
                 },
               ]}
             >
-              <Svg width={200} height={190} viewBox="0 0 200 190">
+              <Svg width={220} height={190} viewBox="0 0 220 190">
                 <Defs>
                   {/* Warm Red Panda Fur Radial Gradient */}
                   <RadialGradient id="rpFurGradClimb" cx="50%" cy="35%" r="65%">
@@ -665,144 +659,142 @@ export const SparkyCelebrationModal: React.FC = () => {
                     <Stop offset="60%" stopColor="#F59E0B" />
                     <Stop offset="100%" stopColor="#D97706" />
                   </LinearGradient>
-                  {/* Cream White Fur */}
-                  <LinearGradient id="rpCreamFur" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0%" stopColor="#FFFFFF" />
-                    <Stop offset="100%" stopColor="#FEF3C7" />
-                  </LinearGradient>
                 </Defs>
 
                 {/* ------------------------------------------------------------- */}
                 {/* 1. FLUFFY STRIPED TAIL (Trails dynamically behind body)      */}
                 {/* ------------------------------------------------------------- */}
-                <G transform="translate(18, 12)">
+                <G transform="translate(10, 0)">
                   <Path
-                    d="M 112 110 C 146 120, 178 104, 172 74 C 168 50, 142 54, 128 78 Z"
+                    d="M 142 110 C 176 120, 208 102, 202 72 C 196 48, 170 52, 156 76 Z"
                     fill="url(#rpFurGradClimb)"
                   />
                   {/* Cream tip */}
                   <Path
-                    d="M 172 74 C 170 54, 152 52, 144 64 C 158 70, 168 78, 172 74 Z"
+                    d="M 202 72 C 200 52, 182 50, 174 62 C 188 68, 198 76, 202 72 Z"
                     fill="#FEF3C7"
                   />
                   {/* Dark stripe 1 */}
                   <Path
-                    d="M 163 82 C 152 79, 142 82, 136 90 C 144 94, 155 92, 163 82 Z"
+                    d="M 193 80 C 182 77, 172 80, 166 88 C 174 92, 185 90, 193 80 Z"
                     fill="#240F05"
                     opacity={0.85}
                   />
                   {/* Dark stripe 2 */}
                   <Path
-                    d="M 150 94 C 140 92, 132 95, 128 102 C 134 105, 143 103, 150 94 Z"
+                    d="M 180 92 C 170 90, 162 93, 158 100 C 164 103, 173 101, 180 92 Z"
                     fill="#240F05"
                     opacity={0.85}
                   />
                 </G>
 
                 {/* ------------------------------------------------------------- */}
-                {/* 2. BACK HIND LEGS (Hugging & clamping onto bamboo stalk)      */}
+                {/* 2. BACK LIMBS REACHING AROUND BAMBOO (Behind stalk)          */}
                 {/* ------------------------------------------------------------- */}
-                {/* Left Hind Leg (Clamping around left of bamboo) */}
-                <G id="hind-leg-left">
-                  <Path
-                    d="M 72 112 C 58 116, 52 130, 64 140 C 76 142, 86 132, 84 118 Z"
-                    fill="url(#rpDarkFurClimb)"
-                  />
-                  {/* Paw pad gripping bamboo */}
-                  <Ellipse cx="65" cy="138" rx="6" ry="4.5" fill="#FEF08A" opacity={0.95} transform="rotate(-15 65 138)" />
-                  <Circle cx="58" cy="134" r="1.8" fill="#FEF08A" opacity={0.95} />
-                  <Circle cx="63" cy="130" r="1.8" fill="#FEF08A" opacity={0.95} />
-                  <Circle cx="69" cy="132" r="1.8" fill="#FEF08A" opacity={0.95} />
-                </G>
-
-                {/* Right Hind Leg (Clamping around right of bamboo) */}
-                <G id="hind-leg-right">
-                  <Path
-                    d="M 128 112 C 142 116, 148 130, 136 140 C 124 142, 114 132, 116 118 Z"
-                    fill="url(#rpDarkFurClimb)"
-                  />
-                  {/* Paw pad gripping bamboo */}
-                  <Ellipse cx="135" cy="138" rx="6" ry="4.5" fill="#FEF08A" opacity={0.95} transform="rotate(15 135 138)" />
-                  <Circle cx="131" cy="132" r="1.8" fill="#FEF08A" opacity={0.95} />
-                  <Circle cx="137" cy="130" r="1.8" fill="#FEF08A" opacity={0.95} />
-                  <Circle cx="142" cy="134" r="1.8" fill="#FEF08A" opacity={0.95} />
-                </G>
+                {/* Left Hind Leg reaching around bamboo from behind */}
+                <Path
+                  d="M 112 116 C 96 116, 76 122, 68 128 C 62 134, 72 142, 88 138 C 104 134, 116 126, 120 118 Z"
+                  fill="url(#rpDarkFurClimb)"
+                />
+                {/* Left Front Arm reaching around bamboo from behind */}
+                <Path
+                  d="M 108 84 C 92 82, 74 80, 66 82 C 58 86, 64 96, 78 94 C 92 92, 106 88, 112 85 Z"
+                  fill="url(#rpDarkFurClimb)"
+                />
 
                 {/* ------------------------------------------------------------- */}
                 {/* 3. CHUBBY TORSO & BELLY (Hugs against the bamboo cylinder)   */}
                 {/* ------------------------------------------------------------- */}
-                <Ellipse cx="100" cy="108" rx="36" ry="28" fill="url(#rpFurGradClimb)" />
+                <Ellipse cx="120" cy="106" rx="34" ry="26" fill="url(#rpFurGradClimb)" />
                 {/* Dark Chocolate underbelly patch */}
-                <Ellipse cx="100" cy="113" rx="22" ry="17" fill="url(#rpDarkFurClimb)" />
+                <Ellipse cx="120" cy="110" rx="20" ry="16" fill="url(#rpDarkFurClimb)" />
                 {/* White fluffy chest collar */}
-                <Path d="M 91 94 Q 100 102 109 94 Q 100 98 91 94 Z" fill="#FFFFFF" opacity={0.95} />
+                <Path d="M 110 92 Q 120 100 130 92 Q 120 96 110 92 Z" fill="#FFFFFF" opacity={0.95} />
 
                 {/* ------------------------------------------------------------- */}
-                {/* 4. LEFT FRONT ARM & PAW (Firmly grasping around bamboo front) */}
+                {/* 4. FRONT CLAWS & PAWS CLASPING THE BAMBOO STALK (In Front!)  */}
                 {/* ------------------------------------------------------------- */}
-                <G id="front-arm-left">
-                  {/* Left arm stretching across to hug bamboo */}
-                  <Path
-                    d="M 72 90 C 64 92, 60 102, 70 108 C 80 110, 88 102, 85 92 Z"
-                    fill="url(#rpDarkFurClimb)"
-                  />
-                  {/* Front left paw wrapping the bamboo stalk */}
-                  <Ellipse cx="78" cy="102" rx="7.5" ry="6.5" fill="url(#rpDarkFurClimb)" transform="rotate(-15 78 102)" />
-                  <Ellipse cx="78" cy="102" rx="3.2" ry="2.4" fill="#FEF08A" opacity={0.9} />
-                  <Circle cx="72" cy="99" r="1.4" fill="#FEF08A" opacity={0.9} />
-                  <Circle cx="76" cy="96" r="1.4" fill="#FEF08A" opacity={0.9} />
-                  <Circle cx="81" cy="97" r="1.4" fill="#FEF08A" opacity={0.9} />
+                {/* Left Front Paw: Visibly WRAPS around the front of the bamboo stalk! */}
+                <G id="paw-front-left">
+                  <Ellipse cx="68" cy="85" rx="8" ry="7" fill="url(#rpDarkFurClimb)" transform="rotate(20 68 85)" />
+                  <Ellipse cx="68" cy="85" rx="3.5" ry="2.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="63" cy="81" r="1.5" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="67" cy="78" r="1.5" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="73" cy="79" r="1.5" fill="#FEF08A" opacity={0.95} />
                 </G>
 
-                {/* ------------------------------------------------------------- */}
-                {/* 5. RIGHT FRONT ARM & PAW (Climbing reach or enthusiastic wave)*/}
-                {/* ------------------------------------------------------------- */}
+                {/* Left Hind Foot: Visibly CLAMPS around the front-left of bamboo! */}
+                <G id="paw-hind-left">
+                  <Ellipse cx="70" cy="130" rx="9" ry="7" fill="url(#rpDarkFurClimb)" transform="rotate(25 70 130)" />
+                  <Ellipse cx="70" cy="130" rx="4.2" ry="3" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="64" cy="126" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="69" cy="123" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="75" cy="124" r="1.6" fill="#FEF08A" opacity={0.95} />
+                </G>
+
+                {/* Right Hind Foot: Visibly CLAMPS against the right side of bamboo! */}
+                <G id="paw-hind-right">
+                  <Path
+                    d="M 126 116 C 138 118, 142 128, 134 136 C 122 138, 108 132, 100 126 Z"
+                    fill="url(#rpDarkFurClimb)"
+                  />
+                  <Ellipse cx="98" cy="126" rx="9" ry="7" fill="url(#rpDarkFurClimb)" transform="rotate(-20 98 126)" />
+                  <Ellipse cx="98" cy="126" rx="4.2" ry="3" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="94" cy="121" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="99" cy="120" r="1.6" fill="#FEF08A" opacity={0.95} />
+                  <Circle cx="104" cy="122" r="1.6" fill="#FEF08A" opacity={0.95} />
+                </G>
+
+                {/* Right Front Arm & Paw: Climbing Grip OR Victory Waving Hand! */}
                 {hasReachedTop ? (
-                  /* Perched at Top: Waving joyfully to the user! */
-                  <G id="front-arm-right-waving" transform="translate(126, 82)">
-                    {/* Upper arm raised outwards */}
+                  /* Perched at Top: Waving enthusiastically to the user! */
+                  <G id="front-arm-right-waving">
+                    {/* Upper arm raised high */}
                     <Path
-                      d="M -8 10 C 2 2, 14 -4, 22 -14 C 28 -8, 22 4, 10 16 Z"
+                      d="M 128 78 C 142 66, 154 50, 162 36 C 170 42, 162 58, 146 80 Z"
                       fill="url(#rpDarkFurClimb)"
                     />
                     {/* Waving Paw Hand */}
-                    <G transform="translate(20, -16)">
-                      <Ellipse cx="0" cy="0" rx="9" ry="7.5" fill="url(#rpDarkFurClimb)" transform="rotate(-20 0 0)" />
-                      <Ellipse cx="0" cy="0" rx="3.8" ry="2.8" fill="#FEF08A" opacity={0.95} />
-                      <Circle cx="-5" cy="-4" r="1.5" fill="#FEF08A" opacity={0.95} />
-                      <Circle cx="0" cy="-6" r="1.5" fill="#FEF08A" opacity={0.95} />
-                      <Circle cx="5" cy="-4" r="1.5" fill="#FEF08A" opacity={0.95} />
+                    <G transform="translate(164, 34)">
+                      <Ellipse cx="0" cy="0" rx="9.5" ry="8" fill="url(#rpDarkFurClimb)" transform="rotate(-20 0 0)" />
+                      <Ellipse cx="0" cy="0" rx="4.2" ry="3.2" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="-5" cy="-5" r="1.7" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="0" cy="-7" r="1.7" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="5" cy="-5" r="1.7" fill="#FEF08A" opacity={0.95} />
                     </G>
                   </G>
                 ) : (
-                  /* Climbing: Reaching up along the bamboo stalk! */
+                  /* Climbing: Right paw firmly gripping the front of the bamboo trunk! */
                   <G id="front-arm-right-climbing">
                     <Path
-                      d="M 124 90 C 132 86, 138 96, 130 106 C 120 108, 114 98, 118 88 Z"
+                      d="M 126 84 C 114 80, 98 76, 90 74 C 82 74, 84 84, 96 88 C 108 92, 122 90, 128 86 Z"
                       fill="url(#rpDarkFurClimb)"
                     />
-                    <Ellipse cx="124" cy="94" rx="7.5" ry="6.5" fill="url(#rpDarkFurClimb)" transform="rotate(20 124 94)" />
-                    <Ellipse cx="124" cy="94" rx="3.2" ry="2.4" fill="#FEF08A" opacity={0.9} />
+                    <Ellipse cx="88" cy="74" rx="8" ry="7" fill="url(#rpDarkFurClimb)" transform="rotate(-15 88 74)" />
+                    <Ellipse cx="88" cy="74" rx="3.5" ry="2.6" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="84" cy="70" r="1.5" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="88" cy="68" r="1.5" fill="#FEF08A" opacity={0.95} />
+                    <Circle cx="93" cy="70" r="1.5" fill="#FEF08A" opacity={0.95} />
                   </G>
                 )}
 
                 {/* ------------------------------------------------------------- */}
-                {/* 6. ROUND CHUBBY HEAD, EARS, FACE & EXPRESSIONS               */}
+                {/* 5. ROUND CHUBBY HEAD, EARS, FACE & EXPRESSIONS               */}
                 {/* ------------------------------------------------------------- */}
                 {/* Rounded Ears */}
                 <G id="rp-ears-group">
                   {/* Left Ear */}
-                  <Path d="M 56 46 C 44 26, 58 14, 76 26 C 80 32, 76 42, 68 48 Z" fill="url(#rpFurGradClimb)" />
-                  <Path d="M 58 44 C 50 30, 62 22, 72 30 Z" fill="#FFFFFF" />
+                  <Path d="M 88 38 C 76 18, 90 6, 108 18 C 112 24, 108 34, 100 40 Z" fill="url(#rpFurGradClimb)" />
+                  <Path d="M 90 36 C 82 22, 94 14, 104 22 Z" fill="#FFFFFF" />
 
                   {/* Right Ear */}
-                  <Path d="M 144 46 C 156 26, 142 14, 124 26 C 120 32, 124 42, 132 48 Z" fill="url(#rpFurGradClimb)" />
-                  <Path d="M 142 44 C 150 30, 138 22, 128 30 Z" fill="#FFFFFF" />
+                  <Path d="M 152 38 C 164 18, 150 6, 132 18 C 128 24, 132 34, 140 40 Z" fill="url(#rpFurGradClimb)" />
+                  <Path d="M 150 36 C 158 22, 146 14, 136 22 Z" fill="#FFFFFF" />
                 </G>
 
                 {/* Equipped Hats & Headgear */}
                 {equippedHat === 'crown' && (
-                  <G transform="translate(76, 12)">
+                  <G transform="translate(96, 4)">
                     <Path d="M0,20 L10,6 L24,18 L38,6 L48,20 Z" fill="url(#goldCrownClimb)" stroke="#B45309" strokeWidth={1} />
                     <Circle cx="10" cy="6" r="2.5" fill="#EF4444" />
                     <Circle cx="24" cy="18" r="2.5" fill="#3B82F6" />
@@ -810,40 +802,40 @@ export const SparkyCelebrationModal: React.FC = () => {
                   </G>
                 )}
                 {equippedHat === 'wizard' && (
-                  <G transform="translate(74, 4)">
+                  <G transform="translate(94, -4)">
                     <Path d="M 0,38 C 11,22, 18,6, 28,2 C 34,8, 38,22, 52,38 Z" fill="#312E81" stroke="#4338CA" strokeWidth={1} />
                     <Ellipse cx="26" cy="38" rx="28" ry="6" fill="#1E1B4B" />
                     <Path d="M 22,20 L 23.5,23 L 27,23.5 L 24.5,26 L 25,29 L 22,27.5 L 19,29 L 19.5,26 L 17,23.5 L 20.5,23 Z" fill="#FDE047" />
                   </G>
                 )}
                 {equippedHat === 'chef' && (
-                  <G transform="translate(76, 10)">
+                  <G transform="translate(96, 2)">
                     <Path d="M 4,30 C -2,18, 8,6, 16,8 C 20,2, 32,2, 36,8 C 44,6, 54,18, 48,30 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth={1} />
                     <Rect x="4" y="28" width="44" height="7" rx="2" fill="#E2E8F0" />
                   </G>
                 )}
                 {equippedHat === 'santa' && (
-                  <G transform="translate(72, 14)">
+                  <G transform="translate(92, 6)">
                     <Path d="M 4,28 C 8,12, 24,2, 44,4 C 54,8, 58,16, 64,24 Z" fill="#DC2626" />
                     <Circle cx="66" cy="26" r="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={1} />
                     <Rect x="0" y="24" width="58" height="9" rx="4.5" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={0.8} />
                   </G>
                 )}
                 {equippedHat === 'detective' && (
-                  <G transform="translate(72, 18)">
+                  <G transform="translate(92, 10)">
                     <Path d="M 6,22 C 4,6, 16,0, 34,0 C 52,0, 64,6, 62,22 Z" fill="#78350F" />
                     <Path d="M 0,22 Q 34,30 68,22 Q 34,18 0,22 Z" fill="#451A03" />
                   </G>
                 )}
                 {equippedHat === 'party_hat' && (
-                  <G transform="translate(84, 8)">
+                  <G transform="translate(104, 0)">
                     <Path d="M 0,30 L 16,4 L 32,30 Z" fill="#F43F5E" />
                     <Path d="M 4,24 L 16,4 L 28,24 Z" fill="#F59E0B" />
                     <Circle cx="16" cy="3" r="3.5" fill="#FDE047" />
                   </G>
                 )}
                 {equippedHat === 'beanie' && (
-                  <G transform="translate(72, 16)">
+                  <G transform="translate(92, 8)">
                     <Path d="M 6,24 C 4,8, 16,0, 34,0 C 52,0, 64,8, 62,24 Z" fill="#0D9488" />
                     <Rect x="2" y="18" width="64" height="9" rx="3" fill="#115E59" />
                     <Circle cx="34" cy="-2" r="4.5" fill="#F59E0B" />
@@ -851,73 +843,73 @@ export const SparkyCelebrationModal: React.FC = () => {
                 )}
 
                 {/* Head Base & Muzzle */}
-                <Ellipse cx="100" cy="60" rx="38" ry="31" fill="url(#rpFurGradClimb)" />
-                <Ellipse cx="100" cy="68" rx="16" ry="12" fill="#FFFFFF" />
+                <Ellipse cx="120" cy="54" rx="36" ry="29" fill="url(#rpFurGradClimb)" />
+                <Ellipse cx="120" cy="62" rx="15" ry="11" fill="#FFFFFF" />
 
                 {/* White Eyebrow Spots */}
-                <Circle cx="82" cy="46" r="4.5" fill="#FFFFFF" />
-                <Circle cx="118" cy="46" r="4.5" fill="#FFFFFF" />
+                <Circle cx="104" cy="42" r="4.2" fill="#FFFFFF" />
+                <Circle cx="136" cy="42" r="4.2" fill="#FFFFFF" />
 
                 {/* Fluffy White Cheek Tuft Markings */}
-                <Path d="M 66 62 C 62 72, 70 78, 76 73 C 74 66, 69 62, 66 62 Z" fill="#FFFFFF" />
-                <Path d="M 134 62 C 138 72, 130 78, 124 73 C 126 66, 131 62, 134 62 Z" fill="#FFFFFF" />
+                <Path d="M 88 56 C 84 66, 92 72, 98 67 C 96 60, 91 56, 88 56 Z" fill="#FFFFFF" />
+                <Path d="M 152 56 C 156 66, 148 72, 142 67 C 144 60, 149 56, 152 56 Z" fill="#FFFFFF" />
 
                 {/* Cute Button Nose */}
-                <Path d="M 96 64 Q 100 62 104 64 Q 100 69 96 64 Z" fill="#1C1917" />
-                <Circle cx="98.5" cy="64.5" r="0.8" fill="#FFFFFF" />
+                <Path d="M 116 58 Q 120 56 124 58 Q 120 63 116 58 Z" fill="#1C1917" />
+                <Circle cx="118.5" cy="58.5" r="0.7" fill="#FFFFFF" />
 
                 {/* Sparkling Starry Celebration Eyes */}
                 <G id="starry-eyes">
                   {/* Left Eye */}
-                  <Circle cx="83" cy="56" r="6.5" fill="#1C1917" />
-                  <Circle cx="81.5" cy="53.5" r="2.6" fill="#FFFFFF" />
-                  <Circle cx="85.5" cy="58.5" r="1.3" fill="#93C5FD" />
+                  <Circle cx="105" cy="50" r="6" fill="#1C1917" />
+                  <Circle cx="103.5" cy="47.5" r="2.4" fill="#FFFFFF" />
+                  <Circle cx="107.5" cy="52.5" r="1.2" fill="#93C5FD" />
 
                   {/* Right Eye */}
-                  <Circle cx="117" cy="56" r="6.5" fill="#1C1917" />
-                  <Circle cx="115.5" cy="53.5" r="2.6" fill="#FFFFFF" />
-                  <Circle cx="119.5" cy="58.5" r="1.3" fill="#93C5FD" />
+                  <Circle cx="135" cy="50" r="6" fill="#1C1917" />
+                  <Circle cx="133.5" cy="47.5" r="2.4" fill="#FFFFFF" />
+                  <Circle cx="137.5" cy="52.5" r="1.2" fill="#93C5FD" />
                 </G>
 
                 {/* Rosy Blushing Cheeks */}
-                <Ellipse cx="70" cy="66" rx="5.5" ry="4" fill="#FB7185" opacity={0.7} />
-                <Ellipse cx="130" cy="66" rx="5.5" ry="4" fill="#FB7185" opacity={0.7} />
+                <Ellipse cx="92" cy="60" rx="5" ry="3.8" fill="#FB7185" opacity={0.7} />
+                <Ellipse cx="148" cy="60" rx="5" ry="3.8" fill="#FB7185" opacity={0.7} />
 
                 {/* Wide Cheerful Happy Open Smile with Tongue */}
-                <Path d="M 93 70 Q 100 80 107 70 Z" fill="#E11D48" />
-                <Path d="M 95 74 Q 100 80 105 74 Z" fill="#FB7185" />
+                <Path d="M 113 64 Q 120 74 127 64 Z" fill="#E11D48" />
+                <Path d="M 115 68 Q 120 74 125 68 Z" fill="#FB7185" />
 
                 {/* Equipped Glasses & Eyewear */}
                 {equippedGlasses === 'aviators' && (
-                  <G transform="translate(72, 48)">
-                    <Rect x="0" y="0" width="24" height="15" rx="5" fill="#0F172A" />
-                    <Rect x="32" y="0" width="24" height="15" rx="5" fill="#0F172A" />
-                    <Line x1="24" y1="6" x2="32" y2="6" stroke="#F59E0B" strokeWidth={2.5} />
-                    <Path d="M 4 3 L 10 12" stroke="#FFFFFF" strokeWidth={1.5} opacity={0.6} />
-                    <Path d="M 36 3 L 42 12" stroke="#FFFFFF" strokeWidth={1.5} opacity={0.6} />
+                  <G transform="translate(94, 42)">
+                    <Rect x="0" y="0" width="22" height="14" rx="5" fill="#0F172A" />
+                    <Rect x="30" y="0" width="22" height="14" rx="5" fill="#0F172A" />
+                    <Line x1="22" y1="5" x2="30" y2="5" stroke="#F59E0B" strokeWidth={2.5} />
+                    <Path d="M 4 3 L 9 11" stroke="#FFFFFF" strokeWidth={1.5} opacity={0.6} />
+                    <Path d="M 34 3 L 39 11" stroke="#FFFFFF" strokeWidth={1.5} opacity={0.6} />
                   </G>
                 )}
                 {equippedGlasses === 'round_specs' && (
-                  <G transform="translate(70, 46)">
-                    <Circle cx="13" cy="11" r="11" fill="none" stroke="#0284C7" strokeWidth={2.5} />
-                    <Circle cx="47" cy="11" r="11" fill="none" stroke="#0284C7" strokeWidth={2.5} />
-                    <Line x1="24" y1="11" x2="36" y2="11" stroke="#0284C7" strokeWidth={2.5} />
+                  <G transform="translate(92, 40)">
+                    <Circle cx="12" cy="10" r="10" fill="none" stroke="#0284C7" strokeWidth={2.5} />
+                    <Circle cx="44" cy="10" r="10" fill="none" stroke="#0284C7" strokeWidth={2.5} />
+                    <Line x1="22" y1="10" x2="34" y2="10" stroke="#0284C7" strokeWidth={2.5} />
                   </G>
                 )}
                 {equippedGlasses === 'star_glasses' && (
-                  <G transform="translate(72, 46)">
+                  <G transform="translate(94, 40)">
                     <Path d="M 12 0 L 15 8 L 24 9 L 17 15 L 19 24 L 12 19 L 5 24 L 7 15 L 0 9 L 9 8 Z" fill="#EAB308" />
                     <Path d="M 44 0 L 47 8 L 56 9 L 49 15 L 51 24 L 44 19 L 37 24 L 39 15 L 32 9 L 41 8 Z" fill="#EAB308" />
                     <Line x1="20" y1="12" x2="36" y2="12" stroke="#CA8A04" strokeWidth={2.5} />
                   </G>
                 )}
                 {equippedGlasses === 'pixel_shades' && (
-                  <G transform="translate(70, 50)">
-                    <Rect x="0" y="0" width="26" height="10" fill="#0F172A" />
-                    <Rect x="30" y="0" width="26" height="10" fill="#0F172A" />
-                    <Rect x="24" y="0" width="8" height="4" fill="#0F172A" />
+                  <G transform="translate(92, 44)">
+                    <Rect x="0" y="0" width="24" height="9" fill="#0F172A" />
+                    <Rect x="28" y="0" width="24" height="9" fill="#0F172A" />
+                    <Rect x="22" y="0" width="8" height="4" fill="#0F172A" />
                     <Rect x="3" y="2" width="4" height="3" fill="#FFFFFF" />
-                    <Rect x="33" y="2" width="4" height="3" fill="#FFFFFF" />
+                    <Rect x="31" y="2" width="4" height="3" fill="#FFFFFF" />
                   </G>
                 )}
               </Svg>
