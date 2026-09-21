@@ -142,9 +142,6 @@ interface HabitContextType {
   importJsonData: (json: string) => boolean;
   exportJsonData: () => string;
   triggerCelebration: () => void;
-  isCelebrationModalOpen: boolean;
-  setIsCelebrationModalOpen: (open: boolean) => void;
-  triggerSparkyCelebration: () => void;
   isConfettiActive: boolean;
   triggerConfetti: () => void;
   isSyncing: boolean;
@@ -186,6 +183,8 @@ interface HabitContextType {
   equippedGlasses: string | null;
   isShopModalOpen: boolean;
   setIsShopModalOpen: (open: boolean) => void;
+  isDayCompletionModalOpen: boolean;
+  setIsDayCompletionModalOpen: (open: boolean) => void;
   buyAccessory: (id: string, price: number) => boolean;
   equipAccessory: (category: 'hat' | 'glasses', id: string | null) => void;
   earnBambooCoins: (amount: number, reason?: string) => void;
@@ -1113,7 +1112,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [equippedHat, setEquippedHat] = useState<string | null>(null);
   const [equippedGlasses, setEquippedGlasses] = useState<string | null>(null);
   const [isShopModalOpen, setIsShopModalOpen] = useState<boolean>(false);
-  const [isCelebrationModalOpen, setIsCelebrationModalOpen] = useState<boolean>(false);
+  const [isDayCompletionModalOpen, setIsDayCompletionModalOpen] = useState<boolean>(false);
 
   // Feature 3: Smart Widgets & Lock Screen Studio State
   const [isWidgetModalOpen, setIsWidgetModalOpen] = useState<boolean>(false);
@@ -2152,16 +2151,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [soundEnabled, hapticsEnabled, triggerConfetti]);
 
-  const triggerSparkyCelebration = useCallback(() => {
-    setIsCelebrationModalOpen(true);
-    triggerConfetti();
-    setBambooCoins((prev) => {
-      const updated = prev + 25;
-      AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(updated)).catch(() => {});
-      return updated;
-    });
-  }, [triggerConfetti]);
-
   const switchAccountData = useCallback(async (targetUser: UserProfile) => {
     isLoggingOut.current = false;
     const uid = targetUser.id;
@@ -2656,29 +2645,41 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             AsyncStorage.setItem('habitup_completions_usr_default', JSON.stringify(updated)).catch(() => {});
           }
 
-          const activeHabits = habits.filter((h) => !h.archived_at && !h.deleted_at && !h.paused_at);
-          const targetDateTime = new Date(targetDate + 'T12:00:00');
-          const scheduledToday = activeHabits.filter((h) => isHabitScheduledOnDate(h, targetDateTime));
-          const areAllCompleted =
-            scheduledToday.length > 0 &&
-            scheduledToday.every((h) =>
-              updated.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === targetDate)
-            );
-
-          if (areAllCompleted) {
-            setTimeout(() => {
-              triggerSparkyCelebration();
-            }, 200);
-          } else {
-            triggerCelebration();
-          }
-
+          triggerCelebration();
           // Award +10 Bamboo Coins for completing habit!
           setBambooCoins((c) => {
             const added = c + 10;
             AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(added)).catch(() => {});
             return added;
           });
+
+          // Check if this completion achieved 100% completion of all scheduled habits for targetDate!
+          try {
+            const activeScheduled = habits.filter((h) => {
+              if (h.archived_at || h.deleted_at || h.paused_at) return false;
+              return isHabitScheduledOnDate(h, new Date(targetDate + 'T12:00:00'));
+            });
+            const totalScheduled = activeScheduled.length;
+            const prevDoneCount = activeScheduled.filter((h) =>
+              prev.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === targetDate)
+            ).length;
+            const newDoneCount = activeScheduled.filter((h) =>
+              updated.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === targetDate)
+            ).length;
+
+            if (totalScheduled > 0 && newDoneCount === totalScheduled && prevDoneCount < totalScheduled) {
+              setTimeout(() => {
+                setIsDayCompletionModalOpen(true);
+                soundService.playMascotFeastCelebration();
+              }, 180);
+              // Bonus +15 Bamboo Coins for perfect 100% feast day!
+              setBambooCoins((c) => {
+                const added = c + 15;
+                AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(added)).catch(() => {});
+                return added;
+              });
+            }
+          } catch {}
 
           if (isOffline) {
             addMutationToQueue(`/habits/${habitId}/completions`, 'POST', { completion_date: targetDate });
@@ -2700,7 +2701,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       });
     },
-    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, triggerSparkyCelebration, addMutationToQueue]
+    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, addMutationToQueue]
   );
 
   const earnBambooCoins = useCallback((amount: number, reason?: string) => {
@@ -4271,9 +4272,6 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         importJsonData,
         exportJsonData,
         triggerCelebration,
-        isCelebrationModalOpen,
-        setIsCelebrationModalOpen,
-        triggerSparkyCelebration,
         isConfettiActive,
         triggerConfetti,
         isSyncing,
@@ -4307,6 +4305,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         equippedGlasses,
         isShopModalOpen,
         setIsShopModalOpen,
+        isDayCompletionModalOpen,
+        setIsDayCompletionModalOpen,
         buyAccessory,
         equipAccessory,
         earnBambooCoins,

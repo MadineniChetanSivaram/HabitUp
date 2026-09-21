@@ -180,136 +180,6 @@ class SoundService {
   }
 
   /**
-   * Bamboo Slide Up / Whoosh Sound when Bamboo Shoots Up
-   */
-  playBambooSlideSound(): void {
-    const ctx = this.getAudioContext();
-    if (!ctx) return;
-    try {
-      const now = ctx.currentTime;
-      const dur = 0.45;
-
-      // 1. Sliding organic wooden pitch
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(260, now);
-      osc.frequency.exponentialRampToValueAtTime(820, now + dur);
-
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
-      // 2. Air whoosh texture
-      const noiseBuf = this.createPinkNoiseBuffer(ctx, dur);
-      if (noiseBuf) {
-        const noise = ctx.createBufferSource();
-        noise.buffer = noiseBuf;
-        const noiseGain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(450, now);
-        filter.frequency.exponentialRampToValueAtTime(1600, now + dur);
-        filter.Q.setValueAtTime(3.5, now);
-
-        noiseGain.gain.setValueAtTime(0.001, now);
-        noiseGain.gain.linearRampToValueAtTime(0.2, now + 0.1);
-        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
-        noise.connect(filter);
-        filter.connect(noiseGain);
-        noiseGain.connect(ctx.destination);
-        noise.start(now);
-        noise.stop(now + dur);
-      }
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + dur);
-    } catch {
-      // ignore
-    }
-  }
-
-  /**
-   * Iconic Duolingo-style Lesson Complete Major Victory Fanfare with Reward Coin Clinks!
-   */
-  playDuolingoCelebrationFanfare(): void {
-    const ctx = this.getAudioContext();
-    if (!ctx) return;
-    try {
-      const now = ctx.currentTime;
-
-      // Bright upbeat multi-tone fanfare: C5, E5, G5, high C6 chord burst with vibrato & coin sparkles
-      const notes = [
-        { freq: 523.25, start: 0.00, dur: 0.14, gain: 0.28 }, // C5
-        { freq: 659.25, start: 0.12, dur: 0.14, gain: 0.32 }, // E5
-        { freq: 783.99, start: 0.24, dur: 0.18, gain: 0.36 }, // G5
-        { freq: 1046.50, start: 0.38, dur: 0.70, gain: 0.44 }, // C6 (sustained celebration)
-        { freq: 1318.51, start: 0.40, dur: 0.65, gain: 0.28 }, // E6 harmonic layer
-      ];
-
-      notes.forEach(({ freq, start, dur, gain: targetGain }) => {
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, now + start);
-
-        // Warm harmonic overtone
-        const overtone = ctx.createOscillator();
-        const overtoneGain = ctx.createGain();
-        overtone.type = 'sine';
-        overtone.frequency.setValueAtTime(freq * 2, now + start);
-        overtoneGain.gain.setValueAtTime(targetGain * 0.3, now + start);
-        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + start + dur * 0.7);
-
-        gainNode.gain.setValueAtTime(0.001, now + start);
-        gainNode.gain.linearRampToValueAtTime(targetGain, now + start + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + start + dur);
-
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        overtone.connect(overtoneGain);
-        overtoneGain.connect(ctx.destination);
-
-        osc.start(now + start);
-        osc.stop(now + start + dur);
-        overtone.start(now + start);
-        overtone.stop(now + start + dur);
-      });
-
-      // Twin Bamboo Coin Clinks after 0.75s
-      setTimeout(() => {
-        const cCtx = this.getAudioContext();
-        if (!cCtx) return;
-        const cNow = cCtx.currentTime;
-
-        [
-          { freq: 1760, delay: 0.00 }, // A6
-          { freq: 2349.32, delay: 0.12 }, // D7
-        ].forEach(({ freq, delay }) => {
-          const cOsc = cCtx.createOscillator();
-          const cGain = cCtx.createGain();
-          cOsc.type = 'sine';
-          cOsc.frequency.setValueAtTime(freq, cNow + delay);
-
-          cGain.gain.setValueAtTime(0.001, cNow + delay);
-          cGain.gain.linearRampToValueAtTime(0.26, cNow + delay + 0.008);
-          cGain.gain.exponentialRampToValueAtTime(0.0001, cNow + delay + 0.25);
-
-          cOsc.connect(cGain);
-          cGain.connect(cCtx.destination);
-          cOsc.start(cNow + delay);
-          cOsc.stop(cNow + delay + 0.25);
-        });
-      }, 750);
-    } catch {
-      // ignore
-    }
-  }
-
-  /**
    * Plays authentic bio-acoustic Red Panda animal vocalizations!
    * Formants + glottal pulses + vocal tract resonances + breath dynamics.
    */
@@ -607,6 +477,23 @@ class SoundService {
           break;
         }
       }
+    } catch {
+      // ignore
+    }
+  }
+
+  /**
+   * Orchestrates the 100% Day Completion celebration fanfare + cute panda 'Hi!' squeak + bamboo crunching
+   */
+  playMascotFeastCelebration(): void {
+    try {
+      this.playCompletionChime();
+      setTimeout(() => {
+        this.playMascotCuteSound('happy_bleat');
+      }, 350);
+      setTimeout(() => {
+        this.playMascotCuteSound('feast');
+      }, 850);
     } catch {
       // ignore
     }
