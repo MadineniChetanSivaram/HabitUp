@@ -121,25 +121,16 @@ export const NotificationBanner: React.FC = () => {
           />
         </View>
 
-        {/* Center Text Info */}
+        {/* Center Text Info: Only Sparky Emotion Title */}
         <View style={styles.textWrapper}>
           <Text
             style={[
               styles.title,
               { color: isDark ? '#FFFFFF' : '#0F172A' },
             ]}
-            numberOfLines={1}
-          >
-            {cleanTitle}
-          </Text>
-          <Text
-            style={[
-              styles.body,
-              { color: isDark ? '#94A3B8' : '#64748B' },
-            ]}
             numberOfLines={2}
           >
-            {cleanBody}
+            {cleanTitle}
           </Text>
         </View>
 
@@ -205,14 +196,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 14,
-    fontWeight: '900',
+    fontSize: 15,
+    fontWeight: '800',
     letterSpacing: -0.2,
-  },
-  body: {
-    fontSize: 11,
-    lineHeight: 16,
-    marginTop: 2,
   },
   rightColumn: {
     alignItems: 'flex-end',
