@@ -43,7 +43,6 @@ import {
   Check,
   ShoppingBag,
   Sparkles,
-  LayoutGrid,
   MessageSquare,
   Flame,
   Zap,
@@ -77,8 +76,6 @@ export const SettingsView: React.FC = () => {
     bambooCoins,
     ownedAccessories,
     setIsShopModalOpen,
-    setIsWidgetModalOpen,
-    widgetTheme,
     notificationTone,
     setNotificationTone,
     sendMascotNotification,
@@ -550,50 +547,6 @@ export const SettingsView: React.FC = () => {
           >
             <Sparkles size={12} color="#FFFFFF" />
             <Text style={styles.actionPillBtnText}>Open Shop</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-
-      {/* SMART WIDGET STUDIO */}
-      <View
-        style={[
-          styles.sectionCard,
-          {
-            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-          },
-        ]}
-      >
-        <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          SMART LOCK & HOME SCREEN WIDGETS
-        </Text>
-
-        <TouchableOpacity
-          style={styles.preferenceRow}
-          onPress={() => setIsWidgetModalOpen(true)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.prefLeft}>
-            <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(124, 92, 255, 0.15)' }]}>
-              <LayoutGrid size={16} color="#7C5CFF" />
-            </View>
-            <View>
-              <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Widget Studio & Simulator
-              </Text>
-              <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                Theme: {widgetTheme.toUpperCase()} • 2x2, 4x2 & Dynamic Island
-              </Text>
-            </View>
-          </View>
-          <View
-            style={[
-              styles.actionPillBtn,
-              { backgroundColor: '#7C5CFF' },
-            ]}
-          >
-            <Smartphone size={12} color="#FFFFFF" />
-            <Text style={styles.actionPillBtnText}>Preview</Text>
           </View>
         </TouchableOpacity>
       </View>
