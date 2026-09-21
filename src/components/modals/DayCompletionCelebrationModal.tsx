@@ -55,15 +55,13 @@ export const DayCompletionCelebrationModal: React.FC = () => {
   const sheetScaleAnim = useRef(new Animated.Value(0.8)).current;
 
   // Panda sliding DOWN the bamboo stalk from top
-  const pandaSlideDownAnim = useRef(new Animated.Value(-240)).current;
+  const pandaSlideDownAnim = useRef(new Animated.Value(-320)).current;
   const pandaBounceAnim = useRef(new Animated.Value(1)).current;
 
   // Waving Paw Animation
   const waveAnim = useRef(new Animated.Value(0)).current;
   // Tail Wag Animation
   const tailAnim = useRef(new Animated.Value(0)).current;
-  // Floating Breathe Animation
-  const breatheAnim = useRef(new Animated.Value(0)).current;
   // Rewards & Speech bubble pop
   const rewardsPopAnim = useRef(new Animated.Value(0)).current;
   const speechBubblePopAnim = useRef(new Animated.Value(0)).current;
@@ -75,7 +73,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     if (!isDayCompletionModalOpen) {
       sheetSlideAnim.setValue(450);
       sheetScaleAnim.setValue(0.8);
-      pandaSlideDownAnim.setValue(-240);
+      pandaSlideDownAnim.setValue(-320);
       pandaBounceAnim.setValue(1);
       rewardsPopAnim.setValue(0);
       speechBubblePopAnim.setValue(0);
@@ -99,33 +97,33 @@ export const DayCompletionCelebrationModal: React.FC = () => {
         tension: 45,
         useNativeDriver: useNative,
       }),
-      // Panda slides smoothly down the bamboo pole from top (-240 -> 0)
+      // Panda slides smoothly down the bamboo pole from high above (-320 -> 0) and lands firmly on the table
       Animated.sequence([
-        Animated.delay(100),
+        Animated.delay(120),
         Animated.timing(pandaSlideDownAnim, {
           toValue: 0,
-          duration: 650,
-          easing: Easing.out(Easing.back(1.4)),
+          duration: 700,
+          easing: Easing.out(Easing.back(1.15)),
           useNativeDriver: useNative,
         }),
-        // Landing bounce on bamboo
+        // Landing squish bounce directly on table
         Animated.sequence([
           Animated.timing(pandaBounceAnim, {
-            toValue: 1.12,
-            duration: 90,
+            toValue: 1.09,
+            duration: 80,
             useNativeDriver: useNative,
           }),
           Animated.spring(pandaBounceAnim, {
             toValue: 1,
-            friction: 4,
-            tension: 60,
+            friction: 4.5,
+            tension: 65,
             useNativeDriver: useNative,
           }),
         ]),
       ]),
-      // Speech bubble pop in after landing
+      // Speech bubble pop in after landing on table
       Animated.sequence([
-        Animated.delay(650),
+        Animated.delay(720),
         Animated.spring(speechBubblePopAnim, {
           toValue: 1,
           friction: 4.5,
@@ -135,7 +133,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
       ]),
       // Rewards card pop in
       Animated.sequence([
-        Animated.delay(800),
+        Animated.delay(860),
         Animated.spring(rewardsPopAnim, {
           toValue: 1,
           friction: 4,
@@ -196,26 +194,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     );
     tailLoop.start();
 
-    // 4. Gentle Breathe Float
-    const floatLoop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(breatheAnim, {
-          toValue: -4,
-          duration: 1100,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
-        }),
-        Animated.timing(breatheAnim, {
-          toValue: 0,
-          duration: 1100,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
-        }),
-      ])
-    );
-    floatLoop.start();
-
-    // 5. Glow Pulse
+    // 4. Forest Aura Glow Pulse
     const auraLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(auraPulse, {
@@ -237,7 +216,6 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     return () => {
       waveLoop.stop();
       tailLoop.stop();
-      floatLoop.stop();
       auraLoop.stop();
     };
   }, [isDayCompletionModalOpen]);
@@ -518,75 +496,74 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               <Path d="M 283 164 Q 275 158 273 164 Q 279 168 283 164 Z" fill="#4ADE80" />
               <Path d="M 283 164 Q 290 156 294 161 Q 288 167 283 164 Z" fill="#22C55E" />
 
-              {/* 5. 🎋 THE CRAFTED BAMBOO STOOL (Sitting Stool for Panda) */}
-              <G id="bamboo-stool">
-                {/* Stool Soft Ground Shadow */}
-                <Ellipse cx="160" cy="198" rx="52" ry="9" fill="rgba(6, 78, 59, 0.45)" />
+              {/* 5. 🎋 THE CRAFTED BAMBOO TABLE (Panda sits solidly on top) */}
+              <G id="bamboo-table">
+                {/* Table Soft Ground Shadow */}
+                <Ellipse cx="160" cy="202" rx="58" ry="8" fill="rgba(6, 78, 59, 0.45)" />
 
-                {/* Stool Back Legs */}
-                <Path d="M 122 154 L 114 192 L 121 192 L 129 154 Z" fill="url(#bambooStoolFreshGrad)" />
-                <Line x1="117" y1="172" x2="126" y2="172" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+                {/* Table Back Legs */}
+                <Path d="M 118 156 L 110 198 L 117 198 L 125 156 Z" fill="url(#bambooStoolFreshGrad)" />
+                <Line x1="113" y1="178" x2="122" y2="178" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
 
-                <Path d="M 191 154 L 199 192 L 206 192 L 198 154 Z" fill="url(#bambooStoolFreshGrad)" />
-                <Line x1="194" y1="172" x2="203" y2="172" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+                <Path d="M 195 156 L 203 198 L 210 198 L 202 156 Z" fill="url(#bambooStoolFreshGrad)" />
+                <Line x1="198" y1="178" x2="207" y2="178" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
 
-                {/* Stool Stretcher Crossbar */}
-                <Rect x="117" y="174" width="86" height="7" rx="3.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
-                <Line x1="145" y1="174" x2="145" y2="181" stroke="#92400E" strokeWidth={1.5} />
-                <Line x1="175" y1="174" x2="175" y2="181" stroke="#92400E" strokeWidth={1.5} />
+                {/* Table Stretcher Crossbar */}
+                <Rect x="112" y="179" width="96" height="7" rx="3.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                <Line x1="140" y1="179" x2="140" y2="186" stroke="#92400E" strokeWidth={1.5} />
+                <Line x1="180" y1="179" x2="180" y2="186" stroke="#92400E" strokeWidth={1.5} />
 
-                {/* Stool Front Left Leg */}
-                <Path d="M 127 156 L 120 197 L 128 197 L 135 156 Z" fill="url(#bambooStoolFreshGrad)" stroke="#14532D" strokeWidth={0.8} />
-                <Line x1="123" y1="176" x2="132" y2="176" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
-                <Line x1="121" y1="192" x2="129" y2="192" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+                {/* Table Front Left Leg */}
+                <Path d="M 124 158 L 116 202 L 124 202 L 132 158 Z" fill="url(#bambooStoolFreshGrad)" stroke="#14532D" strokeWidth={0.8} />
+                <Line x1="119" y1="180" x2="128" y2="180" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+                <Line x1="117" y1="196" x2="125" y2="196" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
 
-                {/* Stool Front Right Leg */}
-                <Path d="M 185 156 L 192 197 L 200 197 L 193 156 Z" fill="url(#bambooStoolFreshGrad)" stroke="#14532D" strokeWidth={0.8} />
-                <Line x1="188" y1="176" x2="197" y2="176" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
-                <Line x1="191" y1="192" x2="199" y2="192" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+                {/* Table Front Right Leg */}
+                <Path d="M 188 158 L 196 202 L 204 202 L 196 158 Z" fill="url(#bambooStoolFreshGrad)" stroke="#14532D" strokeWidth={0.8} />
+                <Line x1="192" y1="180" x2="201" y2="180" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+                <Line x1="195" y1="196" x2="203" y2="196" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
 
-                {/* Bamboo Stool Seat Logs (Polished Canes) */}
-                <Rect x="110" y="146" width="100" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
-                <Rect x="108" y="151" width="104" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
-                <Rect x="110" y="156" width="100" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                {/* Bamboo Table Top Logs (Polished Canes) */}
+                <Rect x="100" y="152" width="120" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                <Rect x="96" y="157" width="128" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                <Rect x="100" y="162" width="120" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
 
-                {/* Node Rings across the seat */}
-                <Line x1="140" y1="146" x2="140" y2="165" stroke="#92400E" strokeWidth={1.8} strokeLinecap="round" />
-                <Line x1="180" y1="146" x2="180" y2="165" stroke="#92400E" strokeWidth={1.8} strokeLinecap="round" />
+                {/* Node Rings across the table */}
+                <Line x1="135" y1="152" x2="135" y2="171" stroke="#92400E" strokeWidth={1.8} strokeLinecap="round" />
+                <Line x1="185" y1="152" x2="185" y2="171" stroke="#92400E" strokeWidth={1.8} strokeLinecap="round" />
 
-                {/* Round Cut Ends of Bamboo Logs */}
-                <Ellipse cx="112" cy="151" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
-                <Circle cx="112" cy="151" r="1.5" fill="#78350F" />
-                <Ellipse cx="110" cy="156" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
-                <Circle cx="110" cy="156" r="1.5" fill="#78350F" />
-                <Ellipse cx="112" cy="161" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
-                <Circle cx="112" cy="161" r="1.5" fill="#78350F" />
+                {/* Round Cut Ends of Bamboo Table Logs */}
+                <Ellipse cx="102" cy="157" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="102" cy="157" r="1.5" fill="#78350F" />
+                <Ellipse cx="98" cy="162" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="98" cy="162" r="1.5" fill="#78350F" />
+                <Ellipse cx="102" cy="167" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="102" cy="167" r="1.5" fill="#78350F" />
 
-                <Ellipse cx="208" cy="151" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
-                <Circle cx="208" cy="151" r="1.5" fill="#78350F" />
-                <Ellipse cx="210" cy="156" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
-                <Circle cx="210" cy="156" r="1.5" fill="#78350F" />
-                <Ellipse cx="208" cy="161" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
-                <Circle cx="208" cy="161" r="1.5" fill="#78350F" />
+                <Ellipse cx="218" cy="157" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="218" cy="157" r="1.5" fill="#78350F" />
+                <Ellipse cx="222" cy="162" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="222" cy="162" r="1.5" fill="#78350F" />
+                <Ellipse cx="218" cy="167" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="218" cy="167" r="1.5" fill="#78350F" />
 
                 {/* Twine Rope Cross-Ties on Joints */}
-                <Path d="M 124 153 L 132 165 M 132 153 L 124 165" stroke="#78350F" strokeWidth={2} strokeLinecap="round" />
-                <Path d="M 188 153 L 196 165 M 196 153 L 188 165" stroke="#78350F" strokeWidth={2} strokeLinecap="round" />
+                <Path d="M 118 159 L 126 171 M 126 159 L 118 171" stroke="#78350F" strokeWidth={2} strokeLinecap="round" />
+                <Path d="M 194 159 L 202 171 M 202 159 L 194 171" stroke="#78350F" strokeWidth={2} strokeLinecap="round" />
 
-                {/* Woven Green Leaf Cushion on Stool Seat */}
-                <Path d="M 132 148 Q 160 145 188 148 Q 186 154 184 156 Q 160 153 136 156 Z" fill="#15803D" opacity={0.85} />
-                <Path d="M 134 149 Q 160 147 186 149" stroke="#86EFAC" strokeWidth={1} strokeDasharray="3,2" fill="none" />
+                {/* Woven Green Leaf Runner on Table */}
+                <Path d="M 125 154 Q 160 151 195 154 Q 192 160 190 162 Q 160 159 130 162 Z" fill="#15803D" opacity={0.9} />
+                <Path d="M 127 155 Q 160 153 193 155" stroke="#86EFAC" strokeWidth={1} strokeDasharray="3,2" fill="none" />
               </G>
             </Svg>
 
-            {/* SLIDING PANDA (Slides Down Bamboo & Lands on Bamboo Stool) */}
+            {/* SLIDING PANDA (Slides Down Bamboo & Sits Solidly on Bamboo Table) */}
             <Animated.View
               style={[
                 styles.slidingPandaWrapper,
                 {
                   transform: [
                     { translateY: pandaSlideDownAnim },
-                    { translateY: breatheAnim },
                     { scale: pandaBounceAnim },
                   ],
                 },
@@ -1129,7 +1106,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 160,
     height: 160,
-    top: 14,
+    top: 40,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 5,
