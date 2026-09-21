@@ -175,6 +175,30 @@ interface HabitContextType {
   friendsEnabled: boolean;
   experimentVariant: string | null;
   recordFriendsExposure: () => Promise<void>;
+
+  // Feature 2: Sparky's Bamboo Shop & Outfits Customization
+  bambooCoins: number;
+  ownedAccessories: string[];
+  equippedHat: string | null;
+  equippedGlasses: string | null;
+  equippedNeckwear: string | null;
+  equippedHandheld: string | null;
+  isShopModalOpen: boolean;
+  setIsShopModalOpen: (open: boolean) => void;
+  buyAccessory: (id: string, price: number) => boolean;
+  equipAccessory: (category: 'hat' | 'glasses' | 'neckwear' | 'handheld', id: string | null) => void;
+  earnBambooCoins: (amount: number, reason?: string) => void;
+
+  // Feature 3: Smart Widgets & Lock Screen Studio
+  isWidgetModalOpen: boolean;
+  setIsWidgetModalOpen: (open: boolean) => void;
+  widgetTheme: 'glass' | 'midnight' | 'emerald' | 'sunset' | 'slate';
+  setWidgetTheme: (theme: 'glass' | 'midnight' | 'emerald' | 'sunset' | 'slate') => void;
+
+  // Feature 4: Witty Mascot Push Notifications
+  notificationTone: 'witty' | 'sweet' | 'strict';
+  setNotificationTone: (tone: 'witty' | 'sweet' | 'strict') => void;
+  sendMascotNotification: (scenario: 'morning' | 'midday' | 'evening_danger' | 'night_alert' | 'celebration' | 'freeze_shield') => void;
 }
 
 const HabitContext = createContext<HabitContextType | null>(null);
@@ -1082,6 +1106,22 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
   const [fcmPushToken, setFcmPushToken] = useState<string | null>(null);
 
+  // Feature 2: Bamboo Coins & Sparky Wardrobe State
+  const [bambooCoins, setBambooCoins] = useState<number>(100);
+  const [ownedAccessories, setOwnedAccessories] = useState<string[]>(['default_bamboo']);
+  const [equippedHat, setEquippedHat] = useState<string | null>(null);
+  const [equippedGlasses, setEquippedGlasses] = useState<string | null>(null);
+  const [equippedNeckwear, setEquippedNeckwear] = useState<string | null>(null);
+  const [equippedHandheld, setEquippedHandheld] = useState<string | null>(null);
+  const [isShopModalOpen, setIsShopModalOpen] = useState<boolean>(false);
+
+  // Feature 3: Smart Widgets & Lock Screen Studio State
+  const [isWidgetModalOpen, setIsWidgetModalOpen] = useState<boolean>(false);
+  const [widgetTheme, setWidgetTheme] = useState<'glass' | 'midnight' | 'emerald' | 'sunset' | 'slate'>('glass');
+
+  // Feature 4: Witty Mascot Notifications & Tone State
+  const [notificationTone, setNotificationToneState] = useState<'witty' | 'sweet' | 'strict'>('witty');
+
   const registerPushToken = useCallback(async (): Promise<string | null> => {
     try {
       const reg = await registerForPushNotificationsAsync();
@@ -1441,6 +1481,30 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
     AsyncStorage.getItem('habitup_notifications_enabled_v1').then((val) => {
       if (val !== null) setNotificationsEnabled(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_bamboo_coins_v1').then((val) => {
+      if (val !== null) setBambooCoins(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_owned_accessories_v1').then((val) => {
+      if (val !== null) setOwnedAccessories(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_equipped_hat_v1').then((val) => {
+      if (val !== null) setEquippedHat(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_equipped_glasses_v1').then((val) => {
+      if (val !== null) setEquippedGlasses(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_equipped_neckwear_v1').then((val) => {
+      if (val !== null) setEquippedNeckwear(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_equipped_handheld_v1').then((val) => {
+      if (val !== null) setEquippedHandheld(JSON.parse(val));
+    });
+    AsyncStorage.getItem('habitup_widget_theme_v1').then((val) => {
+      if (val) setWidgetTheme(val as any);
+    });
+    AsyncStorage.getItem('habitup_notification_tone_v1').then((val) => {
+      if (val === 'witty' || val === 'sweet' || val === 'strict') setNotificationToneState(val);
     });
     getCachedPushToken().then((token) => {
       if (token) setFcmPushToken(token);
@@ -2589,6 +2653,13 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           }
 
           triggerCelebration();
+          // Award +10 Bamboo Coins for completing habit!
+          setBambooCoins((c) => {
+            const added = c + 10;
+            AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(added)).catch(() => {});
+            return added;
+          });
+
           if (isOffline) {
             addMutationToQueue(`/habits/${habitId}/completions`, 'POST', { completion_date: targetDate });
           } else {
@@ -2611,6 +2682,65 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     },
     [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, addMutationToQueue]
   );
+
+  const earnBambooCoins = useCallback((amount: number, reason?: string) => {
+    setBambooCoins((prev) => {
+      const updated = prev + amount;
+      AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+    if (reason) {
+      showToast(`+${amount} 🎋 Bamboo Coins! (${reason})`, undefined, 'success');
+    }
+  }, [showToast]);
+
+  const buyAccessory = useCallback((id: string, price: number): boolean => {
+    if (bambooCoins < price) {
+      showToast(`Need ${price - bambooCoins} more Bamboo Coins 🎋 to buy this!`, undefined, 'warning');
+      return false;
+    }
+    setBambooCoins((prev) => {
+      const updated = Math.max(0, prev - price);
+      AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+    setOwnedAccessories((prev) => {
+      if (prev.includes(id)) return prev;
+      const updated = [...prev, id];
+      AsyncStorage.setItem('habitup_owned_accessories_v1', JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+    showToast(`Unlocked new outfit item! ✨`, undefined, 'success');
+    triggerCelebration();
+    return true;
+  }, [bambooCoins, showToast, triggerCelebration]);
+
+  const equipAccessory = useCallback((category: 'hat' | 'glasses' | 'neckwear' | 'handheld', id: string | null) => {
+    if (category === 'hat') {
+      setEquippedHat(id);
+      AsyncStorage.setItem('habitup_equipped_hat_v1', JSON.stringify(id)).catch(() => {});
+    } else if (category === 'glasses') {
+      setEquippedGlasses(id);
+      AsyncStorage.setItem('habitup_equipped_glasses_v1', JSON.stringify(id)).catch(() => {});
+    } else if (category === 'neckwear') {
+      setEquippedNeckwear(id);
+      AsyncStorage.setItem('habitup_equipped_neckwear_v1', JSON.stringify(id)).catch(() => {});
+    } else if (category === 'handheld') {
+      setEquippedHandheld(id);
+      AsyncStorage.setItem('habitup_equipped_handheld_v1', JSON.stringify(id)).catch(() => {});
+    }
+    if (soundEnabled) {
+      soundService.playClickSound();
+    }
+  }, [soundEnabled]);
+
+  const setNotificationTone = useCallback(async (tone: 'witty' | 'sweet' | 'strict') => {
+    setNotificationToneState(tone);
+    try {
+      await AsyncStorage.setItem('habitup_notification_tone_v1', tone);
+    } catch {}
+    showToast(`Sparky's tone set to "${tone.toUpperCase()}"! 🎭`, undefined, 'info');
+  }, [showToast]);
 
   const createHabit = useCallback(
     (habitData: Omit<Habit, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Habit => {
@@ -3036,6 +3166,19 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       plantStreak,
     };
   }, [habits, completions, selectedDate]);
+
+  const sendMascotNotification = useCallback((scenario: 'morning' | 'midday' | 'evening_danger' | 'night_alert' | 'celebration' | 'freeze_shield') => {
+    const scheduled = habits.filter((h) => !h.archived_at && !h.deleted_at && !h.paused_at);
+    const uncompleted = scheduled.filter((h) => !completions.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === selectedDate));
+    const firstHabit = uncompleted[0]?.name || scheduled[0]?.name || 'Daily Routine';
+    const streak = overallStats.plantStreak?.currentStreak ?? overallStats.currentBestStreak ?? 5;
+
+    notificationService.triggerMascot(scenario, notificationTone, {
+      streakCount: Math.max(streak, 1),
+      habitName: firstHabit,
+      remainingCount: Math.max(uncompleted.length, 1),
+    });
+  }, [habits, completions, selectedDate, notificationTone, overallStats]);
 
   // Social & Community Actions
   const adoptFriendHabit = useCallback(
@@ -4141,6 +4284,24 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         friendsEnabled,
         experimentVariant,
         recordFriendsExposure,
+        bambooCoins,
+        ownedAccessories,
+        equippedHat,
+        equippedGlasses,
+        equippedNeckwear,
+        equippedHandheld,
+        isShopModalOpen,
+        setIsShopModalOpen,
+        buyAccessory,
+        equipAccessory,
+        earnBambooCoins,
+        isWidgetModalOpen,
+        setIsWidgetModalOpen,
+        widgetTheme,
+        setWidgetTheme,
+        notificationTone,
+        setNotificationTone,
+        sendMascotNotification,
       }}
     >
       {children}

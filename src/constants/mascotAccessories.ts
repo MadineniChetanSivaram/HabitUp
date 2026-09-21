@@ -1,0 +1,240 @@
+export type AccessoryCategory = 'hat' | 'glasses' | 'neckwear' | 'handheld';
+export type AccessoryRarity = 'common' | 'rare' | 'epic' | 'legendary';
+
+export interface MascotAccessoryItem {
+  id: string;
+  name: string;
+  category: AccessoryCategory;
+  price: number;
+  icon: string;
+  description: string;
+  rarity: AccessoryRarity;
+  badgeColor: string;
+}
+
+export const MASCOT_ACCESSORIES: MascotAccessoryItem[] = [
+  // 🎩 HATS & HEADGEAR
+  {
+    id: 'detective',
+    name: 'Detective Cap',
+    category: 'hat',
+    price: 60,
+    icon: '🕵️',
+    description: 'Investigating missing habits! Classic tweed cap with magnifying badge.',
+    rarity: 'rare',
+    badgeColor: '#3B82F6',
+  },
+  {
+    id: 'wizard',
+    name: 'Wizard Star Hat',
+    category: 'hat',
+    price: 120,
+    icon: '🧙',
+    description: 'Cast consistency spells! Indigo pointed hat studded with golden stars.',
+    rarity: 'epic',
+    badgeColor: '#8B5CF6',
+  },
+  {
+    id: 'chef',
+    name: 'Chef Toque',
+    category: 'hat',
+    price: 50,
+    icon: '👨‍🍳',
+    description: 'Cooking up healthy routines! Tall fluffy culinary master hat.',
+    rarity: 'common',
+    badgeColor: '#10B981',
+  },
+  {
+    id: 'crown',
+    name: 'Royal Diamond Crown',
+    category: 'hat',
+    price: 250,
+    icon: '👑',
+    description: 'Fit for a habit monarch! Polished gold coronet with ruby jewels.',
+    rarity: 'legendary',
+    badgeColor: '#F59E0B',
+  },
+  {
+    id: 'santa',
+    name: 'Holiday Santa Cap',
+    category: 'hat',
+    price: 80,
+    icon: '🎅',
+    description: 'Spreading festive motivation! Red velvet with fluffy white puff.',
+    rarity: 'rare',
+    badgeColor: '#EF4444',
+  },
+  {
+    id: 'ninja_band',
+    name: 'Focus Ninja Headband',
+    category: 'hat',
+    price: 70,
+    icon: '🥋',
+    description: 'Unbreakable warrior discipline! Crimson red martial arts headband.',
+    rarity: 'rare',
+    badgeColor: '#DC2626',
+  },
+  {
+    id: 'flower_crown',
+    name: 'Sakura Flower Crown',
+    category: 'hat',
+    price: 90,
+    icon: '🌸',
+    description: 'Fresh blossoming habit energy! Delicate pink cherry blossoms & vines.',
+    rarity: 'rare',
+    badgeColor: '#EC4899',
+  },
+  {
+    id: 'party_hat',
+    name: 'Party Cone',
+    category: 'hat',
+    price: 40,
+    icon: '🥳',
+    description: 'Every completed habit is a celebration! Rainbow striped party cone.',
+    rarity: 'common',
+    badgeColor: '#06B6D4',
+  },
+
+  // 🕶️ GLASSES & EYEWEAR
+  {
+    id: 'aviators',
+    name: 'Cool Aviator Shades',
+    category: 'glasses',
+    price: 75,
+    icon: '😎',
+    description: 'Too cool for broken streaks! Sleek dark gold-rim sunglasses with shine.',
+    rarity: 'rare',
+    badgeColor: '#F59E0B',
+  },
+  {
+    id: 'round_specs',
+    name: 'Scholar Round Specs',
+    category: 'glasses',
+    price: 55,
+    icon: '👓',
+    description: 'For studious deep work & learning routines! Intellectual circular frames.',
+    rarity: 'common',
+    badgeColor: '#6366F1',
+  },
+  {
+    id: 'monocle',
+    name: 'Golden Monocle',
+    category: 'glasses',
+    price: 110,
+    icon: '🧐',
+    description: 'Exquisite gentleman taste! Gold rim monocle with hanging chain.',
+    rarity: 'epic',
+    badgeColor: '#D97706',
+  },
+  {
+    id: 'star_glasses',
+    name: 'Star Rocker Glasses',
+    category: 'glasses',
+    price: 85,
+    icon: '🤩',
+    description: 'Rockstar momentum! Golden star-shaped festival shades.',
+    rarity: 'rare',
+    badgeColor: '#EAB308',
+  },
+  {
+    id: 'pixel_shades',
+    name: '8-Bit Pixel Shades',
+    category: 'glasses',
+    price: 130,
+    icon: '🕶️',
+    description: 'Deal with it! Stepped retro arcade pixel sunglasses.',
+    rarity: 'epic',
+    badgeColor: '#14B8A6',
+  },
+
+  // 🧣 NECKWEAR & CLOTHES
+  {
+    id: 'red_scarf',
+    name: 'Cozy Knitted Scarf',
+    category: 'neckwear',
+    price: 65,
+    icon: '🧣',
+    description: 'Warm, cuddly winter protection! Thick red knitted wrap with fringes.',
+    rarity: 'common',
+    badgeColor: '#E11D48',
+  },
+  {
+    id: 'dapper_bowtie',
+    name: 'Dapper Silk Bowtie',
+    category: 'neckwear',
+    price: 70,
+    icon: '🎀',
+    description: 'Looking sharp for habit milestones! Crimson satin gentleman bowtie.',
+    rarity: 'rare',
+    badgeColor: '#F43F5E',
+  },
+  {
+    id: 'gold_medal',
+    name: 'Champion Gold Medal',
+    category: 'neckwear',
+    price: 160,
+    icon: '🥇',
+    description: 'Proof of legendary consistency! Olympic gold medallion on blue ribbon.',
+    rarity: 'epic',
+    badgeColor: '#EAB308',
+  },
+  {
+    id: 'hero_cape',
+    name: 'Heroic Red Cape',
+    category: 'neckwear',
+    price: 200,
+    icon: '🦸',
+    description: 'Fly over laziness! Billowing crimson superhero cape.',
+    rarity: 'legendary',
+    badgeColor: '#EF4444',
+  },
+
+  // ✨ HANDHELD ITEMS
+  {
+    id: 'magic_wand',
+    name: 'Star Magic Wand',
+    category: 'handheld',
+    price: 95,
+    icon: '✨',
+    description: 'Magical streak sparkles! Emits glowing fairy dust stars.',
+    rarity: 'rare',
+    badgeColor: '#A855F7',
+  },
+  {
+    id: 'boba_tea',
+    name: 'Boba Milk Tea',
+    category: 'handheld',
+    price: 60,
+    icon: '🧋',
+    description: 'Sweet habit reward! Iced brown sugar milk tea with chewy pearls.',
+    rarity: 'common',
+    badgeColor: '#D97706',
+  },
+  {
+    id: 'coffee_mug',
+    name: "Sparky's Morning Mug",
+    category: 'handheld',
+    price: 55,
+    icon: '☕',
+    description: 'Fueled for the morning rush! Steaming dark roast coffee mug.',
+    rarity: 'common',
+    badgeColor: '#854D0E',
+  },
+  {
+    id: 'golden_trophy',
+    name: 'Grand Champion Cup',
+    category: 'handheld',
+    price: 220,
+    icon: '🏆',
+    description: 'Awarded to supreme habit masters! Gleaming golden victory trophy.',
+    rarity: 'legendary',
+    badgeColor: '#F59E0B',
+  },
+];
+
+export const RARITY_LABELS: Record<AccessoryRarity, { label: string; color: string; bg: string }> = {
+  common: { label: 'Common', color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)' },
+  rare: { label: 'Rare', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.15)' },
+  epic: { label: 'Epic', color: '#A855F7', bg: 'rgba(168, 85, 247, 0.15)' },
+  legendary: { label: 'Legendary', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)' },
+};

@@ -40,6 +40,14 @@ import {
   X,
   Globe,
   Check,
+  ShoppingBag,
+  Sparkles,
+  LayoutGrid,
+  MessageSquare,
+  Flame,
+  Zap,
+  Heart,
+  Smile,
 } from 'lucide-react-native';
 
 export const SettingsView: React.FC = () => {
@@ -65,6 +73,14 @@ export const SettingsView: React.FC = () => {
     language,
     setLanguage,
     t,
+    bambooCoins,
+    ownedAccessories,
+    setIsShopModalOpen,
+    setIsWidgetModalOpen,
+    widgetTheme,
+    notificationTone,
+    setNotificationTone,
+    sendMascotNotification,
   } = useHabit();
 
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState<boolean>(false);
@@ -495,6 +511,201 @@ export const SettingsView: React.FC = () => {
           />
         </View>
 
+      </View>
+
+      {/* SPARKY BOUTIQUE & WARDROBE SECTION (Finch Style) */}
+      <View
+        style={[
+          styles.sectionCard,
+          {
+            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+          },
+        ]}
+      >
+        <View style={styles.sectionHeaderRow}>
+          <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+            SPARKY'S BOUTIQUE & WARDROBE
+          </Text>
+          <View style={[styles.bambooPill, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7' }]}>
+            <Text style={{ fontSize: 13, fontWeight: '800', color: '#10B981' }}>🎋 {bambooCoins}</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity
+          style={styles.preferenceRow}
+          onPress={() => setIsShopModalOpen(true)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.prefLeft}>
+            <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
+              <ShoppingBag size={16} color="#F59E0B" />
+            </View>
+            <View>
+              <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+                Shop Outfits & Accessories
+              </Text>
+              <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+                {ownedAccessories.length} items unlocked • Hats, Glasses, Capes & Wands
+              </Text>
+            </View>
+          </View>
+          <View
+            style={[
+              styles.actionPillBtn,
+              { backgroundColor: '#F59E0B' },
+            ]}
+          >
+            <Sparkles size={12} color="#FFFFFF" />
+            <Text style={styles.actionPillBtnText}>Open Shop</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* SMART WIDGET STUDIO */}
+      <View
+        style={[
+          styles.sectionCard,
+          {
+            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+          },
+        ]}
+      >
+        <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+          SMART LOCK & HOME SCREEN WIDGETS
+        </Text>
+
+        <TouchableOpacity
+          style={styles.preferenceRow}
+          onPress={() => setIsWidgetModalOpen(true)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.prefLeft}>
+            <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(124, 92, 255, 0.15)' }]}>
+              <LayoutGrid size={16} color="#7C5CFF" />
+            </View>
+            <View>
+              <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+                Widget Studio & Simulator
+              </Text>
+              <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+                Theme: {widgetTheme.toUpperCase()} • 2x2, 4x2 & Dynamic Island
+              </Text>
+            </View>
+          </View>
+          <View
+            style={[
+              styles.actionPillBtn,
+              { backgroundColor: '#7C5CFF' },
+            ]}
+          >
+            <Smartphone size={12} color="#FFFFFF" />
+            <Text style={styles.actionPillBtnText}>Preview</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* MASCOT NOTIFICATIONS & PERSONALITY (Duolingo Style) */}
+      <View
+        style={[
+          styles.sectionCard,
+          {
+            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+          },
+        ]}
+      >
+        <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+          SPARKY'S NOTIFICATION PERSONALITY
+        </Text>
+        <Text style={[styles.sectionSubDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+          Choose Sparky's tone when sending smart reminders and streak danger alerts:
+        </Text>
+
+        {/* Tone Selector Chips */}
+        <View style={styles.toneSelectorRow}>
+          {[
+            { id: 'witty' as const, label: '🎭 Witty (Duolingo)', desc: 'Dramatic guilt trips & hilarious sass' },
+            { id: 'sweet' as const, label: '🌸 Sweet & Cuddly', desc: 'Gentle warmth & positive hugs' },
+            { id: 'strict' as const, label: '⚡ Drill Coach', desc: 'Direct, focused & energetic' },
+          ].map((tOption) => {
+            const isSelected = notificationTone === tOption.id;
+            return (
+              <TouchableOpacity
+                key={tOption.id}
+                style={[
+                  styles.toneCard,
+                  {
+                    backgroundColor: isSelected
+                      ? isDark
+                        ? 'rgba(124, 92, 255, 0.18)'
+                        : 'rgba(124, 92, 255, 0.1)'
+                      : isDark
+                      ? '#0C1322'
+                      : '#F8FAFC',
+                    borderColor: isSelected
+                      ? '#7C5CFF'
+                      : isDark
+                      ? 'rgba(255, 255, 255, 0.06)'
+                      : '#E2E8F0',
+                  },
+                ]}
+                onPress={() => {
+                  setNotificationTone(tOption.id);
+                  if (soundEnabled) soundService.playClickSound();
+                  showToast(`Sparky set to ${tOption.label}! 🐼`, undefined, 'success');
+                }}
+                activeOpacity={0.7}
+              >
+                <View style={styles.toneHeader}>
+                  <Text style={[styles.toneLabel, { color: isSelected ? '#7C5CFF' : isDark ? '#FFFFFF' : '#0F172A' }]}>
+                    {tOption.label}
+                  </Text>
+                  {isSelected && (
+                    <View style={styles.toneCheckBadge}>
+                      <Check size={12} color="#FFFFFF" strokeWidth={3} />
+                    </View>
+                  )}
+                </View>
+                <Text style={[styles.toneDescText, { color: isDark ? '#94A3B8' : '#64748B' }]}>
+                  {tOption.desc}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* Simulator & Live Test Alert Triggers */}
+        <Text style={[styles.simulatorTitle, { color: isDark ? '#E2E8F0' : '#334155' }]}>
+          TEST VIRAL NOTIFICATION SOUNDS & ALERTS:
+        </Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.testAlertsRow}>
+          {[
+            { id: 'morning' as const, label: '🥱 Morning Yawn' },
+            { id: 'midday' as const, label: '⏱️ Midday Check' },
+            { id: 'evening_danger' as const, label: '🥺🔥 Streak Danger' },
+            { id: 'night_alert' as const, label: '😱 Midnight Alert' },
+            { id: 'celebration' as const, label: '🏆🎋 100% Feast' },
+          ].map((alertBtn) => (
+            <TouchableOpacity
+              key={alertBtn.id}
+              style={[
+                styles.testAlertBtn,
+                {
+                  backgroundColor: isDark ? '#0C1322' : '#F1F5F9',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#CBD5E1',
+                },
+              ]}
+              onPress={() => sendMascotNotification(alertBtn.id)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.testAlertBtnText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+                {alertBtn.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
 
       {/* Standalone Export CSV Button */}
@@ -1245,5 +1456,85 @@ const styles = StyleSheet.create({
     backgroundColor: '#7C5CFF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  bambooPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  actionPillBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 12,
+  },
+  actionPillBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  sectionSubDesc: {
+    fontSize: 12,
+    lineHeight: 17,
+    marginBottom: 12,
+  },
+  toneSelectorRow: {
+    gap: 8,
+    marginBottom: 14,
+  },
+  toneCard: {
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1.5,
+  },
+  toneHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 3,
+  },
+  toneLabel: {
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  toneCheckBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#7C5CFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toneDescText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  simulatorTitle: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+  },
+  testAlertsRow: {
+    gap: 8,
+    paddingBottom: 4,
+  },
+  testAlertBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  testAlertBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

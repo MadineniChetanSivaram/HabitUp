@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
-import { Sun, Moon, WifiOff, Settings, Flame, Zap } from 'lucide-react-native';
+import { Sun, Moon, WifiOff, Settings, Flame, Zap, ShoppingBag, LayoutGrid } from 'lucide-react-native';
 import { HabitlyMascot } from './HabitlyMascot';
 
 interface HomeHeroProps {
@@ -18,6 +18,9 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
     setActiveTab,
     showToast,
     overallStats,
+    bambooCoins,
+    setIsShopModalOpen,
+    setIsWidgetModalOpen,
     t,
   } = useHabit();
 
@@ -44,6 +47,36 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
         </Text>
 
         <View style={styles.iconActions}>
+          {/* Bamboo Coins & Boutique Button */}
+          <TouchableOpacity
+            onPress={() => setIsShopModalOpen(true)}
+            style={[
+              styles.coinsBadgeBtn,
+              {
+                backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                borderColor: 'rgba(245, 158, 11, 0.35)',
+              },
+            ]}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.coinsBadgeEmoji}>🎋</Text>
+            <Text style={styles.coinsBadgeText}>{bambooCoins}</Text>
+          </TouchableOpacity>
+
+          {/* Widgets Studio Shortcut */}
+          <TouchableOpacity
+            onPress={() => setIsWidgetModalOpen(true)}
+            style={[
+              styles.actionBtn,
+              {
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.06)',
+              },
+            ]}
+          >
+            <LayoutGrid size={16} color={isDark ? '#38BDF8' : '#0284C7'} />
+          </TouchableOpacity>
+
           {isOffline && (
             <TouchableOpacity
               onPress={() => {
@@ -214,6 +247,23 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     lineHeight: 32,
     letterSpacing: -0.5,
+  },
+  coinsBadgeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 4,
+  },
+  coinsBadgeEmoji: {
+    fontSize: 12,
+  },
+  coinsBadgeText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F59E0B',
   },
   mascotCol: {
     width: 156,

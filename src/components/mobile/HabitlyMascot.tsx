@@ -18,6 +18,7 @@ import Svg, {
   Circle,
   Ellipse,
   Line,
+  Rect,
 } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
 import { isHabitScheduledOnDate } from '../../utils/streakCalculator';
@@ -30,14 +31,38 @@ interface HabitlyMascotProps {
   onClick?: () => void;
   size?: number;
   forcedMood?: MascotMood;
+  equippedHat?: string | null;
+  equippedGlasses?: string | null;
+  equippedNeckwear?: string | null;
+  equippedHandheld?: string | null;
 }
 
 export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   onClick,
   size = 120,
   forcedMood,
+  equippedHat: propEquippedHat,
+  equippedGlasses: propEquippedGlasses,
+  equippedNeckwear: propEquippedNeckwear,
+  equippedHandheld: propEquippedHandheld,
 }) => {
-  const { habits, completions, selectedDate, theme, soundEnabled, t } = useHabit();
+  const {
+    habits,
+    completions,
+    selectedDate,
+    theme,
+    soundEnabled,
+    t,
+    equippedHat: ctxHat,
+    equippedGlasses: ctxGlasses,
+    equippedNeckwear: ctxNeckwear,
+    equippedHandheld: ctxHandheld,
+  } = useHabit();
+
+  const activeHat = propEquippedHat !== undefined ? propEquippedHat : ctxHat;
+  const activeGlasses = propEquippedGlasses !== undefined ? propEquippedGlasses : ctxGlasses;
+  const activeNeckwear = propEquippedNeckwear !== undefined ? propEquippedNeckwear : ctxNeckwear;
+  const activeHandheld = propEquippedHandheld !== undefined ? propEquippedHandheld : ctxHandheld;
   const isDark = theme === 'dark';
 
   // 1. Calculate active daily completion progress
@@ -644,6 +669,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 fill="#240F05"
                 opacity={0.8}
               />
+
+              {/* 🦸 Superhero Red Cape (Flowing behind shoulders in Layer 1) */}
+              {activeNeckwear === 'hero_cape' && (
+                <G id="rp-hero-cape">
+                  <Path d="M 46 80 C 26 100, 20 130, 36 142 C 54 136, 68 128, 76 122 M 114 80 C 134 100, 140 130, 124 142 C 106 136, 92 128, 84 122" fill="#DC2626" stroke="#991B1B" strokeWidth={1.5} />
+                  <Path d="M 44 82 Q 80 76 116 82 Q 80 88 44 82 Z" fill="#B91C1C" />
+                </G>
+              )}
             </Svg>
           </AnimatedView>
 
@@ -692,13 +725,97 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 />
               </G>
 
-              {/* 👑 Golden Royal Crown (When 100% Feast) */}
-              {isMunchingStage && (
+              {/* ======================================================== */}
+              {/* 🎩 EQUIPPED HATS & HEADGEAR (Rendered on top of head)    */}
+              {/* ======================================================== */}
+              {/* 🕵️ Detective Cap */}
+              {activeHat === 'detective' && (
+                <G id="rp-hat-detective">
+                  <Path d="M 52 40 C 50 24, 62 18, 80 18 C 98 18, 110 24, 108 40 Z" fill="#78350F" />
+                  <Path d="M 54 34 Q 80 30 106 34" stroke="#92400E" strokeWidth={2.5} fill="none" />
+                  <Path d="M 46 40 Q 80 48 114 40 Q 80 36 46 40 Z" fill="#451A03" />
+                  <Circle cx="80" cy="26" r="4" stroke="#FDE047" strokeWidth={1.5} fill="#38BDF8" opacity={0.8} />
+                  <Line x1="83" y1="29" x2="86" y2="33" stroke="#FDE047" strokeWidth={1.5} strokeLinecap="round" />
+                </G>
+              )}
+
+              {/* 🧙 Wizard Star Hat */}
+              {activeHat === 'wizard' && (
+                <G id="rp-hat-wizard">
+                  <Path d="M 54 40 C 65 24, 72 8, 82 4 C 88 10, 92 24, 106 40 Z" fill="#312E81" stroke="#4338CA" strokeWidth={1} />
+                  <Path d="M 82 4 Q 90 0 92 6 Q 85 7 82 4 Z" fill="#1E1B4B" />
+                  <Ellipse cx="80" cy="40" rx="30" ry="6.5" fill="#1E1B4B" />
+                  <Path d="M 58 37 Q 80 43 102 37" stroke="#F59E0B" strokeWidth={3} fill="none" />
+                  <Path d="M 76 22 L 77.5 25 L 81 25.5 L 78.5 28 L 79 31 L 76 29.5 L 73 31 L 73.5 28 L 71 25.5 L 74.5 25 Z" fill="#FDE047" />
+                </G>
+              )}
+
+              {/* 👨‍🍳 Chef Toque */}
+              {activeHat === 'chef' && (
+                <G id="rp-hat-chef">
+                  <Path d="M 58 36 C 52 24, 62 12, 70 14 C 74 8, 86 8, 90 14 C 98 12, 108 24, 102 36 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth={1.2} />
+                  <Path d="M 70 16 Q 72 28 72 34 M 80 12 Q 80 26 80 34 M 90 16 Q 88 28 88 34" stroke="#E2E8F0" strokeWidth={1.2} />
+                  <Rect x="58" y="34" width="44" height="7" rx="2" fill="#E2E8F0" />
+                </G>
+              )}
+
+              {/* 👑 Royal Crown (Equipped or default in 100% feast) */}
+              {(activeHat === 'crown' || (isMunchingStage && !activeHat)) && (
                 <G id="rp-crown">
-                  <Path d="M66 30 L70 14 L76 22 L80 10 L84 22 L90 14 L94 30 Z" fill="url(#rpCrown2)" stroke="#B45309" strokeWidth={1} />
+                  <Path d="M66 32 L70 14 L76 23 L80 10 L84 23 L90 14 L94 32 Z" fill="url(#rpCrown2)" stroke="#B45309" strokeWidth={1} />
                   <Circle cx="80" cy="18" r="2.5" fill="#EF4444" />
                   <Circle cx="72" cy="22" r="1.8" fill="#3B82F6" />
                   <Circle cx="88" cy="22" r="1.8" fill="#10B981" />
+                </G>
+              )}
+
+              {/* 🎅 Santa Cap */}
+              {activeHat === 'santa' && (
+                <G id="rp-hat-santa">
+                  <Path d="M 54 38 C 58 22, 74 12, 94 14 C 104 18, 108 26, 114 34 Z" fill="#DC2626" />
+                  <Circle cx="116" cy="36" r="6" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={1} />
+                  <Rect x="50" y="34" width="60" height="9" rx="4.5" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={0.8} />
+                </G>
+              )}
+
+              {/* 🥋 Ninja Headband */}
+              {activeHat === 'ninja_band' && (
+                <G id="rp-hat-ninja">
+                  <Path d="M 44 48 Q 80 43 116 48 L 115 54 Q 80 49 45 54 Z" fill="#DC2626" />
+                  <Rect x="70" y="46" width="20" height="6" rx="2" fill="#E2E8F0" stroke="#94A3B8" strokeWidth={0.8} />
+                  <Path d="M 115 50 Q 124 54 128 64 Q 122 62 114 53 Z M 115 52 Q 126 60 124 72 Q 120 66 113 55 Z" fill="#B91C1C" />
+                </G>
+              )}
+
+              {/* 🌸 Flower Crown */}
+              {activeHat === 'flower_crown' && (
+                <G id="rp-hat-flower">
+                  <Path d="M 48 42 Q 80 36 112 42" stroke="#15803D" strokeWidth={2.5} fill="none" />
+                  <Circle cx="54" cy="40" r="4.5" fill="#F472B6" /> <Circle cx="54" cy="40" r="1.8" fill="#FDE047" />
+                  <Circle cx="67" cy="37" r="4.5" fill="#FB7185" /> <Circle cx="67" cy="37" r="1.8" fill="#FDE047" />
+                  <Circle cx="80" cy="35" r="5" fill="#F472B6" /> <Circle cx="80" cy="35" r="2" fill="#FDE047" />
+                  <Circle cx="93" cy="37" r="4.5" fill="#FB7185" /> <Circle cx="93" cy="37" r="1.8" fill="#FDE047" />
+                  <Circle cx="106" cy="40" r="4.5" fill="#F472B6" /> <Circle cx="106" cy="40" r="1.8" fill="#FDE047" />
+                </G>
+              )}
+
+              {/* 🥳 Party Hat */}
+              {activeHat === 'party_hat' && (
+                <G id="rp-hat-party">
+                  <Path d="M 64 38 L 80 12 L 96 38 Z" fill="#F43F5E" />
+                  <Path d="M 68 32 L 80 12 L 92 32 Z" fill="#F59E0B" />
+                  <Path d="M 72 26 L 80 12 L 88 26 Z" fill="#10B981" />
+                  <Path d="M 76 20 L 80 12 L 84 20 Z" fill="#3B82F6" />
+                  <Circle cx="80" cy="11" r="3.5" fill="#FDE047" />
+                </G>
+              )}
+
+              {/* 🧢 Beanie */}
+              {activeHat === 'beanie' && (
+                <G id="rp-hat-beanie">
+                  <Path d="M 52 40 C 50 24, 62 16, 80 16 C 98 16, 110 24, 108 40 Z" fill="#0D9488" />
+                  <Rect x="48" y="34" width="64" height="9" rx="3" fill="#115E59" />
+                  <Circle cx="80" cy="14" r="4.5" fill="#F59E0B" />
                 </G>
               )}
 
@@ -767,11 +884,45 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* Left Front Paw (holding the growing stalk) */}
+              {/* Left Front Paw (holding the growing stalk or handheld accessory) */}
               {!isMunchingStage && (
                 <G id="rp-front-paw-left">
                   <Ellipse cx="58" cy="98" rx="7.5" ry="6.5" fill="url(#rpDarkFur2)" transform="rotate(-15 58 98)" />
                   <Ellipse cx="58" cy="98" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
+                </G>
+              )}
+
+              {/* ✨ CUSTOM EQUIPPED HANDHELD ITEMS */}
+              {!isMunchingStage && activeHandheld === 'magic_wand' && (
+                <G id="rp-handheld-wand">
+                  <Line x1="58" y1="104" x2="40" y2="68" stroke="#78350F" strokeWidth={3} strokeLinecap="round" />
+                  <Path d="M 40 66 L 42 70 L 46 70.5 L 43 73 L 44 77 L 40 75 L 36 77 L 37 73 L 34 70.5 L 38 70 Z" fill="#FDE047" stroke="#EAB308" strokeWidth={1} />
+                  <Circle cx="40" cy="72" r="7" fill="#FDE047" opacity={0.35} />
+                </G>
+              )}
+              {!isMunchingStage && activeHandheld === 'boba_tea' && (
+                <G id="rp-handheld-boba">
+                  <Path d="M 40 82 L 44 104 L 58 104 L 62 82 Z" fill="#FEF3C7" stroke="#D97706" strokeWidth={1.2} />
+                  <Line x1="51" y1="74" x2="51" y2="92" stroke="#F43F5E" strokeWidth={2.5} strokeLinecap="round" />
+                  <Circle cx="46" cy="100" r="1.8" fill="#1C1917" />
+                  <Circle cx="51" cy="101" r="1.8" fill="#1C1917" />
+                  <Circle cx="56" cy="100" r="1.8" fill="#1C1917" />
+                </G>
+              )}
+              {!isMunchingStage && activeHandheld === 'coffee_mug' && (
+                <G id="rp-handheld-coffee">
+                  <Rect x="40" y="86" width="16" height="18" rx="3" fill="#FFFFFF" stroke="#94A3B8" strokeWidth={1.2} />
+                  <Path d="M 40 90 C 34 90, 34 100, 40 100" stroke="#94A3B8" strokeWidth={2} fill="none" />
+                  <Path d="M 48 95 C 46 93, 45 91, 46.5 90 C 48 89, 48 90.5, 48 90.5 C 48 90.5, 48 89, 49.5 90 C 51 91, 50 93, 48 95 Z" fill="#EF4444" />
+                  <Path d="M 44 82 Q 46 76 44 70 M 52 82 Q 54 76 52 70" stroke="#CBD5E1" strokeWidth={1.2} strokeLinecap="round" fill="none" />
+                </G>
+              )}
+              {!isMunchingStage && activeHandheld === 'golden_trophy' && (
+                <G id="rp-handheld-trophy">
+                  <Path d="M 38 76 L 62 76 L 58 92 C 56 96, 44 96, 42 92 Z" fill="#F59E0B" stroke="#B45309" strokeWidth={1.2} />
+                  <Path d="M 38 78 C 32 80, 32 88, 39 90 M 62 78 C 68 80, 68 88, 61 90" stroke="#B45309" strokeWidth={1.8} fill="none" />
+                  <Rect x="48" y="94" width="4" height="6" fill="#D97706" />
+                  <Rect x="42" y="100" width="16" height="4" rx="1" fill="#78350F" />
                 </G>
               )}
 
@@ -780,6 +931,37 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 <G id="rp-front-paw-right-sleeping">
                   <Ellipse cx="100" cy="94" rx="8" ry="7" fill="url(#rpDarkFur2)" transform="rotate(15 100 94)" />
                   <Ellipse cx="100" cy="94" rx="3" ry="2.2" fill="#FEF08A" opacity={0.9} />
+                </G>
+              )}
+
+              {/* 🧣 EQUIPPED NECKWEAR (Rendered around neck & collar) */}
+              {/* Cozy Red Scarf */}
+              {activeNeckwear === 'red_scarf' && (
+                <G id="rp-neck-scarf">
+                  <Path d="M 54 78 C 62 88, 98 88, 106 78 C 104 88, 62 92, 54 78 Z" fill="#E11D48" stroke="#BE123C" strokeWidth={1} />
+                  <Path d="M 60 82 L 58 106 L 70 106 L 72 83 Z" fill="#E11D48" stroke="#BE123C" strokeWidth={0.8} />
+                  <Line x1="59" y1="106" x2="59" y2="110" stroke="#BE123C" strokeWidth={1.5} />
+                  <Line x1="64" y1="106" x2="64" y2="110" stroke="#BE123C" strokeWidth={1.5} />
+                  <Line x1="69" y1="106" x2="69" y2="110" stroke="#BE123C" strokeWidth={1.5} />
+                </G>
+              )}
+
+              {/* 🎀 Dapper Silk Bowtie */}
+              {activeNeckwear === 'dapper_bowtie' && (
+                <G id="rp-neck-bowtie">
+                  <Path d="M 76 83 L 64 77 L 64 89 Z" fill="#E11D48" stroke="#9F1239" strokeWidth={0.8} />
+                  <Path d="M 84 83 L 96 77 L 96 89 Z" fill="#E11D48" stroke="#9F1239" strokeWidth={0.8} />
+                  <Rect x="76" y="80" width="8" height="6" rx="2" fill="#BE123C" />
+                </G>
+              )}
+
+              {/* 🥇 Champion Gold Medal */}
+              {activeNeckwear === 'gold_medal' && (
+                <G id="rp-neck-medal">
+                  <Path d="M 66 76 L 80 92 L 94 76" stroke="#2563EB" strokeWidth={3.5} strokeLinecap="round" fill="none" />
+                  <Circle cx="80" cy="95" r="7.5" fill="#F59E0B" stroke="#B45309" strokeWidth={1} />
+                  <Circle cx="80" cy="95" r="5.5" fill="#FDE047" />
+                  <Path d="M 79 92 L 81 92 L 81 98 M 78 98 L 82 98" stroke="#B45309" strokeWidth={1.2} strokeLinecap="round" fill="none" />
                 </G>
               )}
 
@@ -976,6 +1158,57 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
 
                   <Ellipse cx="54" cy="66" rx="4.6" ry="2.7" fill="#FB7185" opacity={0.75} />
                   <Ellipse cx="106" cy="66" rx="4.6" ry="2.7" fill="#FB7185" opacity={0.75} />
+                </G>
+              )}
+
+              {/* ==================================================== */}
+              {/* 🕶️ EQUIPPED GLASSES & EYEWEAR (Rendered over eyes)   */}
+              {/* ==================================================== */}
+              {/* 😎 Cool Aviators */}
+              {activeGlasses === 'aviators' && (
+                <G id="rp-glasses-aviators">
+                  <Path d="M 52 54 L 108 54 M 74 58 Q 80 55 86 58" stroke="#F59E0B" strokeWidth={1.8} strokeLinecap="round" />
+                  <Path d="M 54 54 C 54 66, 62 70, 72 68 C 76 66, 76 56, 74 54 Z" fill="#0F172A" stroke="#F59E0B" strokeWidth={1.5} />
+                  <Line x1="58" y1="56" x2="68" y2="66" stroke="#FFFFFF" strokeWidth={1.2} opacity={0.65} />
+                  <Path d="M 86 54 C 84 56, 84 66, 88 68 C 98 70, 106 66, 106 54 Z" fill="#0F172A" stroke="#F59E0B" strokeWidth={1.5} />
+                  <Line x1="90" y1="56" x2="100" y2="66" stroke="#FFFFFF" strokeWidth={1.2} opacity={0.65} />
+                </G>
+              )}
+
+              {/* 👓 Scholar Round Specs */}
+              {activeGlasses === 'round_specs' && (
+                <G id="rp-glasses-round">
+                  <Path d="M 73 59 Q 80 56 87 59" stroke="#334155" strokeWidth={2} strokeLinecap="round" fill="none" />
+                  <Circle cx="63" cy="59" r="9" stroke="#334155" strokeWidth={2.2} fill="#38BDF8" opacity={0.2} />
+                  <Circle cx="97" cy="59" r="9" stroke="#334155" strokeWidth={2.2} fill="#38BDF8" opacity={0.2} />
+                </G>
+              )}
+
+              {/* 🧐 Golden Monocle */}
+              {activeGlasses === 'monocle' && (
+                <G id="rp-glasses-monocle">
+                  <Circle cx="95" cy="59" r="8.5" stroke="#F59E0B" strokeWidth={2} fill="#38BDF8" opacity={0.25} />
+                  <Path d="M 98 65 Q 106 75 102 88" stroke="#D97706" strokeWidth={1.2} strokeLinecap="round" fill="none" strokeDasharray="2,2" />
+                </G>
+              )}
+
+              {/* 🤩 Star Rocker Glasses */}
+              {activeGlasses === 'star_glasses' && (
+                <G id="rp-glasses-star">
+                  <Line x1="72" y1="58" x2="88" y2="58" stroke="#EAB308" strokeWidth={2} strokeLinecap="round" />
+                  <Path d="M 64 50 L 66.5 56 L 73 57 L 68 62 L 69.5 68 L 64 65 L 58.5 68 L 60 62 L 55 57 L 61.5 56 Z" fill="#FDE047" stroke="#EAB308" strokeWidth={1.2} />
+                  <Path d="M 96 50 L 98.5 56 L 105 57 L 100 62 L 101.5 68 L 96 65 L 90.5 68 L 92 62 L 87 57 L 93.5 56 Z" fill="#FDE047" stroke="#EAB308" strokeWidth={1.2} />
+                </G>
+              )}
+
+              {/* 🕶️ 8-Bit Pixel Shades */}
+              {activeGlasses === 'pixel_shades' && (
+                <G id="rp-glasses-pixel">
+                  <Rect x="54" y="55" width="22" height="10" fill="#0F172A" />
+                  <Rect x="84" y="55" width="22" height="10" fill="#0F172A" />
+                  <Rect x="76" y="55" width="8" height="4" fill="#0F172A" />
+                  <Rect x="58" y="57" width="3" height="3" fill="#FFFFFF" />
+                  <Rect x="88" y="57" width="3" height="3" fill="#FFFFFF" />
                 </G>
               )}
 

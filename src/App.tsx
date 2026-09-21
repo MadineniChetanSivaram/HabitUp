@@ -19,6 +19,8 @@ import { OnboardingModal } from './components/modals/OnboardingModal';
 import { AuthSessionModal } from './components/modals/AuthSessionModal';
 import { BiometricScanModal } from './components/modals/BiometricScanModal';
 import { PlantGardenModal } from './components/modals/PlantGardenModal';
+import { SparkyShopModal } from './components/modals/SparkyShopModal';
+import { WidgetPreviewModal } from './components/modals/WidgetPreviewModal';
 import { NotificationBanner } from './components/common/NotificationBanner';
 import { FullScreenConfetti } from './components/common/FullScreenConfetti';
 
@@ -74,6 +76,8 @@ const AppContent: React.FC = () => {
       <OnboardingModal />
       <AuthSessionModal />
       <PlantGardenModal />
+      <SparkyShopModal />
+      <WidgetPreviewModal />
     </MobileShell>
   );
 };

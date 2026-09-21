@@ -205,6 +205,240 @@ export async function cancelAllReminders() {
   }
 }
 
+export type NotificationTone = 'witty' | 'sweet' | 'strict';
+export type MascotNotificationScenario =
+  | 'morning'
+  | 'midday'
+  | 'evening_danger'
+  | 'night_alert'
+  | 'celebration'
+  | 'freeze_shield';
+
+export interface MascotNotificationMessage {
+  title: string;
+  body: string;
+  icon: string;
+  color: string;
+  soundType: string;
+}
+
+export function getMascotNotificationContent(
+  scenario: MascotNotificationScenario,
+  tone: NotificationTone = 'witty',
+  params?: { streakCount?: number; habitName?: string; remainingCount?: number }
+): MascotNotificationMessage {
+  const streak = params?.streakCount ?? 7;
+  const habit = params?.habitName ?? 'Daily Routine';
+  const remaining = params?.remainingCount ?? 2;
+
+  const NOTIFICATIONS_MAP: Record<NotificationTone, Record<MascotNotificationScenario, MascotNotificationMessage>> = {
+    witty: {
+      morning: {
+        title: 'Yawn... Sparky is Awake! 🥱🎋',
+        body: 'Sparky just crawled out of bed and needs morning bamboo. Complete habit #1 to water his sprout before he gets sassy!',
+        icon: 'Sunrise',
+        color: '#F59E0B',
+        soundType: 'sleepy_yawn',
+      },
+      midday: {
+        title: 'Sparky is Checking his Watch ⌚👀',
+        body: `Half the day is history! You have ${remaining} habits waiting. Give Sparky something to celebrate! 🎋💪`,
+        icon: 'Clock',
+        color: '#3B82F6',
+        soundType: 'half_done_chirp',
+      },
+      evening_danger: {
+        title: `🚨 STREAK EMERGENCY! Sparky is Pouting 🥺🔥`,
+        body: `Sparky is staring at his empty bamboo stalk... Only hours left before your ${streak}-day streak burns to ashes! Check off "${habit}" now!`,
+        icon: 'Flame',
+        color: '#EF4444',
+        soundType: 'sad_whimper',
+      },
+      night_alert: {
+        title: '😱 Sparky is Packing his Bags! 🧳',
+        body: 'Snooze alert! Only 45 minutes left before midnight reset! Save your streak and keep Sparky happy!',
+        icon: 'AlertTriangle',
+        color: '#DC2626',
+        soundType: 'sad_whimper',
+      },
+      celebration: {
+        title: '🏆 NOM NOM NOM! Royal Bamboo Feast! 🎋😋',
+        body: "ALL habits crushed today! Sparky is wearing his crown and munching delicious bamboo! You're an absolute legend!",
+        icon: 'Crown',
+        color: '#10B981',
+        soundType: 'bamboo_crunch',
+      },
+      freeze_shield: {
+        title: '🛡️ Streak Freeze Shield Deployed!',
+        body: `Phew! Your icy shield saved your ${streak}-day streak yesterday. Sparky is safe, but today we get right back to business!`,
+        icon: 'Shield',
+        color: '#06B6D4',
+        soundType: 'excited_twitter',
+      },
+    },
+    sweet: {
+      morning: {
+        title: 'Good Morning, Sunshine! ☀️🌱',
+        body: 'Sparky is sending you warm morning cuddles. Remember: small daily steps create big wonderful journeys!',
+        icon: 'Sun',
+        color: '#FBBF24',
+        soundType: 'sleepy_yawn',
+      },
+      midday: {
+        title: 'Sparky Believes in You! 💖🌸',
+        body: `Take a gentle breath, hydrate, and take one mindful step toward "${habit}". You're doing wonderful!`,
+        icon: 'Heart',
+        color: '#EC4899',
+        soundType: 'half_done_chirp',
+      },
+      evening_danger: {
+        title: 'Gentle Evening Self-Care 🌿✨',
+        body: `You've worked so hard on your ${streak}-day streak! Take 5 quiet minutes for yourself tonight to finish strong.`,
+        icon: 'Sparkles',
+        color: '#8B5CF6',
+        soundType: 'sad_whimper',
+      },
+      night_alert: {
+        title: 'Sparky is Cheering for You! 🌟🌙',
+        body: 'Just one quick habit check-in before bedtime to keep your peaceful momentum glowing warmly.',
+        icon: 'Moon',
+        color: '#6366F1',
+        soundType: 'excited_twitter',
+      },
+      celebration: {
+        title: 'You are Incredible! 🌈🎋',
+        body: 'Every single habit completed with care! Sparky is so proud of you, rest well tonight and recharge!',
+        icon: 'Smile',
+        color: '#10B981',
+        soundType: 'bamboo_crunch',
+      },
+      freeze_shield: {
+        title: 'Warm Blanket for your Streak 🛡️🤍',
+        body: 'Your streak freeze protected you while you rested. Today is a fresh, beautiful day to shine!',
+        icon: 'Shield',
+        color: '#38BDF8',
+        soundType: 'happy_bleat',
+      },
+    },
+    strict: {
+      morning: {
+        title: 'RISE & GRIND! ⚡🔥',
+        body: 'Zero excuses! While others are hitting snooze, we are building unbreakable discipline. Attack habit #1 NOW!',
+        icon: 'Zap',
+        color: '#E11D48',
+        soundType: 'excited_twitter',
+      },
+      midday: {
+        title: 'NO SLACKING! Midday Check! ⏱️🥊',
+        body: `50% of the day gone. Champions execute when it counts. Check off "${habit}" immediately!`,
+        icon: 'Clock',
+        color: '#EA580C',
+        soundType: 'half_done_chirp',
+      },
+      evening_danger: {
+        title: `DEFEND THE ${streak}-DAY STREAK AT ALL COSTS! 🛡️💥`,
+        body: 'Do NOT surrender ground tonight! Your streak is your discipline score. Finish what you started!',
+        icon: 'Flame',
+        color: '#DC2626',
+        soundType: 'sad_whimper',
+      },
+      night_alert: {
+        title: 'FINAL COUNTDOWN! Midnight Approaching! ⚠️',
+        body: 'Lock in right now. No excuses tomorrow morning for work left undone tonight. Execute!',
+        icon: 'AlertOctagon',
+        color: '#991B1B',
+        soundType: 'sad_whimper',
+      },
+      celebration: {
+        title: 'MISSION ACCOMPLISHED! Flawless Victory! 🎖️🥇',
+        body: '100% execution score today! Standards maintained, discipline proven. Be proud, tomorrow we reload!',
+        icon: 'Award',
+        color: '#16A34A',
+        soundType: 'bamboo_crunch',
+      },
+      freeze_shield: {
+        title: 'Tactical Shield Spent! ⚠️',
+        body: 'Your streak freeze bought you time. We do not waste second chances. Lock in today’s tasks now!',
+        icon: 'ShieldAlert',
+        color: '#0284C7',
+        soundType: 'excited_twitter',
+      },
+    },
+  };
+
+  return NOTIFICATIONS_MAP[tone]?.[scenario] || NOTIFICATIONS_MAP.witty[scenario];
+}
+
+export async function triggerMascotNotification(
+  scenario: MascotNotificationScenario,
+  tone: NotificationTone = 'witty',
+  params?: { streakCount?: number; habitName?: string; remainingCount?: number }
+) {
+  const notif = getMascotNotificationContent(scenario, tone, params);
+  const currentTime = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).format(new Date());
+
+  // 1. Web Audio Chime or Mascot Sound
+  playWebAudioChime();
+
+  // 2. Web browser notification
+  if (Platform.OS === 'web' && typeof window !== 'undefined' && 'Notification' in window) {
+    if (Notification.permission === 'granted') {
+      try {
+        new Notification(notif.title, {
+          body: notif.body,
+          icon: 'https://cdn-icons-png.flaticon.com/512/3233/3233497.png',
+        });
+      } catch (e) {
+        console.log('Browser notification fallback error:', e);
+      }
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then((p) => {
+        if (p === 'granted') {
+          try {
+            new Notification(notif.title, {
+              body: notif.body,
+              icon: 'https://cdn-icons-png.flaticon.com/512/3233/3233497.png',
+            });
+          } catch {}
+        }
+      });
+    }
+  }
+
+  // 3. Native Expo OS notification on mobile
+  if (Platform.OS !== 'web') {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: notif.title,
+          body: notif.body,
+          sound: true,
+          priority: Notifications.AndroidNotificationPriority.MAX,
+        },
+        trigger: null,
+      });
+    } catch (err) {
+      console.warn('Native notification trigger error:', err);
+    }
+  }
+
+  // 4. In-App Animated Floating Banner Card
+  notifyInAppListeners({
+    id: `mascot-notif-${Date.now()}`,
+    title: notif.title,
+    body: notif.body,
+    icon: notif.icon,
+    color: notif.color,
+    reminderTime: currentTime,
+    timestamp: new Date().toISOString(),
+    type: scenario === 'evening_danger' || scenario === 'night_alert' ? 'streak' : 'reminder',
+  });
+}
+
 export async function triggerTestNotification(
   title = 'HabitUp Notifications Active! 🔔',
   body = 'Your daily habit reminders and sound alerts are ready to go.'
@@ -486,6 +720,8 @@ export const notificationService = {
   cancelAll: cancelAllReminders,
   triggerTest: triggerTestNotification,
   triggerNudge: triggerNudgeNotification,
+  triggerMascot: triggerMascotNotification,
+  getMascotContent: getMascotNotificationContent,
   playChime: playWebAudioChime,
   addListener: addInAppNotificationListener,
 };
