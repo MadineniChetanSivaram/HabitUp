@@ -195,6 +195,28 @@ export const FriendsView: React.FC = () => {
 
   const [activeCheerFriendId, setActiveCheerFriendId] = useState<string | null>(null);
 
+  const flamePulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const useNative = Platform.OS !== 'web';
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(flamePulseAnim, {
+          toValue: 1.08,
+          duration: 1200,
+          useNativeDriver: useNative,
+        }),
+        Animated.timing(flamePulseAnim, {
+          toValue: 1.0,
+          duration: 1200,
+          useNativeDriver: useNative,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, []);
+
   const handleCheer = (friend: FriendUser) => {
     setActiveCheerFriendId(friend.id);
     const friendName = formatFriendDisplayName(friend).displayName;
@@ -718,12 +740,17 @@ export const FriendsView: React.FC = () => {
           ]}
         >
           <View style={styles.incomingHeaderRow}>
-            <View style={styles.incomingBadge}>
+            <Animated.View
+              style={[
+                styles.incomingBadge,
+                { transform: [{ scale: flamePulseAnim }] },
+              ]}
+            >
               <UserCheck size={14} color="#10B981" />
               <Text style={styles.incomingBadgeText}>
                 {t('friends.incoming_requests', 'INCOMING FOLLOW REQUESTS')} ({incomingRequests.length})
               </Text>
-            </View>
+            </Animated.View>
             <Text style={[styles.incomingNoticeSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
               {t('friends.accept_to_unlock', "Accept to unlock each other's habits")}
             </Text>
@@ -883,10 +910,15 @@ export const FriendsView: React.FC = () => {
                         <Text style={styles.pendingBadgeText}>{t('friends.requested', 'Requested')} ⏳</Text>
                       </View>
                     ) : (
-                      <View style={styles.streakFlameBadge}>
+                      <Animated.View
+                        style={[
+                          styles.streakFlameBadge,
+                          friend.currentStreak > 0 && { transform: [{ scale: flamePulseAnim }] },
+                        ]}
+                      >
                         <Flame size={11} color="#FF6B6B" fill="#FF6B6B" />
                         <Text style={styles.streakFlameText}>{friend.currentStreak}d</Text>
-                      </View>
+                      </Animated.View>
                     )}
                   </View>
                   <Text

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
+  Animated,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useHabit } from '../../context/HabitContext';
@@ -19,6 +21,7 @@ import {
   ChevronRight,
   Calendar as CalendarIcon,
   Check,
+  Sparkles,
 } from 'lucide-react-native';
 
 const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -41,6 +44,10 @@ export const CalendarView: React.FC = () => {
   const todayKey = formatDateKey(new Date());
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<string>(todayKey);
 
+  const selectedDayScale = useRef(new Animated.Value(1)).current;
+  const monthGridFade = useRef(new Animated.Value(1)).current;
+  const monthGridSlide = useRef(new Animated.Value(0)).current;
+
   const year = calendarDate.getFullYear();
   const month = calendarDate.getMonth();
   const daysInMonth = getMonthCalendarDays(year, month);
@@ -62,7 +69,49 @@ export const CalendarView: React.FC = () => {
     year;
 
   const changeMonth = (offset: number) => {
+    const useNative = Platform.OS !== 'web';
+    monthGridFade.setValue(0.3);
+    monthGridSlide.setValue(offset * 16);
+
     setCalendarDate(new Date(year, month + offset, 1));
+
+    Animated.parallel([
+      Animated.timing(monthGridFade, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: useNative,
+      }),
+      Animated.spring(monthGridSlide, {
+        toValue: 0,
+        friction: 6,
+        tension: 50,
+        useNativeDriver: useNative,
+      }),
+    ]).start();
+  };
+
+  const handleSelectDay = (dayKey: string) => {
+    setSelectedCalendarDay(dayKey);
+    const useNative = Platform.OS !== 'web';
+    Animated.sequence([
+      Animated.timing(selectedDayScale, {
+        toValue: 0.82,
+        duration: 70,
+        useNativeDriver: useNative,
+      }),
+      Animated.spring(selectedDayScale, {
+        toValue: 1.18,
+        friction: 3,
+        tension: 45,
+        useNativeDriver: useNative,
+      }),
+      Animated.spring(selectedDayScale, {
+        toValue: 1.0,
+        friction: 5,
+        tension: 40,
+        useNativeDriver: useNative,
+      }),
+    ]).start();
   };
 
   const selectedDateObj = new Date(selectedCalendarDay + 'T12:00:00');
@@ -92,6 +141,33 @@ export const CalendarView: React.FC = () => {
   const completedDayCount = completedHabitsForDay.length;
   const dayProgressPercent =
     totalDayCount > 0 ? Math.round((completedDayCount / totalDayCount) * 100) : 0;
+
+  // Smooth animated day progress
+  const [animatedDayProgress, setAnimatedDayProgress] = useState(dayProgressPercent);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const duration = 450;
+    const startVal = animatedDayProgress;
+    const endVal = dayProgressPercent;
+    let animFrameId: number;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const progressRatio = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progressRatio, 3);
+
+      setAnimatedDayProgress(Math.round(startVal + (endVal - startVal) * eased));
+
+      if (progressRatio < 1) {
+        animFrameId = requestAnimationFrame(step);
+      }
+    };
+
+    animFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animFrameId);
+  }, [selectedCalendarDay, dayProgressPercent]);
 
   const dayHeaderKeys = ['days.m', 'days.t', 'days.w', 'days.th', 'days.f', 'days.s', 'days.su'];
 
@@ -173,7 +249,15 @@ export const CalendarView: React.FC = () => {
       </View>
 
       {/* Calendar Matrix Rows (7 columns per row) */}
-      <View style={styles.calGridContainer}>
+      <Animated.View
+        style={[
+          styles.calGridContainer,
+          {
+            opacity: monthGridFade,
+            transform: [{ translateY: monthGridSlide }],
+          },
+        ]}
+      >
         {weeks.map((week, wIdx) => (
           <View key={`week-${wIdx}`} style={styles.weekRow}>
             {week.map((item, index) => {
@@ -228,23 +312,75 @@ export const CalendarView: React.FC = () => {
               if (nodeType === 'partial') {
                 return (
                   <View key={item.key} style={styles.dayCol}>
+                    <Animated.View
+                      style={{
+                        transform: [{ scale: isSelected ? selectedDayScale : 1 }],
+                      }}
+                    >
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => handleSelectDay(item.key)}
+                        style={[
+                          styles.calNodeWrapper,
+                          isCurrentToday && styles.todayRing,
+                          isSelected && styles.selectedRing,
+                        ]}
+                      >
+                        <LinearGradient
+                          colors={['#10B981', '#10B981', '#EF4444', '#EF4444']}
+                          locations={[0, 0.5, 0.5, 1]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={[
+                            styles.calNode,
+                            styles.nodePartial,
+                            !item.isCurrentMonth && styles.nodeInactiveMonth,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.calNodeText,
+                              {
+                                color: nodeTextColor,
+                                fontWeight: isSelected || isCurrentToday ? '900' : '700',
+                              },
+                            ]}
+                          >
+                            {item.dayNumber}
+                          </Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    </Animated.View>
+                  </View>
+                );
+              }
+
+              return (
+                <View key={item.key} style={styles.dayCol}>
+                  <Animated.View
+                    style={{
+                      transform: [{ scale: isSelected ? selectedDayScale : 1 }],
+                    }}
+                  >
                     <TouchableOpacity
                       activeOpacity={0.8}
-                      onPress={() => setSelectedCalendarDay(item.key)}
+                      onPress={() => handleSelectDay(item.key)}
                       style={[
                         styles.calNodeWrapper,
                         isCurrentToday && styles.todayRing,
                         isSelected && styles.selectedRing,
                       ]}
                     >
-                      <LinearGradient
-                        colors={['#10B981', '#10B981', '#EF4444', '#EF4444']}
-                        locations={[0, 0.5, 0.5, 1]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
+                      <View
                         style={[
                           styles.calNode,
-                          styles.nodePartial,
+                          nodeType === 'completed' && styles.nodeCompleted,
+                          nodeType === 'missed' && styles.nodeMissed,
+                          nodeType === 'pending' && {
+                            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
+                            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+                            borderWidth: 1,
+                          },
                           !item.isCurrentMonth && styles.nodeInactiveMonth,
                         ]}
                       >
@@ -259,55 +395,15 @@ export const CalendarView: React.FC = () => {
                         >
                           {item.dayNumber}
                         </Text>
-                      </LinearGradient>
+                      </View>
                     </TouchableOpacity>
-                  </View>
-                );
-              }
-
-              return (
-                <View key={item.key} style={styles.dayCol}>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={() => setSelectedCalendarDay(item.key)}
-                    style={[
-                      styles.calNodeWrapper,
-                      isCurrentToday && styles.todayRing,
-                      isSelected && styles.selectedRing,
-                    ]}
-                  >
-                    <View
-                      style={[
-                        styles.calNode,
-                        nodeType === 'completed' && styles.nodeCompleted,
-                        nodeType === 'missed' && styles.nodeMissed,
-                        nodeType === 'pending' && {
-                          backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-                          borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-                          borderWidth: 1,
-                        },
-                        !item.isCurrentMonth && styles.nodeInactiveMonth,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.calNodeText,
-                          {
-                            color: nodeTextColor,
-                            fontWeight: isSelected || isCurrentToday ? '900' : '700',
-                          },
-                        ]}
-                      >
-                        {item.dayNumber}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                  </Animated.View>
                 </View>
               );
             })}
           </View>
         ))}
-      </View>
+      </Animated.View>
 
       {/* Status Legend */}
       <View style={styles.legendRow}>
@@ -345,20 +441,28 @@ export const CalendarView: React.FC = () => {
           <Text style={[styles.selectedDayTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {formattedSelectedHeader}
           </Text>
-          {isSelectedToday && (
-            <View style={styles.todayBadge}>
-              <Text style={styles.todayBadgeText}>{t('calendar.today', 'Today')}</Text>
-            </View>
-          )}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            {dayProgressPercent === 100 && totalDayCount > 0 && (
+              <View style={styles.perfectDayBadge}>
+                <Sparkles size={11} color="#10B981" />
+                <Text style={styles.perfectDayBadgeText}>{t('home.perfect', 'Perfect!')}</Text>
+              </View>
+            )}
+            {isSelectedToday && (
+              <View style={styles.todayBadge}>
+                <Text style={styles.todayBadgeText}>{t('calendar.today', 'Today')}</Text>
+              </View>
+            )}
+          </View>
         </View>
 
         <Text style={[styles.selectedDaySub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
           {totalDayCount === 0
             ? t('calendar.no_habits_scheduled', 'No habits scheduled for this day')
-            : t('calendar.completed_summary', `${completedDayCount} of ${totalDayCount} completed (${dayProgressPercent}%)`, {
+            : t('calendar.completed_summary', `${completedDayCount} of ${totalDayCount} completed (${animatedDayProgress}%)`, {
                 completed: completedDayCount,
                 total: totalDayCount,
-                percent: dayProgressPercent,
+                percent: animatedDayProgress,
               })}
         </Text>
 
@@ -368,8 +472,8 @@ export const CalendarView: React.FC = () => {
               style={[
                 styles.progressBarFill,
                 {
-                  width: `${dayProgressPercent}%`,
-                  backgroundColor: dayProgressPercent === 100 ? '#10B981' : '#7C5CFF',
+                  width: `${animatedDayProgress}%`,
+                  backgroundColor: animatedDayProgress === 100 ? '#10B981' : '#7C5CFF',
                 },
               ]}
             />
@@ -630,6 +734,22 @@ const styles = StyleSheet.create({
   todayBadgeText: {
     color: '#FFFFFF',
     fontSize: 10,
+    fontWeight: '800',
+  },
+  perfectDayBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+  },
+  perfectDayBadgeText: {
+    color: '#10B981',
+    fontSize: 10.5,
     fontWeight: '800',
   },
   selectedDaySub: {
