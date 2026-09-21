@@ -11,6 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { LottieAnimation } from '../common/LottieAnimation';
 import {
   getMonthCalendarDays,
   formatDateKey,
@@ -216,7 +217,7 @@ export const CalendarView: React.FC = () => {
         </TouchableOpacity>
 
         <View style={styles.monthTitleWrapper}>
-          <CalendarIcon size={18} color="#7C5CFF" />
+          <LottieAnimation source="plantGrowing" size={24} />
           <Text style={[styles.monthTitleText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {monthName}
           </Text>
@@ -444,7 +445,7 @@ export const CalendarView: React.FC = () => {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             {dayProgressPercent === 100 && totalDayCount > 0 && (
               <View style={styles.perfectDayBadge}>
-                <Sparkles size={11} color="#10B981" />
+                <LottieAnimation source="trophyAchievement" size={18} />
                 <Text style={styles.perfectDayBadgeText}>{t('home.perfect', 'Perfect!')}</Text>
               </View>
             )}
@@ -518,7 +519,7 @@ export const CalendarView: React.FC = () => {
 
                 {isHabitDone ? (
                   <View style={styles.doneStatusBadge}>
-                    <Check size={12} color="#10B981" strokeWidth={3} />
+                    <LottieAnimation source="streakFlame" size={16} />
                     <Text style={styles.doneStatusText}>{t('common.done', 'Done')}</Text>
                   </View>
                 ) : (

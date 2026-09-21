@@ -17,6 +17,7 @@ import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { LottieAnimation } from '../common/LottieAnimation';
 import {
   getUserInviteCode,
   getWeekDays,
@@ -79,10 +80,13 @@ const FloatingCheerBurst: React.FC<{ onDone?: () => void }> = ({ onDone }) => {
 
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      <View style={{ position: 'absolute', bottom: -12, alignSelf: 'center', zIndex: 98 }}>
+        <LottieAnimation source="celebrationBurst" size={76} loop={false} />
+      </View>
       {particles.map((p, idx) => {
         const translateY = anim.interpolate({
           inputRange: [0, 1],
-          outputRange: [0, -50 - idx * 8],
+          outputRange: [0, -52 - idx * 8],
         });
         const opacity = anim.interpolate({
           inputRange: [0, 0.7, 1],
@@ -946,15 +950,10 @@ export const FriendsView: React.FC = () => {
                         <Text style={styles.pendingBadgeText}>{t('friends.requested', 'Requested')} ⏳</Text>
                       </View>
                     ) : (
-                      <Animated.View
-                        style={[
-                          styles.streakFlameBadge,
-                          friend.currentStreak > 0 && { transform: [{ scale: flamePulseAnim }] },
-                        ]}
-                      >
-                        <Flame size={11} color="#FF6B6B" fill="#FF6B6B" />
+                      <View style={styles.streakFlameBadge}>
+                        <LottieAnimation source="streakFlame" size={18} />
                         <Text style={styles.streakFlameText}>{friend.currentStreak}d</Text>
-                      </Animated.View>
+                      </View>
                     )}
                   </View>
                   <Text
@@ -1125,9 +1124,7 @@ export const FriendsView: React.FC = () => {
                             {friendHabit.currentStreak > 0 && (
                               <>
                                 <Text style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 10 }}>•</Text>
-                                <Animated.View style={{ transform: [{ scale: flamePulseAnim }] }}>
-                                  <Flame size={11} color="#F59E0B" fill="#F59E0B" />
-                                </Animated.View>
+                                <LottieAnimation source="streakFlame" size={16} />
                                 <Text style={{ color: '#F59E0B', fontSize: 11, fontWeight: '800' }}>
                                   {friendHabit.currentStreak}d {t('habits.streak', 'streak')}
                                 </Text>
@@ -1711,20 +1708,23 @@ export const FriendsView: React.FC = () => {
                     </View>
                   </View>
 
-                  <Text
-                    style={[
-                      styles.accountabilityText,
-                      { color: bothModalDone ? '#10B981' : isDark ? '#94A3B8' : '#64748B' },
-                    ]}
-                  >
-                    {bothModalDone
-                      ? t('friends.both_completed_today', '🎉 Both completed today! Shared streak secured!')
-                      : myModalDone && !friendModalDone
-                      ? t('friends.you_done_remind', "⚡ You're done! Remind {name} to check in.", { name: friendShortName })
-                      : !myModalDone && friendModalDone
-                      ? t('friends.friend_done_your_turn', '⏳ {name} completed today! Your turn to check in.', { name: friendShortName })
-                      : t('friends.both_pending_today', '⏳ Both pending today. Keep each other accountable!')}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, width: '100%' }}>
+                    {bothModalDone && <LottieAnimation source="celebrationBurst" size={32} loop={true} />}
+                    <Text
+                      style={[
+                        styles.accountabilityText,
+                        { color: bothModalDone ? '#10B981' : isDark ? '#94A3B8' : '#64748B', flexShrink: 1 },
+                      ]}
+                    >
+                      {bothModalDone
+                        ? t('friends.both_completed_today', '🎉 Both completed today! Shared streak secured!')
+                        : myModalDone && !friendModalDone
+                        ? t('friends.you_done_remind', "⚡ You're done! Remind {name} to check in.", { name: friendShortName })
+                        : !myModalDone && friendModalDone
+                        ? t('friends.friend_done_your_turn', '⏳ {name} completed today! Your turn to check in.', { name: friendShortName })
+                        : t('friends.both_pending_today', '⏳ Both pending today. Keep each other accountable!')}
+                    </Text>
+                  </View>
                 </View>
 
                 {/* Stat Summary Cards */}
@@ -1738,9 +1738,7 @@ export const FriendsView: React.FC = () => {
                       },
                     ]}
                   >
-                    <Animated.View style={{ transform: [{ scale: flamePulseAnim }] }}>
-                      <Flame size={18} color="#F59E0B" fill="#F59E0B" />
-                    </Animated.View>
+                    <LottieAnimation source="streakFlame" size={32} />
                     <Text
                       style={[
                         styles.modalStatValue,
@@ -1768,9 +1766,13 @@ export const FriendsView: React.FC = () => {
                       },
                     ]}
                   >
-                    <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
-                      <Text style={{ fontSize: 16 }}>{user?.avatar || '🌟'}</Text>
-                    </Animated.View>
+                    {myCount === 7 ? (
+                      <LottieAnimation source="trophyAchievement" size={26} />
+                    ) : (
+                      <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                        <Text style={{ fontSize: 16 }}>{user?.avatar || '🌟'}</Text>
+                      </Animated.View>
+                    )}
                     <Text style={[styles.modalStatValue, { color: '#10B981' }]}>
                       {myCount}/7
                     </Text>
@@ -1793,9 +1795,13 @@ export const FriendsView: React.FC = () => {
                       },
                     ]}
                   >
-                    <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
-                      <Text style={{ fontSize: 16 }}>{liveFriend.avatar || '👤'}</Text>
-                    </Animated.View>
+                    {friendCount === 7 ? (
+                      <LottieAnimation source="trophyAchievement" size={26} />
+                    ) : (
+                      <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                        <Text style={{ fontSize: 16 }}>{liveFriend.avatar || '👤'}</Text>
+                      </Animated.View>
+                    )}
                     <Text style={[styles.modalStatValue, { color: '#7C5CFF' }]}>
                       {friendCount}/7
                     </Text>
