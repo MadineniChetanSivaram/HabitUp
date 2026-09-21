@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
@@ -324,12 +324,46 @@ export const StatsView: React.FC = () => {
     };
   }, [habits, completions, timeRange, overallStats, getHabitStats, t, currentMonth, currentYear]);
 
+  const [animProgress, setAnimProgress] = useState(0);
+  const [displayPercent, setDisplayPercent] = useState(0);
+  const [displayCompletions, setDisplayCompletions] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const duration = 700;
+    let animFrameId: number;
+
+    const startPercent = displayPercent;
+    const targetPercent = analytics.overallSuccessRate;
+    const startCompletions = displayCompletions;
+    const targetCompletions = analytics.periodCompletionsCount;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const progressRatio = Math.min(elapsed / duration, 1);
+      // Smooth ease-out cubic curve
+      const eased = 1 - Math.pow(1 - progressRatio, 3);
+
+      setAnimProgress(eased);
+      setDisplayPercent(Math.round(startPercent + (targetPercent - startPercent) * eased));
+      setDisplayCompletions(Math.round(startCompletions + (targetCompletions - startCompletions) * eased));
+
+      if (progressRatio < 1) {
+        animFrameId = requestAnimationFrame(step);
+      }
+    };
+
+    animFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animFrameId);
+  }, [timeRange, analytics.overallSuccessRate, analytics.periodCompletionsCount]);
+
   // Donut Gauge math
   const radius = 48;
   const strokeWidth = 9;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset =
-    circumference - (analytics.overallSuccessRate / 100) * circumference;
+    circumference - (displayPercent / 100) * circumference;
 
   return (
     <ScrollView
@@ -438,7 +472,7 @@ export const StatsView: React.FC = () => {
               <Text
                 style={[styles.donutPercent, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
               >
-                {analytics.overallSuccessRate}%
+                {displayPercent}%
               </Text>
               <Text
                 style={[styles.donutLabel, { color: isDark ? '#94A3B8' : '#64748B' }]}
@@ -459,7 +493,7 @@ export const StatsView: React.FC = () => {
               <Text
                 style={[styles.metricValue, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
               >
-                {analytics.periodCompletionsCount}
+                {displayCompletions}
               </Text>
             </View>
 
@@ -503,6 +537,11 @@ export const StatsView: React.FC = () => {
 
         <View style={styles.barChartRow}>
           {analytics.bars.map((item, idx) => {
+            const totalBars = analytics.bars.length;
+            const staggerOffset = (idx / Math.max(totalBars, 1)) * 0.35;
+            const barRatio = Math.max(0, Math.min(1, (animProgress - staggerOffset) / (1 - staggerOffset || 1)));
+            const animatedPercent = Math.max(8, Math.round(item.percent * barRatio));
+
             return (
               <View key={idx} style={styles.barCol}>
                 <View
@@ -518,7 +557,7 @@ export const StatsView: React.FC = () => {
                     style={[
                       styles.barFill,
                       {
-                        height: `${Math.max(8, item.percent)}%`,
+                        height: `${animatedPercent}%`,
                         backgroundColor:
                           item.percent === 100
                             ? '#10B981'
@@ -557,47 +596,54 @@ export const StatsView: React.FC = () => {
           })}
         </Text>
 
-        {analytics.habitBreakdown.map((item) => (
-          <TouchableOpacity
-            key={item.habit.id}
-            style={[
-              styles.habitRowCard,
-              {
-                backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-              },
-            ]}
-            onPress={() => setSelectedHabitForDetail(item.habit)}
-            activeOpacity={0.75}
-          >
-            <View style={[styles.habitIconCircle, { backgroundColor: item.color }]}>
-              <IconRenderer name={item.icon} size={18} color="#FFFFFF" />
-            </View>
+        {analytics.habitBreakdown.map((item, index) => {
+          const totalHabits = analytics.habitBreakdown.length;
+          const itemStagger = (index / Math.max(totalHabits, 1)) * 0.3;
+          const habitRatio = Math.max(0, Math.min(1, (animProgress - itemStagger) / (1 - itemStagger || 1)));
+          const animatedWidth = Math.round(item.rate * habitRatio);
 
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.habitName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                {tHabitName(item.name)}
-              </Text>
-              <View style={[styles.progressTrack, { backgroundColor: isDark ? '#0C1322' : '#F1F5F9' }]}>
-                <View
-                  style={[
-                    styles.progressFill,
-                    {
-                      width: `${item.rate}%`,
-                      backgroundColor: item.color,
-                    },
-                  ]}
-                />
+          return (
+            <TouchableOpacity
+              key={item.habit.id}
+              style={[
+                styles.habitRowCard,
+                {
+                  backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+                },
+              ]}
+              onPress={() => setSelectedHabitForDetail(item.habit)}
+              activeOpacity={0.75}
+            >
+              <View style={[styles.habitIconCircle, { backgroundColor: item.color }]}>
+                <IconRenderer name={item.icon} size={18} color="#FFFFFF" />
               </View>
-            </View>
 
-            <View style={styles.rateBadge}>
-              <Text style={[styles.rateText, { color: item.color }]}>
-                {item.rate}%
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.habitName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+                  {tHabitName(item.name)}
+                </Text>
+                <View style={[styles.progressTrack, { backgroundColor: isDark ? '#0C1322' : '#F1F5F9' }]}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      {
+                        width: `${animatedWidth}%`,
+                        backgroundColor: item.color,
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.rateBadge}>
+                <Text style={[styles.rateText, { color: item.color }]}>
+                  {item.rate}%
+                </Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </ScrollView>
   );

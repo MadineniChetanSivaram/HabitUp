@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Animated, Platform } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
 import { PlantStreakCard } from '../mobile/PlantStreakCard';
-import { CheckCircle2, ChevronLeft } from 'lucide-react-native';
+import { CheckCircle2, ChevronLeft, Sparkles, Flame } from 'lucide-react-native';
 import { LottieAnimation } from '../common/LottieAnimation';
 
 export const StreaksView: React.FC = () => {
@@ -13,6 +13,36 @@ export const StreaksView: React.FC = () => {
   const currentStreak = Math.max(plant?.currentStreak ?? 0, overallStats.currentBestStreak ?? 0);
   const bestStreak = Math.max(plant?.bestStreak ?? 0, overallStats.bestAllTimeStreak ?? 0);
   const totalCompletions = overallStats.totalCompletionsCount || 0;
+
+  const pulseAura = useRef(new Animated.Value(1)).current;
+  const countScale = useRef(new Animated.Value(0.85)).current;
+
+  useEffect(() => {
+    const useNative = Platform.OS !== 'web';
+    Animated.spring(countScale, {
+      toValue: 1,
+      friction: 4,
+      tension: 40,
+      useNativeDriver: useNative,
+    }).start();
+
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAura, {
+          toValue: 1.12,
+          duration: 1800,
+          useNativeDriver: useNative,
+        }),
+        Animated.timing(pulseAura, {
+          toValue: 0.95,
+          duration: 1800,
+          useNativeDriver: useNative,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, []);
 
   return (
     <ScrollView
@@ -39,18 +69,33 @@ export const StreaksView: React.FC = () => {
         <View style={{ width: 38 }} />
       </View>
 
-      {/* Hero Flame Mascot with Lottie */}
+      {/* Hero Flame Mascot with Animated Pulsing Glow Aura */}
       <View style={styles.heroFlameBox}>
+        <Animated.View
+          style={[
+            styles.flameAura,
+            {
+              backgroundColor: isDark ? 'rgba(245, 158, 11, 0.12)' : 'rgba(245, 158, 11, 0.18)',
+              transform: [{ scale: pulseAura }],
+            },
+          ]}
+        />
         <View style={{ width: 130, height: 130, alignItems: 'center', justifyContent: 'center' }}>
           <LottieAnimation source="streakFlame" size={130} />
         </View>
 
-        <Text style={[styles.streakHeroNumber, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-          {currentStreak}
-        </Text>
-        <Text style={[styles.streakHeroUnit, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-          {t('streaks.day_streak', 'DAY STREAK')}
-        </Text>
+        <Animated.View style={{ transform: [{ scale: countScale }], alignItems: 'center' }}>
+          <Text style={[styles.streakHeroNumber, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+            {currentStreak}
+          </Text>
+          <View style={styles.streakUnitRow}>
+            <Sparkles size={13} color="#F59E0B" />
+            <Text style={[styles.streakHeroUnit, { color: isDark ? '#FBBF24' : '#D97706' }]}>
+              {t('streaks.day_streak', 'DAY STREAK')}
+            </Text>
+            <Sparkles size={13} color="#F59E0B" />
+          </View>
+        </Animated.View>
       </View>
 
       {/* Living Plant Garden Streak Card */}
@@ -131,15 +176,29 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   heroFlameBox: {
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
+  },
+  flameAura: {
+    position: 'absolute',
+    top: 10,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
   streakHeroNumber: {
     fontSize: 48,
     fontWeight: '900',
     marginTop: 8,
     letterSpacing: -1,
+  },
+  streakUnitRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
   },
   streakHeroUnit: {
     fontSize: 12,

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   Platform,
   ActivityIndicator,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -56,6 +57,63 @@ const QUICK_HABIT_PRESETS = [
   { name: 'LeetCode Daily', icon: 'Cpu', color: '#10B981', time: '08:30' },
   { name: 'Strength Workout', icon: 'Dumbbell', color: '#EF4444', time: '18:00' },
 ];
+
+const FloatingCheerBurst: React.FC<{ onDone?: () => void }> = ({ onDone }) => {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(anim, {
+      toValue: 1,
+      duration: 1200,
+      useNativeDriver: Platform.OS !== 'web',
+    }).start(() => onDone?.());
+  }, []);
+
+  const particles = [
+    { emoji: '🔥', x: -22, delay: 0 },
+    { emoji: '👏', x: -8, delay: 50 },
+    { emoji: '💖', x: 8, delay: 100 },
+    { emoji: '⭐', x: 22, delay: 150 },
+    { emoji: '🎉', x: 0, delay: 200 },
+  ];
+
+  return (
+    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      {particles.map((p, idx) => {
+        const translateY = anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, -50 - idx * 8],
+        });
+        const opacity = anim.interpolate({
+          inputRange: [0, 0.7, 1],
+          outputRange: [1, 0.95, 0],
+        });
+        const scale = anim.interpolate({
+          inputRange: [0, 0.3, 1],
+          outputRange: [0.5, 1.25, 0.9],
+        });
+
+        return (
+          <Animated.Text
+            key={idx}
+            style={{
+              position: 'absolute',
+              bottom: 12,
+              alignSelf: 'center',
+              marginLeft: p.x,
+              fontSize: 18,
+              opacity,
+              transform: [{ translateY }, { scale }],
+              zIndex: 99,
+            }}
+          >
+            {p.emoji}
+          </Animated.Text>
+        );
+      })}
+    </View>
+  );
+};
 
 export const FriendsView: React.FC = () => {
   const {
@@ -134,6 +192,14 @@ export const FriendsView: React.FC = () => {
   const [togetherPeriod, setTogetherPeriod] = useState<'AM' | 'PM'>('AM');
   const [togetherIcon, setTogetherIcon] = useState<string>('Target');
   const [togetherColor, setTogetherColor] = useState<string>('#7C5CFF');
+
+  const [activeCheerFriendId, setActiveCheerFriendId] = useState<string | null>(null);
+
+  const handleCheer = (friend: FriendUser) => {
+    setActiveCheerFriendId(friend.id);
+    const friendName = formatFriendDisplayName(friend).displayName;
+    showToast(t('friends.cheer_sent', 'Cheer sent to {name}! 🔥🎉', { name: friendName }), undefined, 'success');
+  };
 
   const myUsername = useMemo(() => {
     if (user?.username) {
@@ -835,17 +901,39 @@ export const FriendsView: React.FC = () => {
 
               <View style={styles.friendHeaderRight}>
                 {!isPendingSent && (
-                  <TouchableOpacity
-                    style={[
-                      styles.buddyTogetherBtn,
-                      { backgroundColor: isDark ? '#1E293B' : '#F1F5F9' },
-                    ]}
-                    onPress={() => openTogetherWithFriend(friend)}
-                    activeOpacity={0.7}
-                  >
-                    <Plus size={12} color="#7C5CFF" strokeWidth={3} />
-                    <Text style={styles.buddyTogetherBtnText}>{t('friends.together', 'Together')}</Text>
-                  </TouchableOpacity>
+                  <>
+                    <View style={{ position: 'relative' }}>
+                      <TouchableOpacity
+                        style={[
+                          styles.buddyCheerBtn,
+                          {
+                            backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7',
+                            borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : '#FDE68A',
+                          },
+                        ]}
+                        onPress={() => handleCheer(friend)}
+                        activeOpacity={0.7}
+                      >
+                        <Flame size={12} color="#F59E0B" fill="#F59E0B" />
+                        <Text style={styles.buddyCheerBtnText}>{t('friends.cheer', 'Cheer')}</Text>
+                      </TouchableOpacity>
+                      {activeCheerFriendId === friend.id && (
+                        <FloatingCheerBurst onDone={() => setActiveCheerFriendId(null)} />
+                      )}
+                    </View>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.buddyTogetherBtn,
+                        { backgroundColor: isDark ? '#1E293B' : '#F1F5F9' },
+                      ]}
+                      onPress={() => openTogetherWithFriend(friend)}
+                      activeOpacity={0.7}
+                    >
+                      <Plus size={12} color="#7C5CFF" strokeWidth={3} />
+                      <Text style={styles.buddyTogetherBtnText}>{t('friends.together', 'Together')}</Text>
+                    </TouchableOpacity>
+                  </>
                 )}
 
                 <TouchableOpacity
@@ -2479,6 +2567,20 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 2,
     lineHeight: 16,
+  },
+  buddyCheerBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 9,
+    paddingVertical: 5.5,
+    borderRadius: 11,
+    borderWidth: 1,
+    gap: 3.5,
+  },
+  buddyCheerBtnText: {
+    color: '#D97706',
+    fontSize: 11,
+    fontWeight: '800',
   },
   buddyTogetherBtn: {
     flexDirection: 'row',

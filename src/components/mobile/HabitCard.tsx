@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, Platform } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Modal, StyleSheet, Platform, Animated } from 'react-native';
 import { Habit } from '../../types';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
@@ -32,15 +32,37 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
   const [showBurst, setShowBurst] = useState(false);
   const isDark = theme === 'dark';
 
+  const checkboxScale = useRef(new Animated.Value(1)).current;
+  const flamePulse = useRef(new Animated.Value(1)).current;
+
   const stats = getHabitStats(habit.id);
   const isCompleted = completions.some(
     (c) => c.habit_id === habit.id && (c.completion_date || '').split('T')[0] === selectedDate
   );
 
+  useEffect(() => {
+    if (stats.currentStreak > 0) {
+      const loop = Animated.loop(
+        Animated.sequence([
+          Animated.timing(flamePulse, { toValue: 1.08, duration: 1200, useNativeDriver: Platform.OS !== 'web' }),
+          Animated.timing(flamePulse, { toValue: 1.0, duration: 1200, useNativeDriver: Platform.OS !== 'web' }),
+        ])
+      );
+      loop.start();
+      return () => loop.stop();
+    }
+  }, [stats.currentStreak]);
+
   const isPaused = Boolean(habit.paused_at);
   const isArchived = Boolean(habit.archived_at);
 
   const handleCheckClick = () => {
+    Animated.sequence([
+      Animated.timing(checkboxScale, { toValue: 0.72, duration: 80, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.spring(checkboxScale, { toValue: 1.22, friction: 3, tension: 45, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.spring(checkboxScale, { toValue: 1.0, friction: 5, tension: 40, useNativeDriver: Platform.OS !== 'web' }),
+    ]).start();
+
     if (!isCompleted) {
       setShowBurst(true);
       setTimeout(() => setShowBurst(false), 1400);
@@ -126,10 +148,18 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
               {tHabitName(habit.name)}
             </Text>
             {stats.currentStreak > 0 && (
-              <View style={[styles.streakBadge, { backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7' }]}>
+              <Animated.View
+                style={[
+                  styles.streakBadge,
+                  {
+                    backgroundColor: isDark ? 'rgba(245, 158, 11, 0.15)' : '#FEF3C7',
+                    transform: [{ scale: flamePulse }],
+                  },
+                ]}
+              >
                 <LottieAnimation source="streakFlame" size={16} />
                 <Text style={styles.streakCount}>{stats.currentStreak}d</Text>
-              </View>
+              </Animated.View>
             )}
             {isPaused && (
               <View style={styles.badgePaused}>
@@ -174,20 +204,22 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
           </TouchableOpacity>
 
           <View style={styles.checkboxWrapper}>
-            <TouchableOpacity
-              style={[
-                styles.checkbox,
-                isCompleted
-                  ? styles.checkboxChecked
-                  : isDark
-                  ? styles.checkboxUncheckedDark
-                  : styles.checkboxUncheckedLight,
-              ]}
-              onPress={handleCheckClick}
-              activeOpacity={0.7}
-            >
-              {isCompleted && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: checkboxScale }] }}>
+              <TouchableOpacity
+                style={[
+                  styles.checkbox,
+                  isCompleted
+                    ? styles.checkboxChecked
+                    : isDark
+                    ? styles.checkboxUncheckedDark
+                    : styles.checkboxUncheckedLight,
+                ]}
+                onPress={handleCheckClick}
+                activeOpacity={0.7}
+              >
+                {isCompleted && <Check size={16} color="#FFFFFF" strokeWidth={3} />}
+              </TouchableOpacity>
+            </Animated.View>
             {showBurst && (
               <View style={styles.burstOverlay} pointerEvents="none">
                 <LottieAnimation source="celebrationBurst" size={88} loop={false} />

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Animated } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
 import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
@@ -38,15 +38,42 @@ export const TodayProgressCard: React.FC = () => {
 
   const totalCount = scheduledToday.length;
   const completedCount = completedToday.length;
-  const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const targetPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
   const plant = overallStats.plantStreak;
-  const isPerfectDay = progressPercent === 100 && totalCount > 0;
+  const isPerfectDay = targetPercent === 100 && totalCount > 0;
+
+  // Smooth animated percentage
+  const [animatedPercent, setAnimatedPercent] = useState(targetPercent);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const duration = 500;
+    const startVal = animatedPercent;
+    const endVal = targetPercent;
+    let animFrameId: number;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const progressRatio = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progressRatio, 3);
+
+      setAnimatedPercent(Math.round(startVal + (endVal - startVal) * eased));
+
+      if (progressRatio < 1) {
+        animFrameId = requestAnimationFrame(step);
+      }
+    };
+
+    animFrameId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animFrameId);
+  }, [targetPercent]);
 
   // SVG Circular Gauge
   const radius = 38;
   const strokeWidth = 6;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progressPercent / 100) * circumference;
+  const strokeDashoffset = circumference - (animatedPercent / 100) * circumference;
 
   return (
     <View
@@ -65,7 +92,7 @@ export const TodayProgressCard: React.FC = () => {
           {
             backgroundColor: isPerfectDay
               ? '#10B981'
-              : progressPercent > 0
+              : animatedPercent > 0
               ? '#7C5CFF'
               : 'transparent',
           },
@@ -111,7 +138,7 @@ export const TodayProgressCard: React.FC = () => {
                   { color: isPerfectDay ? '#10B981' : isDark ? '#A78BFA' : '#7C5CFF' },
                 ]}
               >
-                {progressPercent}%
+                {animatedPercent}%
               </Text>
             </View>
           </View>
@@ -190,7 +217,7 @@ export const TodayProgressCard: React.FC = () => {
             <PlantVisualizer
               stage={plant?.stage}
               streak={plant?.currentStreak || 0}
-              hydrationPercent={progressPercent}
+              hydrationPercent={animatedPercent}
               isWateredToday={completedCount > 0}
               size="sm"
               interactive={false}
