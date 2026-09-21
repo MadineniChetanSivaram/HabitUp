@@ -25,6 +25,8 @@ export interface InAppNotification {
   timestamp: string;
   reminderTime?: string;
   type: 'reminder' | 'streak' | 'daily_briefing' | 'system';
+  mascotMood?: 'sleeping' | 'sad' | 'hopeful' | 'hyped' | 'celebrating' | 'rest' | 'awake';
+  mascotExpression?: 'neutral' | 'wink' | 'starry' | 'love' | 'playful' | 'happy' | 'sad' | 'determined';
 }
 
 // 1. Configure foreground presentation on native
@@ -220,6 +222,8 @@ export interface MascotNotificationMessage {
   icon: string;
   color: string;
   soundType: string;
+  mascotMood: 'sleeping' | 'sad' | 'hopeful' | 'hyped' | 'celebrating' | 'rest' | 'awake';
+  mascotExpression: 'neutral' | 'wink' | 'starry' | 'love' | 'playful' | 'happy' | 'sad' | 'determined';
 }
 
 export function getMascotNotificationContent(
@@ -234,134 +238,170 @@ export function getMascotNotificationContent(
   const NOTIFICATIONS_MAP: Record<NotificationTone, Record<MascotNotificationScenario, MascotNotificationMessage>> = {
     witty: {
       morning: {
-        title: 'Yawn... Sparky is Awake! 🥱🎋',
-        body: 'Sparky just crawled out of bed and needs morning bamboo. Complete habit #1 to water his sprout before he gets sassy!',
+        title: 'Sparky is Awake',
+        body: 'Sparky just crawled out of bed and needs morning bamboo. Complete your first habit to water his sprout before he gets sassy.',
         icon: 'Sunrise',
         color: '#F59E0B',
         soundType: 'sleepy_yawn',
+        mascotMood: 'hopeful',
+        mascotExpression: 'playful',
       },
       midday: {
-        title: 'Sparky is Checking his Watch ⌚👀',
-        body: `Half the day is history! You have ${remaining} habits waiting. Give Sparky something to celebrate! 🎋💪`,
+        title: 'Sparky is Checking the Clock',
+        body: `Half the day is history. You have ${remaining} habits waiting. Give Sparky something to celebrate.`,
         icon: 'Clock',
         color: '#3B82F6',
         soundType: 'half_done_chirp',
+        mascotMood: 'hopeful',
+        mascotExpression: 'wink',
       },
       evening_danger: {
-        title: `🚨 STREAK EMERGENCY! Sparky is Pouting 🥺🔥`,
-        body: `Sparky is staring at his empty bamboo stalk... Only hours left before your ${streak}-day streak burns to ashes! Check off "${habit}" now!`,
+        title: 'Streak Danger Alert',
+        body: `Sparky is staring at his empty bamboo stalk. Only a few hours left before your ${streak}-day streak resets. Complete "${habit}" now.`,
         icon: 'Flame',
         color: '#EF4444',
         soundType: 'sad_whimper',
+        mascotMood: 'sad',
+        mascotExpression: 'sad',
       },
       night_alert: {
-        title: '😱 Sparky is Packing his Bags! 🧳',
-        body: 'Snooze alert! Only 45 minutes left before midnight reset! Save your streak and keep Sparky happy!',
+        title: 'Midnight Alert',
+        body: 'Snooze alert. Only 45 minutes left before midnight reset. Save your streak and keep Sparky happy.',
         icon: 'AlertTriangle',
         color: '#DC2626',
         soundType: 'sad_whimper',
+        mascotMood: 'sad',
+        mascotExpression: 'sad',
       },
       celebration: {
-        title: '🏆 NOM NOM NOM! Royal Bamboo Feast! 🎋😋',
-        body: "ALL habits crushed today! Sparky is wearing his crown and munching delicious bamboo! You're an absolute legend!",
+        title: 'Royal Bamboo Feast',
+        body: 'All habits crushed today. Sparky is wearing his crown and enjoying delicious bamboo. Outstanding work.',
         icon: 'Crown',
         color: '#10B981',
         soundType: 'bamboo_crunch',
+        mascotMood: 'celebrating',
+        mascotExpression: 'happy',
       },
       freeze_shield: {
-        title: '🛡️ Streak Freeze Shield Deployed!',
-        body: `Phew! Your icy shield saved your ${streak}-day streak yesterday. Sparky is safe, but today we get right back to business!`,
+        title: 'Streak Freeze Shield Deployed',
+        body: `Your shield saved your ${streak}-day streak yesterday. Sparky is safe, now let us get right back to business.`,
         icon: 'Shield',
         color: '#06B6D4',
         soundType: 'excited_twitter',
+        mascotMood: 'rest',
+        mascotExpression: 'wink',
       },
     },
     sweet: {
       morning: {
-        title: 'Good Morning, Sunshine! ☀️🌱',
-        body: 'Sparky is sending you warm morning cuddles. Remember: small daily steps create big wonderful journeys!',
+        title: 'Good Morning, Ready to Shine',
+        body: 'Sparky is sending you warm morning encouragement. Small daily steps create big wonderful journeys.',
         icon: 'Sun',
         color: '#FBBF24',
         soundType: 'sleepy_yawn',
+        mascotMood: 'awake',
+        mascotExpression: 'happy',
       },
       midday: {
-        title: 'Sparky Believes in You! 💖🌸',
-        body: `Take a gentle breath, hydrate, and take one mindful step toward "${habit}". You're doing wonderful!`,
+        title: 'Sparky Believes in You',
+        body: `Take a gentle breath, hydrate, and take one mindful step toward "${habit}". You are doing wonderful.`,
         icon: 'Heart',
         color: '#EC4899',
         soundType: 'half_done_chirp',
+        mascotMood: 'hopeful',
+        mascotExpression: 'love',
       },
       evening_danger: {
-        title: 'Gentle Evening Self-Care 🌿✨',
-        body: `You've worked so hard on your ${streak}-day streak! Take 5 quiet minutes for yourself tonight to finish strong.`,
+        title: 'Gentle Evening Reminder',
+        body: `You have worked hard on your ${streak}-day streak. Take a few quiet minutes for yourself tonight to finish strong.`,
         icon: 'Sparkles',
         color: '#8B5CF6',
         soundType: 'sad_whimper',
+        mascotMood: 'hopeful',
+        mascotExpression: 'starry',
       },
       night_alert: {
-        title: 'Sparky is Cheering for You! 🌟🌙',
+        title: 'Nighttime Habit Check-In',
         body: 'Just one quick habit check-in before bedtime to keep your peaceful momentum glowing warmly.',
         icon: 'Moon',
         color: '#6366F1',
         soundType: 'excited_twitter',
+        mascotMood: 'hopeful',
+        mascotExpression: 'starry',
       },
       celebration: {
-        title: 'You are Incredible! 🌈🎋',
-        body: 'Every single habit completed with care! Sparky is so proud of you, rest well tonight and recharge!',
+        title: 'All Habits Complete',
+        body: 'Every single habit completed with care. Sparky is proud of you, rest well tonight and recharge.',
         icon: 'Smile',
         color: '#10B981',
         soundType: 'bamboo_crunch',
+        mascotMood: 'celebrating',
+        mascotExpression: 'happy',
       },
       freeze_shield: {
-        title: 'Warm Blanket for your Streak 🛡️🤍',
-        body: 'Your streak freeze protected you while you rested. Today is a fresh, beautiful day to shine!',
+        title: 'Streak Protected',
+        body: 'Your streak freeze protected you while you rested. Today is a fresh, beautiful day to shine.',
         icon: 'Shield',
         color: '#38BDF8',
         soundType: 'happy_bleat',
+        mascotMood: 'rest',
+        mascotExpression: 'wink',
       },
     },
     strict: {
       morning: {
-        title: 'RISE & GRIND! ⚡🔥',
-        body: 'Zero excuses! While others are hitting snooze, we are building unbreakable discipline. Attack habit #1 NOW!',
+        title: 'Rise and Grind',
+        body: 'Zero excuses. While others are hitting snooze, we are building unbreakable discipline. Attack habit number one now.',
         icon: 'Zap',
         color: '#E11D48',
         soundType: 'excited_twitter',
+        mascotMood: 'hyped',
+        mascotExpression: 'determined',
       },
       midday: {
-        title: 'NO SLACKING! Midday Check! ⏱️🥊',
-        body: `50% of the day gone. Champions execute when it counts. Check off "${habit}" immediately!`,
+        title: 'Midday Accountability Check',
+        body: `50% of the day gone. Champions execute when it counts. Check off "${habit}" immediately.`,
         icon: 'Clock',
         color: '#EA580C',
         soundType: 'half_done_chirp',
+        mascotMood: 'hyped',
+        mascotExpression: 'determined',
       },
       evening_danger: {
-        title: `DEFEND THE ${streak}-DAY STREAK AT ALL COSTS! 🛡️💥`,
-        body: 'Do NOT surrender ground tonight! Your streak is your discipline score. Finish what you started!',
+        title: `Defend the ${streak}-Day Streak`,
+        body: 'Do not surrender ground tonight. Your streak is your discipline score. Finish what you started.',
         icon: 'Flame',
         color: '#DC2626',
         soundType: 'sad_whimper',
+        mascotMood: 'hyped',
+        mascotExpression: 'determined',
       },
       night_alert: {
-        title: 'FINAL COUNTDOWN! Midnight Approaching! ⚠️',
-        body: 'Lock in right now. No excuses tomorrow morning for work left undone tonight. Execute!',
+        title: 'Final Countdown to Midnight',
+        body: 'Lock in right now. No excuses tomorrow morning for work left undone tonight. Execute.',
         icon: 'AlertOctagon',
         color: '#991B1B',
         soundType: 'sad_whimper',
+        mascotMood: 'sad',
+        mascotExpression: 'determined',
       },
       celebration: {
-        title: 'MISSION ACCOMPLISHED! Flawless Victory! 🎖️🥇',
-        body: '100% execution score today! Standards maintained, discipline proven. Be proud, tomorrow we reload!',
+        title: 'Mission Accomplished',
+        body: '100% execution score today. Standards maintained, discipline proven. Be proud, tomorrow we reload.',
         icon: 'Award',
         color: '#16A34A',
         soundType: 'bamboo_crunch',
+        mascotMood: 'celebrating',
+        mascotExpression: 'happy',
       },
       freeze_shield: {
-        title: 'Tactical Shield Spent! ⚠️',
-        body: 'Your streak freeze bought you time. We do not waste second chances. Lock in today’s tasks now!',
+        title: 'Tactical Shield Spent',
+        body: 'Your streak freeze bought you time. We do not waste second chances. Lock in today tasks now.',
         icon: 'ShieldAlert',
         color: '#0284C7',
         soundType: 'excited_twitter',
+        mascotMood: 'hyped',
+        mascotExpression: 'determined',
       },
     },
   };
@@ -436,11 +476,13 @@ export async function triggerMascotNotification(
     reminderTime: currentTime,
     timestamp: new Date().toISOString(),
     type: scenario === 'evening_danger' || scenario === 'night_alert' ? 'streak' : 'reminder',
+    mascotMood: notif.mascotMood,
+    mascotExpression: notif.mascotExpression,
   });
 }
 
 export async function triggerTestNotification(
-  title = 'HabitUp Notifications Active! 🔔',
+  title = 'HabitUp Notifications Active',
   body = 'Your daily habit reminders and sound alerts are ready to go.'
 ) {
   const currentTime = new Intl.DateTimeFormat('en-US', {
@@ -504,6 +546,8 @@ export async function triggerTestNotification(
     reminderTime: currentTime,
     timestamp: new Date().toISOString(),
     type: 'system',
+    mascotMood: 'awake',
+    mascotExpression: 'happy',
   });
 }
 
@@ -515,8 +559,8 @@ export async function triggerNudgeNotification(params: {
   icon?: string;
   color?: string;
 }) {
-  const title = `👋 ${params.senderName} nudged you!`;
-  const body = `Friendly reminder to check off "${params.habitName}" today and maintain your shared streak! 🔥`;
+  const title = `${params.senderName} sent you a nudge`;
+  const body = `Friendly reminder to check off "${params.habitName}" today and maintain your shared streak.`;
 
   const currentTime = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
@@ -581,6 +625,8 @@ export async function triggerNudgeNotification(params: {
     reminderTime: currentTime,
     timestamp: new Date().toISOString(),
     type: 'reminder',
+    mascotMood: 'hopeful',
+    mascotExpression: 'playful',
   });
 }
 

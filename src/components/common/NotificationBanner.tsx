@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
-import { Bell, Check, X, Clock } from 'lucide-react-native';
+import { X, Clock } from 'lucide-react-native';
 import { InAppNotification, addInAppNotificationListener } from '../../services/notificationService';
 import { useHabit } from '../../context/HabitContext';
-import { IconRenderer } from './IconRenderer';
+import { HabitlyMascot } from '../mobile/HabitlyMascot';
 import { formatTo12Hour } from '../../utils/streakCalculator';
 
 export const NotificationBanner: React.FC = () => {
@@ -71,6 +71,17 @@ export const NotificationBanner: React.FC = () => {
 
   const AnimatedView = Animated.View as any;
 
+  // Clean any remaining emoji glyphs for pure, high-clarity typography
+  const cleanTitle = (currentNotification.title || '')
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const cleanBody = (currentNotification.body || '')
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
   return (
     <AnimatedView
       style={[
@@ -90,18 +101,24 @@ export const NotificationBanner: React.FC = () => {
           },
         ]}
       >
-        {/* Left Squircle Icon */}
+        {/* Left: Animated Panda Mascot with Current Expression */}
         <View
           style={[
-            styles.iconWrapper,
-            { backgroundColor: currentNotification.color || '#7C5CFF' },
+            styles.mascotBadge,
+            {
+              backgroundColor: isDark ? 'rgba(124, 92, 255, 0.12)' : '#F5F3FF',
+              borderColor: isDark ? 'rgba(124, 92, 255, 0.25)' : 'rgba(124, 92, 255, 0.2)',
+            },
           ]}
         >
-          {currentNotification.icon ? (
-            <IconRenderer name={currentNotification.icon} size={22} color="#FFFFFF" />
-          ) : (
-            <Bell size={22} color="#FFFFFF" />
-          )}
+          <HabitlyMascot
+            size={36}
+            forcedMood={currentNotification.mascotMood}
+            forcedExpression={currentNotification.mascotExpression}
+            hideSpeechBubble
+            disableAura
+            disableZzz
+          />
         </View>
 
         {/* Center Text Info */}
@@ -113,7 +130,7 @@ export const NotificationBanner: React.FC = () => {
             ]}
             numberOfLines={1}
           >
-            {currentNotification.title}
+            {cleanTitle}
           </Text>
           <Text
             style={[
@@ -122,7 +139,7 @@ export const NotificationBanner: React.FC = () => {
             ]}
             numberOfLines={2}
           >
-            {currentNotification.body}
+            {cleanBody}
           </Text>
         </View>
 
@@ -140,7 +157,7 @@ export const NotificationBanner: React.FC = () => {
             </View>
           )}
 
-          <TouchableOpacity style={styles.dismissBtn} onPress={dismiss}>
+          <TouchableOpacity style={styles.dismissBtn} onPress={dismiss} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <X size={15} color={isDark ? '#94A3B8' : '#64748B'} />
           </TouchableOpacity>
         </View>
@@ -170,17 +187,19 @@ const styles = StyleSheet.create({
     elevation: 12,
     gap: 12,
   },
-  iconWrapper: {
-    width: 44,
-    height: 44,
-    borderRadius: 16,
+  mascotBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#7C5CFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
   },
   textWrapper: {
     flex: 1,

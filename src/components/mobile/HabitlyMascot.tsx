@@ -27,20 +27,28 @@ import { soundService } from '../../services/soundService';
 export type MascotMood = 'sleeping' | 'sad' | 'hopeful' | 'hyped' | 'celebrating' | 'rest' | 'awake';
 export type MascotExpression = 'neutral' | 'wink' | 'starry' | 'love' | 'playful' | 'happy' | 'sad' | 'determined';
 
-interface HabitlyMascotProps {
+export interface HabitlyMascotProps {
   onClick?: () => void;
   size?: number;
   forcedMood?: MascotMood;
+  forcedExpression?: MascotExpression;
   equippedHat?: string | null;
   equippedGlasses?: string | null;
+  hideSpeechBubble?: boolean;
+  disableAura?: boolean;
+  disableZzz?: boolean;
 }
 
 export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   onClick,
   size = 120,
   forcedMood,
+  forcedExpression,
   equippedHat: propEquippedHat,
   equippedGlasses: propEquippedGlasses,
+  hideSpeechBubble = false,
+  disableAura = false,
+  disableZzz = false,
 }) => {
   const {
     habits,
@@ -75,7 +83,9 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const [isAwake, setIsAwake] = useState<boolean>(completedCount > 0);
   const [showSpeechBubble, setShowSpeechBubble] = useState<boolean>(false);
   const [quoteIndex, setQuoteIndex] = useState<number>(0);
-  const [activeExpression, setActiveExpression] = useState<MascotExpression>('neutral');
+  const [stateActiveExpression, setStateActiveExpression] = useState<MascotExpression>('neutral');
+  const activeExpression = forcedExpression !== undefined ? forcedExpression : stateActiveExpression;
+  const setActiveExpression = setStateActiveExpression;
   const expressionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-wake up whenever user completes a habit
@@ -103,7 +113,11 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   // 2: Lush tall stalk (51 - 99% habits done)
   // 3: Eating feast! (100% all habits completed)
   let bambooStage = 0;
-  if (progressPercent === 100 && totalCount > 0) {
+  if (forcedMood === 'celebrating') {
+    bambooStage = 3;
+  } else if (forcedMood === 'sad') {
+    bambooStage = 0;
+  } else if (progressPercent === 100 && totalCount > 0) {
     bambooStage = 3; // Eating feast!
   } else if (progressPercent > 50) {
     bambooStage = 2; // Lush tall stalk
@@ -518,7 +532,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   return (
     <View style={[styles.outerWrapper, { width: size * 1.3, height: size * 1.25 }]}>
       {/* 💬 Interactive Multilingual Speech Bubble (Positioned safely to left of Sparky) */}
-      {showSpeechBubble && (
+      {showSpeechBubble && !hideSpeechBubble && (
         <TouchableOpacity
           style={[
             styles.speechBubble,
@@ -547,7 +561,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
       )}
 
       {/* 💤 Floating Zzz Particles when Sleeping */}
-      {mood === 'sleeping' && (
+      {mood === 'sleeping' && !disableZzz && (
         <View style={styles.zzzContainer} pointerEvents="none">
           <AnimatedView
             style={[
@@ -606,20 +620,22 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
           ]}
         >
           {/* Radial Aura Glow */}
-          <AnimatedView
-            style={[
-              styles.auraGlow,
-              {
-                width: size * 1.05,
-                height: size * 1.05,
-                borderRadius: size,
-                top: (size * 1.25 - size * 1.05) / 2,
-                left: (size * 1.3 - size * 1.05) / 2,
-                backgroundColor: auraColor,
-                transform: [{ scale: auraPulse }],
-              },
-            ]}
-          />
+          {!disableAura && (
+            <AnimatedView
+              style={[
+                styles.auraGlow,
+                {
+                  width: size * 1.05,
+                  height: size * 1.05,
+                  borderRadius: size,
+                  top: (size * 1.25 - size * 1.05) / 2,
+                  left: (size * 1.3 - size * 1.05) / 2,
+                  backgroundColor: auraColor,
+                  transform: [{ scale: auraPulse }],
+                },
+              ]}
+            />
+          )}
 
           {/* ======================================================== */}
           {/* LAYER 1: ISOLATED HW-ACCELERATED TAIL (behind body)      */}
@@ -911,8 +927,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 🥺 2. Sad / Pouting Face (Awake with 0 Habits Completed) */}
-              {mood === 'sad' && activeExpression === 'neutral' && (
+              {/* 🥺 2. Sad / Pouting Face (Awake with 0 Habits Completed or Danger Alert) */}
+              {((mood === 'sad' && activeExpression === 'neutral') || activeExpression === 'sad') && (
                 <G id="rp-face-sad">
                   {/* Sad Drooping Eyebrows */}
                   <Path d="M 60 52 Q 65 50 70 54" stroke="#7C2D12" strokeWidth={2.2} strokeLinecap="round" fill="none" />
@@ -938,8 +954,8 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
                 </G>
               )}
 
-              {/* 🎋💪 3. Halfway Done / Determined Face (1 - 50%) */}
-              {mood === 'hopeful' && activeExpression === 'neutral' && (
+              {/* 🎋💪 3. Halfway Done / Determined Face (1 - 50% or determined) */}
+              {(activeExpression === 'determined' || (mood === 'hopeful' && activeExpression === 'neutral')) && (
                 <G id="rp-face-half-done">
                   {/* Determined Eyebrows */}
                   <Path d="M 61 53 Q 66 51 71 52" stroke="#7C2D12" strokeWidth={2} strokeLinecap="round" fill="none" />

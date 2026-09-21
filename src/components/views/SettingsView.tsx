@@ -571,9 +571,9 @@ export const SettingsView: React.FC = () => {
         {/* Tone Selector Chips */}
         <View style={styles.toneSelectorRow}>
           {[
-            { id: 'witty' as const, label: '🎭 Witty (Duolingo)', desc: 'Dramatic guilt trips & hilarious sass' },
-            { id: 'sweet' as const, label: '🌸 Sweet & Cuddly', desc: 'Gentle warmth & positive hugs' },
-            { id: 'strict' as const, label: '⚡ Drill Coach', desc: 'Direct, focused & energetic' },
+            { id: 'witty' as const, label: 'Witty (Duolingo)', desc: 'Dramatic guilt trips & hilarious sass' },
+            { id: 'sweet' as const, label: 'Sweet & Encouraging', desc: 'Gentle warmth & positive hugs' },
+            { id: 'strict' as const, label: 'Drill Coach', desc: 'Direct, focused & energetic' },
           ].map((tOption) => {
             const isSelected = notificationTone === tOption.id;
             return (
@@ -599,9 +599,9 @@ export const SettingsView: React.FC = () => {
                 onPress={() => {
                   setNotificationTone(tOption.id);
                   if (soundEnabled) soundService.playClickSound();
-                  showToast(`Sparky set to ${tOption.label}! 🐼`, undefined, 'success');
+                  showToast(`Sparky set to ${tOption.label}`, undefined, 'success');
                 }}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
               >
                 <View style={styles.toneHeader}>
                   <Text style={[styles.toneLabel, { color: isSelected ? '#7C5CFF' : isDark ? '#FFFFFF' : '#0F172A' }]}>
@@ -623,15 +623,15 @@ export const SettingsView: React.FC = () => {
 
         {/* Simulator & Live Test Alert Triggers */}
         <Text style={[styles.simulatorTitle, { color: isDark ? '#E2E8F0' : '#334155' }]}>
-          TEST VIRAL NOTIFICATION SOUNDS & ALERTS:
+          TEST MASCOT NOTIFICATIONS & ALERTS:
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.testAlertsRow}>
           {[
-            { id: 'morning' as const, label: '🥱 Morning Yawn' },
-            { id: 'midday' as const, label: '⏱️ Midday Check' },
-            { id: 'evening_danger' as const, label: '🥺🔥 Streak Danger' },
-            { id: 'night_alert' as const, label: '😱 Midnight Alert' },
-            { id: 'celebration' as const, label: '🏆🎋 100% Feast' },
+            { id: 'morning' as const, label: 'Morning Alert' },
+            { id: 'midday' as const, label: 'Midday Check' },
+            { id: 'evening_danger' as const, label: 'Streak Danger' },
+            { id: 'night_alert' as const, label: 'Midnight Alert' },
+            { id: 'celebration' as const, label: '100% Feast' },
           ].map((alertBtn) => (
             <TouchableOpacity
               key={alertBtn.id}
