@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
   Platform,
+  Easing,
 } from 'react-native';
 import Svg, {
   Defs,
@@ -28,30 +29,14 @@ import * as Haptics from 'expo-haptics';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const DUOLINGO_CELEBRATION_QUOTES = [
-  {
-    title: 'UNSTOPPABLE! 🐼🔥',
-    body: 'You crushed every single habit scheduled for today!',
-  },
-  {
-    title: 'STREAK EXTENDED! 🔥🎋',
-    body: 'Look at that discipline! Even Duo would be proud of you.',
-  },
-  {
-    title: 'PERFECT 100%! 🏆✨',
-    body: 'Daily routine complete! Time to feast on fresh bamboo!',
-  },
-  {
-    title: 'MOMENTUM MASTER! ⚡💪',
-    body: 'Another day conquered. Keep this fire burning bright tomorrow!',
-  },
-];
+const AnimatedView = Animated.View;
 
 export const SparkyCelebrationModal: React.FC = () => {
   const {
     isCelebrationModalOpen,
     setIsCelebrationModalOpen,
     overallStats,
+    user,
     soundEnabled,
     hapticsEnabled,
     equippedHat,
@@ -60,143 +45,218 @@ export const SparkyCelebrationModal: React.FC = () => {
   } = useHabit();
 
   const streak = overallStats.plantStreak?.currentStreak ?? overallStats.currentBestStreak ?? 1;
-  const [quote] = useState(() => {
-    const idx = Math.floor(Math.random() * DUOLINGO_CELEBRATION_QUOTES.length);
-    return DUOLINGO_CELEBRATION_QUOTES[idx];
-  });
-
+  const userName = user?.name ? user.name.split(' ')[0] : 'Friend';
   const useNative = Platform.OS !== 'web';
 
-  // Animation Refs
+  // =========================================================================
+  // ANIMATION REFS
+  // =========================================================================
+  // Step 1: Backdrop & Bamboo Entrance
   const backdropAnim = useRef(new Animated.Value(0)).current;
-  const bambooSlideAnim = useRef(new Animated.Value(SCREEN_HEIGHT * 0.6)).current;
-  const bubbleScaleAnim = useRef(new Animated.Value(0)).current;
-  const cardSlideAnim = useRef(new Animated.Value(100)).current;
-  const cardOpacityAnim = useRef(new Animated.Value(0)).current;
+  const bambooShootAnim = useRef(new Animated.Value(SCREEN_HEIGHT * 0.75)).current;
+
+  // Step 2: Panda Climb from Bottom
+  const pandaClimbAnim = useRef(new Animated.Value(360)).current;
+  const pandaWobbleAnim = useRef(new Animated.Value(0)).current;
+  const pawLeftAnim = useRef(new Animated.Value(0)).current;
+  const pawRightAnim = useRef(new Animated.Value(0)).current;
+
+  // Step 3: Sparky Wave & Speech Bubble
+  const waveAnim = useRef(new Animated.Value(0)).current;
+  const tailAnim = useRef(new Animated.Value(0)).current;
+  const speechBubbleAnim = useRef(new Animated.Value(0)).current;
+
+  // Step 4: Reward Cards & Continue Button
+  const rewardCardSlideAnim = useRef(new Animated.Value(100)).current;
+  const rewardCardOpacityAnim = useRef(new Animated.Value(0)).current;
   const buttonBounceAnim = useRef(new Animated.Value(0)).current;
-  const pandaBobAnim = useRef(new Animated.Value(0)).current;
-  const pawWaveAnim = useRef(new Animated.Value(0)).current;
-  const starRotateAnim = useRef(new Animated.Value(0)).current;
+  const sunburstRotateAnim = useRef(new Animated.Value(0)).current;
+
+  const [hasReachedTop, setHasReachedTop] = useState(false);
 
   useEffect(() => {
     if (isCelebrationModalOpen) {
-      // 1. Play bamboo shoot & Duolingo celebration sound sequence
-      if (soundEnabled) {
-        soundService.playBambooSlideSound();
-        setTimeout(() => {
-          soundService.playDuolingoCelebrationFanfare();
-          soundService.playMascotCuteSound('happy_bleat');
-        }, 320);
-      }
+      setHasReachedTop(false);
 
-      if (hapticsEnabled) {
-        try {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-        } catch {}
-      }
-
-      // 2. Reset Animation Values
+      // 0. Reset all animation values
       backdropAnim.setValue(0);
-      bambooSlideAnim.setValue(SCREEN_HEIGHT * 0.65);
-      bubbleScaleAnim.setValue(0);
-      cardSlideAnim.setValue(120);
-      cardOpacityAnim.setValue(0);
+      bambooShootAnim.setValue(SCREEN_HEIGHT * 0.75);
+      pandaClimbAnim.setValue(360);
+      pandaWobbleAnim.setValue(0);
+      pawLeftAnim.setValue(0);
+      pawRightAnim.setValue(0);
+      waveAnim.setValue(0);
+      tailAnim.setValue(0);
+      speechBubbleAnim.setValue(0);
+      rewardCardSlideAnim.setValue(100);
+      rewardCardOpacityAnim.setValue(0);
       buttonBounceAnim.setValue(0);
-      pandaBobAnim.setValue(0);
-      pawWaveAnim.setValue(0);
 
-      // 3. Orchestrate Entrance Stagger
-      Animated.timing(backdropAnim, {
-        toValue: 1,
-        duration: 250,
-        useNativeDriver: useNative,
-      }).start();
-
-      // Bamboo Spring Shoot-Up
-      Animated.spring(bambooSlideAnim, {
-        toValue: 0,
-        tension: 42,
-        friction: 6.2,
-        useNativeDriver: useNative,
-      }).start(() => {
-        // Continuous gentle bobbing once landed
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(pandaBobAnim, {
-              toValue: -8,
-              duration: 1000,
-              useNativeDriver: useNative,
-            }),
-            Animated.timing(pandaBobAnim, {
-              toValue: 0,
-              duration: 1000,
-              useNativeDriver: useNative,
-            }),
-          ])
-        ).start();
-
-        // Cheerful paw wave loop
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(pawWaveAnim, {
-              toValue: 1,
-              duration: 350,
-              useNativeDriver: useNative,
-            }),
-            Animated.timing(pawWaveAnim, {
-              toValue: -1,
-              duration: 350,
-              useNativeDriver: useNative,
-            }),
-          ])
-        ).start();
-      });
-
-      // Speech bubble pop-in (at 380ms)
-      setTimeout(() => {
-        Animated.spring(bubbleScaleAnim, {
-          toValue: 1,
-          tension: 65,
-          friction: 5.5,
-          useNativeDriver: useNative,
-        }).start();
-      }, 380);
-
-      // Reward cards slide in (at 550ms)
-      setTimeout(() => {
-        Animated.parallel([
-          Animated.spring(cardSlideAnim, {
-            toValue: 0,
-            tension: 50,
-            friction: 7,
-            useNativeDriver: useNative,
-          }),
-          Animated.timing(cardOpacityAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: useNative,
-          }),
-        ]).start();
-      }, 550);
-
-      // Continue button pop-in (at 700ms)
-      setTimeout(() => {
-        Animated.spring(buttonBounceAnim, {
-          toValue: 1,
-          tension: 70,
-          friction: 6,
-          useNativeDriver: useNative,
-        }).start();
-      }, 700);
-
-      // Background golden star rotation
+      // Ambient sunburst rotation
       Animated.loop(
-        Animated.timing(starRotateAnim, {
+        Animated.timing(sunburstRotateAnim, {
           toValue: 1,
-          duration: 18000,
+          duration: 20000,
+          easing: Easing.linear,
           useNativeDriver: useNative,
         })
       ).start();
+
+      // Continuous fluffy tail wag
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(tailAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: useNative,
+          }),
+          Animated.timing(tailAnim, {
+            toValue: -1,
+            duration: 400,
+            useNativeDriver: useNative,
+          }),
+        ])
+      ).start();
+
+      // -------------------------------------------------------------
+      // PHASE 1: BAMBOO SHOOTS UP FIRST (0ms - 450ms)
+      // -------------------------------------------------------------
+      Animated.timing(backdropAnim, {
+        toValue: 1,
+        duration: 220,
+        useNativeDriver: useNative,
+      }).start();
+
+      if (soundEnabled) {
+        soundService.playBambooSlideSound();
+      }
+
+      Animated.spring(bambooShootAnim, {
+        toValue: 0,
+        tension: 48,
+        friction: 6.5,
+        useNativeDriver: useNative,
+      }).start(() => {
+        // -----------------------------------------------------------
+        // PHASE 2: PANDA CLIMBS UP THE BAMBOO (Starts after bamboo is up!)
+        // -----------------------------------------------------------
+        // Wobbly climbing motion
+        const climbWobbleLoop = Animated.loop(
+          Animated.sequence([
+            Animated.timing(pandaWobbleAnim, {
+              toValue: 1,
+              duration: 160,
+              useNativeDriver: useNative,
+            }),
+            Animated.timing(pandaWobbleAnim, {
+              toValue: -1,
+              duration: 160,
+              useNativeDriver: useNative,
+            }),
+          ])
+        );
+        climbWobbleLoop.start();
+
+        // Alternating paw steps
+        const pawStepLoop = Animated.loop(
+          Animated.sequence([
+            Animated.timing(pawLeftAnim, {
+              toValue: -12,
+              duration: 160,
+              useNativeDriver: useNative,
+            }),
+            Animated.timing(pawLeftAnim, {
+              toValue: 0,
+              duration: 160,
+              useNativeDriver: useNative,
+            }),
+          ])
+        );
+        pawStepLoop.start();
+
+        if (soundEnabled) {
+          soundService.playMascotCuteSound('happy');
+        }
+
+        // Climb translation from bottom to target perched height
+        Animated.timing(pandaClimbAnim, {
+          toValue: 0,
+          duration: 900,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: useNative,
+        }).start(() => {
+          climbWobbleLoop.stop();
+          pawStepLoop.stop();
+          pandaWobbleAnim.setValue(0);
+          pawLeftAnim.setValue(0);
+          setHasReachedTop(true);
+
+          // ---------------------------------------------------------
+          // PHASE 3: PANDA REACHES TOP, WAVES & SAYS HI! (Fanfare + Speech)
+          // ---------------------------------------------------------
+          if (soundEnabled) {
+            soundService.playDuolingoCelebrationFanfare();
+            setTimeout(() => {
+              soundService.playMascotCuteSound('happy_bleat');
+            }, 300);
+          }
+
+          if (hapticsEnabled) {
+            try {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+            } catch {}
+          }
+
+          // Enthusiastic hand waving loop
+          Animated.loop(
+            Animated.sequence([
+              Animated.timing(waveAnim, {
+                toValue: 1,
+                duration: 260,
+                easing: Easing.inOut(Easing.sin),
+                useNativeDriver: useNative,
+              }),
+              Animated.timing(waveAnim, {
+                toValue: -1,
+                duration: 260,
+                easing: Easing.inOut(Easing.sin),
+                useNativeDriver: useNative,
+              }),
+            ])
+          ).start();
+
+          // Pop in speech bubble
+          Animated.spring(speechBubbleAnim, {
+            toValue: 1,
+            tension: 65,
+            friction: 5,
+            useNativeDriver: useNative,
+          }).start();
+
+          // Slide in reward cards
+          Animated.parallel([
+            Animated.spring(rewardCardSlideAnim, {
+              toValue: 0,
+              tension: 50,
+              friction: 7,
+              useNativeDriver: useNative,
+            }),
+            Animated.timing(rewardCardOpacityAnim, {
+              toValue: 1,
+              duration: 300,
+              useNativeDriver: useNative,
+            }),
+          ]).start();
+
+          // Pop in Continue Button
+          Animated.spring(buttonBounceAnim, {
+            toValue: 1,
+            tension: 70,
+            friction: 5.5,
+            useNativeDriver: useNative,
+          }).start();
+        });
+      });
     }
   }, [isCelebrationModalOpen]);
 
@@ -210,16 +270,21 @@ export const SparkyCelebrationModal: React.FC = () => {
       } catch {}
     }
 
-    // Smooth exit slide
     Animated.parallel([
-      Animated.timing(bambooSlideAnim, {
-        toValue: SCREEN_HEIGHT * 0.7,
+      Animated.timing(pandaClimbAnim, {
+        toValue: 400,
         duration: 300,
+        easing: Easing.in(Easing.cubic),
+        useNativeDriver: useNative,
+      }),
+      Animated.timing(bambooShootAnim, {
+        toValue: SCREEN_HEIGHT * 0.75,
+        duration: 350,
         useNativeDriver: useNative,
       }),
       Animated.timing(backdropAnim, {
         toValue: 0,
-        duration: 250,
+        duration: 300,
         useNativeDriver: useNative,
       }),
     ]).start(() => {
@@ -229,261 +294,314 @@ export const SparkyCelebrationModal: React.FC = () => {
 
   if (!isCelebrationModalOpen) return null;
 
-  const starRotation = starRotateAnim.interpolate({
+  const sunburstRotate = sunburstRotateAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
 
-  const pawRotate = pawWaveAnim.interpolate({
+  const wobbleDeg = pandaWobbleAnim.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-18deg', '18deg'],
+    outputRange: ['-6deg', '6deg'],
+  });
+
+  const handWaveDeg = waveAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-24deg', '24deg'],
+  });
+
+  const tailWagDeg = tailAnim.interpolate({
+    inputRange: [-1, 1],
+    outputRange: ['-14deg', '14deg'],
   });
 
   return (
     <Modal visible={isCelebrationModalOpen} transparent animationType="none" onRequestClose={handleDismiss}>
       <View style={styles.container}>
         {/* Semi-transparent dark overlay */}
-        <Animated.View style={[styles.backdrop, { opacity: backdropAnim }]} />
+        <AnimatedView style={[styles.backdrop, { opacity: backdropAnim }]} />
 
         {/* Ambient Golden Sunburst Rotating Effect */}
-        <Animated.View
+        <AnimatedView
           style={[
             styles.sunburstContainer,
             {
-              transform: [{ rotate: starRotation }],
+              transform: [{ rotate: sunburstRotate }],
               opacity: backdropAnim,
             },
           ]}
         >
           <Svg width={SCREEN_WIDTH * 1.5} height={SCREEN_WIDTH * 1.5} viewBox="0 0 500 500">
             <Defs>
-              <RadialGradient id="starGlow" cx="50%" cy="50%" r="50%">
-                <Stop offset="0%" stopColor="#F59E0B" stopOpacity="0.28" />
-                <Stop offset="60%" stopColor="#10B981" stopOpacity="0.10" />
+              <RadialGradient id="sunburstGlow" cx="50%" cy="50%" r="50%">
+                <Stop offset="0%" stopColor="#F59E0B" stopOpacity="0.32" />
+                <Stop offset="50%" stopColor="#10B981" stopOpacity="0.14" />
                 <Stop offset="100%" stopColor="transparent" stopOpacity="0" />
               </RadialGradient>
             </Defs>
-            <Circle cx="250" cy="250" r="240" fill="url(#starGlow)" />
+            <Circle cx="250" cy="250" r="240" fill="url(#sunburstGlow)" />
           </Svg>
-        </Animated.View>
+        </AnimatedView>
 
-        {/* Main Springing Container */}
-        <Animated.View
-          style={[
-            styles.celebrationContent,
-            {
-              transform: [{ translateY: bambooSlideAnim }],
-            },
-          ]}
-        >
-          {/* 1. Duolingo Comic Speech Bubble */}
-          <Animated.View
+        {/* Main Interactive Celebration Body */}
+        <View style={styles.celebrationContent}>
+          {/* ========================================================= */}
+          {/* 1. DUOLINGO SPEECH BUBBLE (Tells Hi & Congratulations!)   */}
+          {/* ========================================================= */}
+          <AnimatedView
             style={[
               styles.speechBubbleWrapper,
               {
-                transform: [{ scale: bubbleScaleAnim }],
+                transform: [{ scale: speechBubbleAnim }],
+                opacity: speechBubbleAnim,
               },
             ]}
           >
             <View style={styles.speechBubble}>
-              <Text style={styles.speechTitle}>{quote.title}</Text>
-              <Text style={styles.speechBody}>{quote.body}</Text>
+              <Text style={styles.speechGreeting}>Hi {userName}! 👋 🐼</Text>
+              <Text style={styles.speechTitle}>UNSTOPPABLE! 100% COMPLETE 🔥</Text>
+              <Text style={styles.speechBody}>
+                You crushed every habit today! Time to celebrate on the bamboo! 🎋
+              </Text>
             </View>
-            {/* Bubble arrow pointer pointing down to Sparky */}
             <View style={styles.bubbleTail} />
-          </Animated.View>
+          </AnimatedView>
 
-          {/* 2. Sparky Panda + Bamboo Stalk SVG Scene */}
-          <Animated.View
-            style={[
-              styles.mascotScene,
-              {
-                transform: [{ translateY: pandaBobAnim }],
-              },
-            ]}
-          >
-            <Svg width={260} height={240} viewBox="0 0 260 240">
-              <Defs>
-                {/* Bamboo Stalk Gradient */}
-                <LinearGradient id="bambooStalk" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <Stop offset="0%" stopColor="#059669" />
-                  <Stop offset="40%" stopColor="#10B981" />
-                  <Stop offset="70%" stopColor="#34D399" />
-                  <Stop offset="100%" stopColor="#047857" />
-                </LinearGradient>
+          {/* ========================================================= */}
+          {/* 2. THE STAGE: BAMBOO STALK + CLIMBING SPARKY PANDA       */}
+          {/* ========================================================= */}
+          <View style={styles.stageWrapper}>
+            {/* LAYER A: THE TALL BAMBOO STALK (Shoots Up FIRST!) */}
+            <AnimatedView
+              style={[
+                styles.bambooStalkWrapper,
+                {
+                  transform: [{ translateY: bambooShootAnim }],
+                },
+              ]}
+            >
+              <Svg width={200} height={340} viewBox="0 0 200 340">
+                <Defs>
+                  <LinearGradient id="bambooStalkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <Stop offset="0%" stopColor="#047857" />
+                    <Stop offset="30%" stopColor="#10B981" />
+                    <Stop offset="65%" stopColor="#34D399" />
+                    <Stop offset="100%" stopColor="#065F46" />
+                  </LinearGradient>
+                  <LinearGradient id="bambooNodeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <Stop offset="0%" stopColor="#064E3B" />
+                    <Stop offset="50%" stopColor="#6EE7B7" />
+                    <Stop offset="100%" stopColor="#064E3B" />
+                  </LinearGradient>
+                  <LinearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <Stop offset="0%" stopColor="#6EE7B7" />
+                    <Stop offset="60%" stopColor="#10B981" />
+                    <Stop offset="100%" stopColor="#047857" />
+                  </LinearGradient>
+                </Defs>
 
-                {/* Bamboo Node Ring Gradient */}
-                <LinearGradient id="bambooNode" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <Stop offset="0%" stopColor="#064E3B" />
-                  <Stop offset="50%" stopColor="#34D399" />
-                  <Stop offset="100%" stopColor="#064E3B" />
-                </LinearGradient>
+                {/* Stalk Segment 1 (Bottom) */}
+                <Rect x="88" y="240" width="24" height="100" rx="4" fill="url(#bambooStalkGrad)" />
+                <Rect x="84" y="240" width="32" height="6" rx="3" fill="url(#bambooNodeGrad)" />
 
-                {/* Sparky Red Fur Gradient */}
-                <RadialGradient id="sparkyFur" cx="50%" cy="40%" r="60%">
-                  <Stop offset="0%" stopColor="#FF7A3D" />
-                  <Stop offset="75%" stopColor="#EA580C" />
-                  <Stop offset="100%" stopColor="#9A3412" />
-                </RadialGradient>
+                {/* Stalk Segment 2 (Middle) */}
+                <Rect x="88" y="140" width="24" height="100" rx="4" fill="url(#bambooStalkGrad)" />
+                <Rect x="84" y="140" width="32" height="6" rx="3" fill="url(#bambooNodeGrad)" />
 
-                {/* Golden Hat / Crown Gradient */}
-                <LinearGradient id="goldCrown" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <Stop offset="0%" stopColor="#FDE047" />
-                  <Stop offset="50%" stopColor="#EAB308" />
-                  <Stop offset="100%" stopColor="#CA8A04" />
-                </LinearGradient>
+                {/* Stalk Segment 3 (Upper) */}
+                <Rect x="89" y="40" width="22" height="100" rx="4" fill="url(#bambooStalkGrad)" />
+                <Rect x="85" y="40" width="30" height="6" rx="3" fill="url(#bambooNodeGrad)" />
 
-                {/* Leaf Gradient */}
-                <LinearGradient id="bambooLeaf" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <Stop offset="0%" stopColor="#6EE7B7" />
-                  <Stop offset="100%" stopColor="#059669" />
-                </LinearGradient>
-              </Defs>
+                {/* Stalk Segment 4 (Top Shoot) */}
+                <Rect x="90" y="0" width="20" height="40" rx="3" fill="url(#bambooStalkGrad)" />
 
-              {/* === A. BAMBOO STALK (Tall, segmented bamboo shoot) === */}
-              <G>
-                {/* Lower Stalk Segment */}
-                <Rect x="120" y="140" width="20" height="100" rx="3" fill="url(#bambooStalk)" />
-                <Rect x="117" y="140" width="26" height="5" rx="2.5" fill="url(#bambooNode)" />
+                {/* Lush Bamboo Leaves sprouting along the stalk */}
+                {/* Left side branches */}
+                <Path d="M88,50 Q45,30 20,55 Q55,70 88,56 Z" fill="url(#leafGrad)" />
+                <Path d="M88,48 Q35,20 10,40 Q45,55 88,52 Z" fill="url(#leafGrad)" />
+                <Path d="M88,150 Q40,135 15,160 Q55,175 88,158 Z" fill="url(#leafGrad)" />
 
-                {/* Middle Stalk Segment */}
-                <Rect x="120" y="60" width="20" height="80" rx="3" fill="url(#bambooStalk)" />
-                <Rect x="117" y="60" width="26" height="5" rx="2.5" fill="url(#bambooNode)" />
+                {/* Right side branches */}
+                <Path d="M112,90 Q155,70 185,95 Q150,110 112,98 Z" fill="url(#leafGrad)" />
+                <Path d="M112,88 Q165,60 195,80 Q160,95 112,92 Z" fill="url(#leafGrad)" />
+                <Path d="M112,200 Q160,185 190,210 Q150,225 112,208 Z" fill="url(#leafGrad)" />
+              </Svg>
+            </AnimatedView>
 
-                {/* Upper Stalk Segment */}
-                <Rect x="121" y="0" width="18" height="60" rx="3" fill="url(#bambooStalk)" />
+            {/* LAYER B: SPARKY THE PANDA (Climbs up the bamboo stalk!) */}
+            <AnimatedView
+              style={[
+                styles.pandaClimberWrapper,
+                {
+                  transform: [
+                    { translateY: pandaClimbAnim },
+                    { rotate: wobbleDeg },
+                  ],
+                },
+              ]}
+            >
+              <Svg width={180} height={180} viewBox="0 0 160 160">
+                <Defs>
+                  <RadialGradient id="rpFurGradFull" cx="50%" cy="35%" r="65%">
+                    <Stop offset="0%" stopColor="#FB923C" />
+                    <Stop offset="60%" stopColor="#EA580C" />
+                    <Stop offset="100%" stopColor="#C2410C" />
+                  </RadialGradient>
+                  <LinearGradient id="rpDarkFurFull" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor="#3F1D0B" />
+                    <Stop offset="100%" stopColor="#240F05" />
+                  </LinearGradient>
+                  <LinearGradient id="goldCrownFull" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor="#FDE047" />
+                    <Stop offset="60%" stopColor="#F59E0B" />
+                    <Stop offset="100%" stopColor="#D97706" />
+                  </LinearGradient>
+                </Defs>
 
-                {/* Lush Bamboo Leaves sprouting left & right */}
-                {/* Left Branch */}
-                <Path d="M120,70 Q90,55 70,75 Q95,85 120,74 Z" fill="url(#bambooLeaf)" />
-                <Path d="M120,68 Q80,45 60,60 Q85,72 120,70 Z" fill="url(#bambooLeaf)" />
-
-                {/* Right Branch */}
-                <Path d="M140,110 Q170,95 195,115 Q165,125 140,114 Z" fill="url(#bambooLeaf)" />
-                <Path d="M140,108 Q180,85 205,100 Q175,112 140,110 Z" fill="url(#bambooLeaf)" />
-                <Path d="M140,40 Q175,20 190,40 Q160,50 140,42 Z" fill="url(#bambooLeaf)" />
-              </G>
-
-              {/* === B. SPARKY THE PANDA CLIMBING / PEEKING === */}
-              <G transform="translate(45, 30)">
-                {/* Fluffy Red Panda Striped Tail */}
-                <Path
-                  d="M130,130 Q165,135 175,105 Q170,85 145,95 Q135,115 130,130 Z"
-                  fill="url(#sparkyFur)"
-                />
-                {/* Tail Rings */}
-                <Path d="M145,122 Q158,124 162,112" stroke="#451A03" strokeWidth="4" strokeLinecap="round" />
-                <Path d="M155,108 Q166,108 168,98" stroke="#451A03" strokeWidth="4" strokeLinecap="round" />
-
-                {/* Left Ear */}
-                <Path d="M30,42 Q18,18 42,22 Z" fill="url(#sparkyFur)" />
-                <Path d="M32,38 Q24,24 38,26 Z" fill="#FFFFFF" />
-
-                {/* Right Ear */}
-                <Path d="M100,42 Q112,18 88,22 Z" fill="url(#sparkyFur)" />
-                <Path d="M98,38 Q106,24 92,26 Z" fill="#FFFFFF" />
-
-                {/* Head Base */}
-                <Ellipse cx="65" cy="62" rx="42" ry="34" fill="url(#sparkyFur)" />
-
-                {/* White Cheek Tufts & Brow Patches */}
-                <Ellipse cx="38" cy="72" rx="14" ry="10" fill="#FFFFFF" />
-                <Ellipse cx="92" cy="72" rx="14" ry="10" fill="#FFFFFF" />
-                {/* Eyebrow Spots */}
-                <Circle cx="48" cy="46" r="4.5" fill="#FFFFFF" />
-                <Circle cx="82" cy="46" r="4.5" fill="#FFFFFF" />
-
-                {/* Starry / Joyful Celebrating Eyes (Duolingo Style) */}
-                <G>
-                  {/* Left Star Eye */}
-                  <Circle cx="48" cy="58" r="7" fill="#1E1B4B" />
-                  <Circle cx="46" cy="55" r="2.5" fill="#FFFFFF" />
-                  <Circle cx="51" cy="61" r="1.2" fill="#FFFFFF" />
-
-                  {/* Right Star Eye */}
-                  <Circle cx="82" cy="58" r="7" fill="#1E1B4B" />
-                  <Circle cx="80" cy="55" r="2.5" fill="#FFFFFF" />
-                  <Circle cx="85" cy="61" r="1.2" fill="#FFFFFF" />
+                {/* 1. Fluffy Striped Red Panda Tail attached smoothly to body */}
+                <G transform="translate(10, 0)">
+                  <Path
+                    d="M 94 104 C 122 114, 150 100, 146 72 C 142 50, 120 54, 108 76 Z"
+                    fill="url(#rpFurGradFull)"
+                  />
+                  <Path
+                    d="M 146 72 C 144 54, 128 52, 122 62 C 134 68, 142 76, 146 72 Z"
+                    fill="#FEF3C7"
+                  />
+                  <Path
+                    d="M 139 80 C 130 77, 122 80, 116 88 C 122 92, 132 90, 139 80 Z"
+                    fill="#240F05"
+                    opacity={0.8}
+                  />
+                  <Path
+                    d="M 128 92 C 120 90, 114 93, 110 100 C 115 103, 122 101, 128 92 Z"
+                    fill="#240F05"
+                    opacity={0.8}
+                  />
                 </G>
 
-                {/* Rosy Cheeks */}
-                <Circle cx="36" cy="74" r="6" fill="#FB7185" opacity={0.65} />
-                <Circle cx="94" cy="74" r="6" fill="#FB7185" opacity={0.65} />
+                {/* 2. Teddy Bear Ears */}
+                <G id="rp-ears-climbing">
+                  {/* Left Ear */}
+                  <Path d="M 36 48 C 26 28, 40 16, 56 28 C 60 34, 56 44, 48 50 Z" fill="url(#rpFurGradFull)" />
+                  <Path d="M 38 46 C 30 32, 42 24, 52 32 Z" fill="#FFFFFF" />
 
-                {/* Muzzle & Cheerful Mouth */}
-                <Ellipse cx="65" cy="75" rx="13" ry="9" fill="#FFFFFF" />
-                {/* Black Nose */}
-                <Ellipse cx="65" cy="71" rx="4.5" ry="3" fill="#1E1B4B" />
-                {/* Big Open Happy Smile (Duolingo Joy) */}
-                <Path d="M59,76 Q65,85 71,76 Z" fill="#E11D48" />
-                <Path d="M62,82 Q65,85 68,82 Z" fill="#FB7185" />
+                  {/* Right Ear */}
+                  <Path d="M 124 48 C 134 28, 120 16, 104 28 C 100 34, 104 44, 112 50 Z" fill="url(#rpFurGradFull)" />
+                  <Path d="M 122 46 C 130 32, 118 24, 108 32 Z" fill="#FFFFFF" />
+                </G>
 
-                {/* Panda Body hugging the bamboo */}
-                <Ellipse cx="68" cy="112" rx="30" ry="24" fill="url(#sparkyFur)" />
-                {/* Dark chest bib */}
-                <Ellipse cx="68" cy="116" rx="20" ry="16" fill="#451A03" />
-
-                {/* Left Paw holding Bamboo Stalk */}
-                <Ellipse cx="38" cy="104" rx="10" ry="8" fill="#451A03" transform="rotate(-15 38 104)" />
-                {/* Right Paw holding Bamboo Stalk */}
-                <Ellipse cx="96" cy="102" rx="11" ry="8" fill="#451A03" transform="rotate(20 96 102)" />
-
-                {/* Feet at bottom of body */}
-                <Ellipse cx="48" cy="132" rx="10" ry="7" fill="#451A03" />
-                <Ellipse cx="86" cy="132" rx="10" ry="7" fill="#451A03" />
-
-                {/* === EQUIPPED ACCESSORIES (Hats / Glasses) === */}
-                {/* Crown / Hat Accessories */}
+                {/* 3. Equipped Hats */}
                 {equippedHat === 'hat-crown' && (
-                  <G transform="translate(42, 10)">
-                    <Path d="M0,18 L10,6 L23,16 L36,6 L46,18 Z" fill="url(#goldCrown)" />
+                  <G transform="translate(56, 12)">
+                    <Path d="M0,18 L10,6 L24,16 L38,6 L48,18 Z" fill="url(#goldCrownFull)" />
                     <Circle cx="10" cy="6" r="2.5" fill="#EF4444" />
-                    <Circle cx="23" cy="16" r="2.5" fill="#3B82F6" />
-                    <Circle cx="36" cy="6" r="2.5" fill="#10B981" />
+                    <Circle cx="24" cy="16" r="2.5" fill="#3B82F6" />
+                    <Circle cx="38" cy="6" r="2.5" fill="#10B981" />
                   </G>
                 )}
                 {equippedHat === 'hat-grad' && (
-                  <G transform="translate(40, 14)">
-                    <Path d="M0,14 L25,4 L50,14 L25,24 Z" fill="#1E293B" />
-                    <Rect x="18" y="20" width="14" height="8" fill="#0F172A" rx="2" />
-                    <Path d="M42,16 L48,26" stroke="#F59E0B" strokeWidth="2.5" />
-                    <Circle cx="48" cy="27" r="2" fill="#F59E0B" />
+                  <G transform="translate(54, 14)">
+                    <Path d="M0,14 L26,4 L52,14 L26,24 Z" fill="#1E293B" />
+                    <Rect x="19" y="20" width="14" height="8" fill="#0F172A" rx="2" />
+                    <Path d="M44,16 L50,26" stroke="#F59E0B" strokeWidth={2.5} />
+                    <Circle cx="50" cy="27" r="2" fill="#F59E0B" />
                   </G>
                 )}
                 {equippedHat === 'hat-top' && (
-                  <G transform="translate(44, 2)">
-                    <Rect x="8" y="0" width="26" height="24" rx="3" fill="#0F172A" />
-                    <Rect x="8" y="16" width="26" height="5" fill="#DC2626" />
-                    <Ellipse cx="21" cy="24" rx="22" ry="5" fill="#0F172A" />
+                  <G transform="translate(58, 2)">
+                    <Rect x="8" y="0" width="28" height="24" rx="3" fill="#0F172A" />
+                    <Rect x="8" y="16" width="28" height="5" fill="#DC2626" />
+                    <Ellipse cx="22" cy="24" rx="24" ry="5" fill="#0F172A" />
                   </G>
                 )}
 
-                {/* Glasses Accessories */}
+                {/* 4. Chubby Body & Belly */}
+                <Ellipse cx="80" cy="98" rx="34" ry="26" fill="url(#rpFurGradFull)" />
+                <Ellipse cx="80" cy="103" rx="21" ry="15" fill="url(#rpDarkFurFull)" />
+                <Path d="M 72 86 Q 80 93 88 86 Q 80 90 72 86 Z" fill="#FFFFFF" opacity={0.9} />
+
+                {/* 5. Bottom Hind Climbing Feet */}
+                <Ellipse cx="48" cy="122" rx="11" ry="8" fill="url(#rpDarkFurFull)" transform="rotate(-10 48 122)" />
+                <Ellipse cx="48" cy="122" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(-10 48 122)" />
+                <Circle cx="41" cy="118" r="1.6" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="46" cy="115" r="1.6" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="52" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
+
+                <Ellipse cx="112" cy="122" rx="11" ry="8" fill="url(#rpDarkFurFull)" transform="rotate(10 112 122)" />
+                <Ellipse cx="112" cy="122" rx="4.5" ry="3.5" fill="#FEF08A" opacity={0.95} transform="rotate(10 112 122)" />
+                <Circle cx="108" cy="116" r="1.6" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="114" cy="115" r="1.6" fill="#FEF08A" opacity={0.95} />
+                <Circle cx="119" cy="118" r="1.6" fill="#FEF08A" opacity={0.95} />
+
+                {/* 6. Front Left Paw (Grasps bamboo firmly) */}
+                <Ellipse cx="54" cy="95" rx="8" ry="7" fill="url(#rpDarkFurFull)" transform="rotate(-15 54 95)" />
+                <Ellipse cx="54" cy="95" rx="3.2" ry="2.4" fill="#FEF08A" opacity={0.9} />
+
+                {/* 7. Front Right Paw (Waving Hi when at top, or climbing when rising!) */}
+                <G transform={hasReachedTop ? "translate(106, 75)" : "translate(104, 94)"}>
+                  <Ellipse cx="0" cy="0" rx="8" ry="7" fill="url(#rpDarkFurFull)" transform={hasReachedTop ? "rotate(-25 0 0)" : "rotate(15 0 0)"} />
+                  <Ellipse cx="0" cy="0" rx="3.2" ry="2.4" fill="#FEF08A" opacity={0.9} />
+                </G>
+
+                {/* 8. Round Chubby Head & Markings */}
+                <Ellipse cx="80" cy="60" rx="36" ry="29" fill="url(#rpFurGradFull)" />
+                <Ellipse cx="80" cy="67" rx="15" ry="11" fill="#FFFFFF" />
+                <Circle cx="63" cy="47" r="4.2" fill="#FFFFFF" />
+                <Circle cx="97" cy="47" r="4.2" fill="#FFFFFF" />
+                <Path d="M 48 62 C 45 70, 52 75, 57 71 C 55 65, 51 62, 48 62 Z" fill="#FFFFFF" />
+                <Path d="M 112 62 C 115 70, 108 75, 103 71 C 105 65, 109 62, 112 62 Z" fill="#FFFFFF" />
+
+                {/* Cute Button Nose */}
+                <Path d="M 76 63 Q 80 61 84 63 Q 80 68 76 63 Z" fill="#1C1917" />
+                <Circle cx="78.5" cy="63.5" r="0.7" fill="#FFFFFF" />
+
+                {/* Big Happy Starry Celebration Eyes */}
+                <G>
+                  <Circle cx="64" cy="56" r="6" fill="#1C1917" />
+                  <Circle cx="62.5" cy="53.5" r="2.4" fill="#FFFFFF" />
+                  <Circle cx="66" cy="58" r="1.1" fill="#93C5FD" />
+
+                  <Circle cx="96" cy="56" r="6" fill="#1C1917" />
+                  <Circle cx="94.5" cy="53.5" r="2.4" fill="#FFFFFF" />
+                  <Circle cx="98" cy="58" r="1.1" fill="#93C5FD" />
+                </G>
+
+                {/* Rosy Cheeks */}
+                <Ellipse cx="52" cy="65" rx="5" ry="3.5" fill="#FB7185" opacity={0.65} />
+                <Ellipse cx="108" cy="65" rx="5" ry="3.5" fill="#FB7185" opacity={0.65} />
+
+                {/* Big Cheerful Smile */}
+                <Path d="M 74 69 Q 80 77 86 69 Z" fill="#E11D48" />
+                <Path d="M 76 73 Q 80 77 84 73 Z" fill="#FB7185" />
+
+                {/* Equipped Glasses */}
                 {equippedGlasses === 'glass-sunglasses' && (
-                  <G transform="translate(40, 52)">
-                    <Rect x="0" y="0" width="20" height="12" rx="4" fill="#0F172A" />
-                    <Rect x="30" y="0" width="20" height="12" rx="4" fill="#0F172A" />
-                    <Line x1="20" y1="5" x2="30" y2="5" stroke="#0F172A" strokeWidth="2.5" />
+                  <G transform="translate(54, 48)">
+                    <Rect x="0" y="0" width="22" height="13" rx="4" fill="#0F172A" />
+                    <Rect x="30" y="0" width="22" height="13" rx="4" fill="#0F172A" />
+                    <Line x1="22" y1="5" x2="30" y2="5" stroke="#0F172A" strokeWidth={2.5} />
                   </G>
                 )}
                 {equippedGlasses === 'glass-geek' && (
-                  <G transform="translate(38, 50)">
-                    <Circle cx="10" cy="8" r="9" fill="none" stroke="#0284C7" strokeWidth="2.5" />
-                    <Circle cx="36" cy="8" r="9" fill="none" stroke="#0284C7" strokeWidth="2.5" />
-                    <Line x1="19" y1="8" x2="27" y2="8" stroke="#0284C7" strokeWidth="2.5" />
+                  <G transform="translate(52, 46)">
+                    <Circle cx="12" cy="10" r="10" fill="none" stroke="#0284C7" strokeWidth={2.5} />
+                    <Circle cx="44" cy="10" r="10" fill="none" stroke="#0284C7" strokeWidth={2.5} />
+                    <Line x1="22" y1="10" x2="34" y2="10" stroke="#0284C7" strokeWidth={2.5} />
                   </G>
                 )}
-              </G>
-            </Svg>
-          </Animated.View>
+              </Svg>
+            </AnimatedView>
+          </View>
 
-          {/* 3. Reward & Progress Summary Cards */}
-          <Animated.View
+          {/* ========================================================= */}
+          {/* 3. REWARD & STREAK CARDS                                 */}
+          {/* ========================================================= */}
+          <AnimatedView
             style={[
               styles.rewardCardsContainer,
               {
-                opacity: cardOpacityAnim,
-                transform: [{ translateY: cardSlideAnim }],
+                opacity: rewardCardOpacityAnim,
+                transform: [{ translateY: rewardCardSlideAnim }],
               },
             ]}
           >
@@ -508,14 +626,17 @@ export const SparkyCelebrationModal: React.FC = () => {
                 <Text style={[styles.rewardValue, { color: '#10B981' }]}>+25 Bamboo Coins</Text>
               </View>
             </View>
-          </Animated.View>
+          </AnimatedView>
 
-          {/* 4. Duolingo-Style 3D Green Continue Button */}
-          <Animated.View
+          {/* ========================================================= */}
+          {/* 4. DUOLINGO 3D TACTILE GREEN CONTINUE BUTTON             */}
+          {/* ========================================================= */}
+          <AnimatedView
             style={[
               styles.buttonWrapper,
               {
                 transform: [{ scale: buttonBounceAnim }],
+                opacity: buttonBounceAnim,
               },
             ]}
           >
@@ -528,8 +649,8 @@ export const SparkyCelebrationModal: React.FC = () => {
                 {t('common.continue', 'AWESOME! CONTINUE')} 🚀
               </Text>
             </TouchableOpacity>
-          </Animated.View>
-        </Animated.View>
+          </AnimatedView>
+        </View>
       </View>
     </Modal>
   );
@@ -543,11 +664,11 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(8, 14, 26, 0.85)',
+    backgroundColor: 'rgba(6, 11, 22, 0.88)',
   },
   sunburstContainer: {
     position: 'absolute',
-    top: SCREEN_HEIGHT * 0.15,
+    top: SCREEN_HEIGHT * 0.1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -556,30 +677,38 @@ const styles = StyleSheet.create({
     maxWidth: 440,
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingBottom: Platform.OS === 'ios' ? 44 : 28,
+    paddingBottom: Platform.OS === 'ios' ? 44 : 26,
   },
   speechBubbleWrapper: {
     alignItems: 'center',
-    marginBottom: -8,
-    zIndex: 10,
+    marginBottom: -16,
+    zIndex: 20,
   },
   speechBubble: {
     backgroundColor: '#FFFFFF',
     borderRadius: 22,
-    paddingHorizontal: 22,
+    paddingHorizontal: 24,
     paddingVertical: 14,
     alignItems: 'center',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 14,
-    elevation: 8,
-    borderWidth: 2,
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 10,
+    borderWidth: 2.5,
     borderColor: '#7C5CFF',
+  },
+  speechGreeting: {
+    color: '#7C5CFF',
+    fontSize: 14,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+    textTransform: 'uppercase',
   },
   speechTitle: {
     color: '#0F172A',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
     letterSpacing: 0.2,
     textAlign: 'center',
@@ -587,10 +716,10 @@ const styles = StyleSheet.create({
   },
   speechBody: {
     color: '#475569',
-    fontSize: 13,
+    fontSize: 12.5,
     fontWeight: '700',
     textAlign: 'center',
-    lineHeight: 18,
+    lineHeight: 17,
   },
   bubbleTail: {
     width: 0,
@@ -606,20 +735,38 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: -1,
   },
-  mascotScene: {
+  stageWrapper: {
+    width: 240,
+    height: 250,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+    overflow: 'visible',
     marginVertical: 4,
+  },
+  bambooStalkWrapper: {
+    position: 'absolute',
+    bottom: -40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 5,
+  },
+  pandaClimberWrapper: {
+    position: 'absolute',
+    bottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
   },
   rewardCardsContainer: {
     width: '100%',
     gap: 10,
-    marginVertical: 12,
+    marginVertical: 10,
   },
   rewardCard: {
     backgroundColor: '#1E293B',
     borderRadius: 18,
-    padding: 14,
+    padding: 13,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
