@@ -20,6 +20,7 @@ import { useHabit } from '../../context/HabitContext';
 import { soundService } from '../../services/soundService';
 import { requestNotificationPermission } from '../../services/notificationService';
 import { HabitUpLogo } from '../common/HabitUpLogo';
+import { UserAvatar } from '../common/UserAvatar';
 import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n/translations';
 import {
   ChevronLeft,
@@ -294,20 +295,11 @@ export const SettingsView: React.FC = () => {
         <View style={styles.profileLeft}>
           {/* Avatar with Camera Badge */}
           <View style={styles.avatarWrapper}>
-            {user?.avatar ? (
-              <Image source={{ uri: user.avatar }} style={styles.avatarImg} />
-            ) : (
-              <LinearGradient
-                colors={['#C084FC', '#F43F5E']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.avatarGradient}
-              >
-                <Text style={styles.avatarInitial}>
-                  {user?.name ? user.name.charAt(0).toUpperCase() : 'G'}
-                </Text>
-              </LinearGradient>
-            )}
+            <UserAvatar
+              avatar={user?.avatar}
+              name={user?.name || user?.username || 'User'}
+              size={48}
+            />
             <TouchableOpacity
               style={styles.cameraBadge}
               onPress={() => setIsAuthSessionModalOpen(true)}

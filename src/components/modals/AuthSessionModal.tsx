@@ -23,6 +23,7 @@ import {
   Save,
   CheckCircle2,
 } from 'lucide-react-native';
+import { UserAvatar } from '../common/UserAvatar';
 
 const AVATAR_PRESETS = [
   {
@@ -218,17 +219,14 @@ export const AuthSessionModal: React.FC = () => {
           >
             {/* Center Avatar Preview */}
             <View style={styles.avatarPreviewBox}>
-              <View style={styles.avatarCircleBig}>
-                {selectedAvatar ? (
-                  <Image source={{ uri: selectedAvatar }} style={styles.avatarImg} />
-                ) : (
-                  <View style={styles.avatarDefaultGradient}>
-                    <Text style={styles.avatarInitials}>
-                      {(name || user?.name || 'G').charAt(0).toUpperCase()}
-                    </Text>
-                  </View>
-                )}
-              </View>
+              <UserAvatar
+                avatar={selectedAvatar}
+                name={name || user?.name || 'User'}
+                size={84}
+                showBorder
+                borderColor="#7C5CFF"
+                borderWidth={2}
+              />
               <Text style={[styles.profileName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                 {name || user?.name || 'Google User'}
               </Text>

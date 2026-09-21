@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
 import { LottieAnimation } from '../common/LottieAnimation';
+import { UserAvatar } from '../common/UserAvatar';
 import {
   getUserInviteCode,
   getWeekDays,
@@ -687,9 +688,7 @@ export const FriendsView: React.FC = () => {
                   ]}
                 >
                   <View style={styles.searchResultItemLeft}>
-                    <View style={styles.searchResultAvatar}>
-                      <Text style={styles.searchResultAvatarText}>{initial}</Text>
-                    </View>
+                    <UserAvatar name={item.name || cleanHandle} size={38} />
                     <View style={{ flex: 1, minWidth: 0 }}>
                       <Text
                         style={[styles.searchResultName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
@@ -813,9 +812,11 @@ export const FriendsView: React.FC = () => {
                   ]}
                 >
                   <View style={styles.incomingItemLeft}>
-                    <View style={styles.incomingAvatarCircle}>
-                      <Text style={styles.incomingAvatarEmoji}>{req.fromAvatar || '🤝'}</Text>
-                    </View>
+                    <UserAvatar
+                      avatar={req.fromAvatar}
+                      name={req.fromName || req.fromUsername}
+                      size={36}
+                    />
                     <View style={{ flex: 1, minWidth: 0 }}>
                       <Text
                         style={[styles.incomingName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
@@ -836,21 +837,24 @@ export const FriendsView: React.FC = () => {
                     <TouchableOpacity
                       style={styles.acceptBtn}
                       onPress={() => acceptFollowRequest(req.id, req.fromUsername)}
-                      activeOpacity={0.8}
+                      activeOpacity={0.7}
                     >
-                      <Check size={14} color="#FFFFFF" strokeWidth={3} />
+                      <UserCheck size={12} color="#FFFFFF" strokeWidth={2.5} />
                       <Text style={styles.acceptBtnText}>{t('friends.accept', 'Accept')}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[
                         styles.declineBtn,
-                        { backgroundColor: isDark ? '#334155' : '#F1F5F9' },
+                        {
+                          backgroundColor: isDark ? '#2D3B55' : '#F1F5F9',
+                          borderColor: isDark ? '#3E4F6D' : '#E2E8F0',
+                        },
                       ]}
                       onPress={() => declineFollowRequest(req.id)}
-                      activeOpacity={0.8}
+                      activeOpacity={0.7}
                     >
-                      <X size={14} color={isDark ? '#94A3B8' : '#64748B'} strokeWidth={2.5} />
+                      <X size={12} color={isDark ? '#94A3B8' : '#64748B'} strokeWidth={2.5} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -860,82 +864,83 @@ export const FriendsView: React.FC = () => {
         </View>
       )}
 
-      {/* 4. Friends List Heading */}
+      {/* 4. Connected Friends List */}
       <View style={styles.listHeaderRow}>
         <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
           {t('friends.habit_buddies', 'HABIT BUDDIES')} ({connectedFriends.length})
         </Text>
       </View>
 
-      {/* 5. Friend Cards & Mutual Progress Trackers */}
-      {connectedFriends.map((friend) => {
-        const { displayName: friendDisplayName, usernameTag } = formatFriendDisplayName(friend);
-        const myDisplayName = user?.name ? user.name.split(' ')[0] : 'You';
-        const isPendingSent = friend.requestStatus === 'pending_sent';
+        {connectedFriends.map((friend) => {
+          const { displayName: friendDisplayName } = formatFriendDisplayName(friend);
+          const isPendingSent = friend.requestStatus === 'pending_sent';
 
-        // Separate habits into Shared/Adopted vs Not Adopted (Strictly 1 habit per unique name)
-        const sharedHabits: { friendHabit: FriendPublicHabit; myHabit: Habit }[] = [];
-        const unadoptedHabits: FriendPublicHabit[] = [];
-        const seenHabitNames = new Set<string>();
+          // Group habits into mutual vs unadopted
+          const sharedHabits: { friendHabit: FriendPublicHabit; myHabit: Habit }[] = [];
+          const unadoptedHabits: FriendPublicHabit[] = [];
 
-        if (!isPendingSent && Array.isArray(friend.habits)) {
-          // Deduplicate friend habits first
-          const uniqueFriendHabits: FriendPublicHabit[] = [];
-          const nameMap = new Map<string, FriendPublicHabit>();
-          for (const fh of friend.habits) {
-            const k = (fh.name || '').trim().toLowerCase();
-            if (!k) continue;
-            if (!nameMap.has(k)) {
-              nameMap.set(k, fh);
-              uniqueFriendHabits.push(fh);
-            } else {
-              const ex = nameMap.get(k)!;
-              if ((fh.currentStreak || 0) > (ex.currentStreak || 0) || (fh.isCompletedToday && !ex.isCompletedToday)) {
+          if (Array.isArray(friend.habits) && friend.habits.length > 0) {
+            const seenHabitNames = new Set<string>();
+            const uniqueFriendHabits: FriendPublicHabit[] = [];
+            const nameMap = new Map<string, FriendPublicHabit>();
+
+            for (const fh of friend.habits) {
+              const k = (fh.name || '').trim().toLowerCase();
+              if (!nameMap.has(k)) {
                 nameMap.set(k, fh);
-                const idx = uniqueFriendHabits.findIndex((h) => (h.name || '').trim().toLowerCase() === k);
-                if (idx >= 0) uniqueFriendHabits[idx] = fh;
+                uniqueFriendHabits.push(fh);
+              } else {
+                const ex = nameMap.get(k)!;
+                if ((fh.currentStreak || 0) > (ex.currentStreak || 0) || (fh.isCompletedToday && !ex.isCompletedToday)) {
+                  nameMap.set(k, fh);
+                  const idx = uniqueFriendHabits.findIndex((h) => (h.name || '').trim().toLowerCase() === k);
+                  if (idx >= 0) uniqueFriendHabits[idx] = fh;
+                }
               }
             }
+
+            uniqueFriendHabits.forEach((fh) => {
+              const cleanName = (fh.name || '').trim().toLowerCase();
+              if (seenHabitNames.has(cleanName)) return;
+              seenHabitNames.add(cleanName);
+
+              const myMatch = findMatchingMyHabit(fh, friend);
+              if (myMatch) {
+                sharedHabits.push({ friendHabit: fh, myHabit: myMatch });
+              } else {
+                unadoptedHabits.push(fh);
+              }
+            });
           }
 
-          uniqueFriendHabits.forEach((fh) => {
-            const cleanName = (fh.name || '').trim().toLowerCase();
-            if (seenHabitNames.has(cleanName)) return;
-            seenHabitNames.add(cleanName);
-
-            const myMatch = findMatchingMyHabit(fh, friend);
-            if (myMatch) {
-              sharedHabits.push({ friendHabit: fh, myHabit: myMatch });
-            } else {
-              unadoptedHabits.push(fh);
-            }
-          });
-        }
-
-        return (
-          <View
-            key={friend.id}
-            style={[
-              styles.friendCard,
-              {
-                backgroundColor: isDark ? '#131C2E' : '#FFFFFF',
-                borderColor: isPendingSent
-                  ? isDark
-                    ? 'rgba(245, 158, 11, 0.35)'
-                    : 'rgba(245, 158, 11, 0.35)'
-                  : isDark
-                  ? '#1E293B'
-                  : '#E2E8F0',
-              },
-            ]}
-          >
-            {/* Friend Profile Header */}
-            <View style={styles.friendProfileRow}>
-              <View style={styles.friendProfileLeft}>
-                <Animated.View style={[styles.friendAvatarCircle, { transform: [{ translateY: avatarFloatAnim }] }]}>
-                  <Text style={styles.friendAvatarEmoji}>{friend.avatar}</Text>
-                </Animated.View>
-                <View style={styles.friendNameContainer}>
+          return (
+            <View
+              key={friend.id}
+              style={[
+                styles.friendCard,
+                {
+                  backgroundColor: isDark ? '#131C2E' : '#FFFFFF',
+                  borderColor: isPendingSent
+                    ? isDark
+                      ? 'rgba(245, 158, 11, 0.35)'
+                      : 'rgba(245, 158, 11, 0.35)'
+                    : isDark
+                    ? '#1E293B'
+                    : '#E2E8F0',
+                },
+              ]}
+            >
+              {/* Friend Profile Header */}
+              <View style={styles.friendProfileRow}>
+                <View style={styles.friendProfileLeft}>
+                  <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                    <UserAvatar
+                      avatar={friend.avatar}
+                      name={friendDisplayName || friend.username}
+                      size={42}
+                    />
+                  </Animated.View>
+                  <View style={styles.friendNameContainer}>
                   <View style={styles.friendNameStreakRow}>
                     <Text
                       style={[styles.friendName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
@@ -1311,7 +1316,11 @@ export const FriendsView: React.FC = () => {
                       ]}
                       onPress={() => setSelectedFriendForTogether(f)}
                     >
-                      <Text style={styles.friendPillEmoji}>{f.avatar}</Text>
+                      <UserAvatar
+                        avatar={f.avatar}
+                        name={fDisplayName}
+                        size={20}
+                      />
                       <Text
                         style={[
                           styles.friendPillText,
@@ -1631,7 +1640,11 @@ export const FriendsView: React.FC = () => {
                     >
                       <View style={styles.checkinUserMeta}>
                         <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
-                          <Text style={styles.checkinAvatar}>{user?.avatar || '🌟'}</Text>
+                          <UserAvatar
+                            avatar={user?.avatar}
+                            name={user?.name || 'You'}
+                            size={28}
+                          />
                         </Animated.View>
                         <Text
                           style={[
@@ -1675,7 +1688,11 @@ export const FriendsView: React.FC = () => {
                     >
                       <View style={styles.checkinUserMeta}>
                         <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
-                          <Text style={styles.checkinAvatar}>{liveFriend.avatar || '👤'}</Text>
+                          <UserAvatar
+                            avatar={liveFriend.avatar}
+                            name={friendDisplayName || friendShortName}
+                            size={28}
+                          />
                         </Animated.View>
                         <Text
                           style={[
@@ -1770,7 +1787,11 @@ export const FriendsView: React.FC = () => {
                       <LottieAnimation source="trophyAchievement" size={26} />
                     ) : (
                       <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
-                        <Text style={{ fontSize: 16 }}>{user?.avatar || '🌟'}</Text>
+                        <UserAvatar
+                          avatar={user?.avatar}
+                          name={user?.name || 'You'}
+                          size={24}
+                        />
                       </Animated.View>
                     )}
                     <Text style={[styles.modalStatValue, { color: '#10B981' }]}>
@@ -1799,7 +1820,11 @@ export const FriendsView: React.FC = () => {
                       <LottieAnimation source="trophyAchievement" size={26} />
                     ) : (
                       <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
-                        <Text style={{ fontSize: 16 }}>{liveFriend.avatar || '👤'}</Text>
+                        <UserAvatar
+                          avatar={liveFriend.avatar}
+                          name={friendDisplayName || friendShortName}
+                          size={24}
+                        />
                       </Animated.View>
                     )}
                     <Text style={[styles.modalStatValue, { color: '#7C5CFF' }]}>

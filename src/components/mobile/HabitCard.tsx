@@ -6,6 +6,7 @@ import { IconRenderer } from '../common/IconRenderer';
 import { formatTo12Hour } from '../../utils/streakCalculator';
 import { Check, MoreVertical, Calendar, Pause, Play, Archive, Trash2, X } from 'lucide-react-native';
 import { LottieAnimation } from '../common/LottieAnimation';
+import { UserAvatar } from '../common/UserAvatar';
 
 interface HabitCardProps {
   habit: Habit;
@@ -173,8 +174,13 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
             )}
             {habit.is_shared && (
               <View style={styles.badgeBuddy}>
+                <UserAvatar
+                  avatar={habit.buddy_avatar}
+                  name={habit.buddy_name || 'Buddy'}
+                  size={14}
+                />
                 <Text style={styles.badgeBuddyText}>
-                  {habit.buddy_avatar || '🤝'} {habit.buddy_name || t('friends.together', 'Buddy')}
+                  {habit.buddy_name || t('friends.together', 'Buddy')}
                 </Text>
               </View>
             )}
