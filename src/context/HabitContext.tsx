@@ -2645,15 +2645,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             AsyncStorage.setItem('habitup_completions_usr_default', JSON.stringify(updated)).catch(() => {});
           }
 
-          triggerCelebration();
-          // Award +10 Bamboo Coins for completing habit!
-          setBambooCoins((c) => {
-            const added = c + 10;
-            AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(added)).catch(() => {});
-            return added;
-          });
-
           // Check if this completion achieved 100% completion of all scheduled habits for targetDate!
+          let isReaching100Percent = false;
           try {
             const activeScheduled = habits.filter((h) => {
               if (h.archived_at || h.deleted_at || h.paused_at) return false;
@@ -2667,7 +2660,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               updated.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === targetDate)
             ).length;
 
-            if (totalScheduled > 0 && newDoneCount === totalScheduled && prevDoneCount < totalScheduled) {
+            isReaching100Percent = totalScheduled > 0 && newDoneCount === totalScheduled && prevDoneCount < totalScheduled;
+
+            if (isReaching100Percent) {
               setTimeout(() => {
                 setIsDayCompletionModalOpen(true);
                 soundService.playMascotFeastCelebration();
@@ -2680,6 +2675,25 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               });
             }
           } catch {}
+
+          if (!isReaching100Percent) {
+            triggerCelebration();
+          } else {
+            // Trigger confetti and haptic without duplicate chime sound
+            triggerConfetti();
+            if (hapticsEnabled) {
+              try {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              } catch {}
+            }
+          }
+
+          // Award +10 Bamboo Coins for completing habit!
+          setBambooCoins((c) => {
+            const added = c + 10;
+            AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(added)).catch(() => {});
+            return added;
+          });
 
           if (isOffline) {
             addMutationToQueue(`/habits/${habitId}/completions`, 'POST', { completion_date: targetDate });

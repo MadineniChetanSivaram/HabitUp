@@ -65,7 +65,6 @@ export const DayCompletionCelebrationModal: React.FC = () => {
   // Rewards & Speech bubble pop
   const rewardsPopAnim = useRef(new Animated.Value(0)).current;
   const speechBubblePopAnim = useRef(new Animated.Value(0)).current;
-  const auraPulse = useRef(new Animated.Value(1)).current;
 
   const [messageIndex, setMessageIndex] = useState(0);
 
@@ -194,29 +193,9 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     );
     tailLoop.start();
 
-    // 4. Forest Aura Glow Pulse
-    const auraLoop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(auraPulse, {
-          toValue: 1.15,
-          duration: 1000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
-        }),
-        Animated.timing(auraPulse, {
-          toValue: 0.9,
-          duration: 1000,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: useNative,
-        }),
-      ])
-    );
-    auraLoop.start();
-
     return () => {
       waveLoop.stop();
       tailLoop.stop();
-      auraLoop.stop();
     };
   }, [isDayCompletionModalOpen]);
 
@@ -332,34 +311,24 @@ export const DayCompletionCelebrationModal: React.FC = () => {
             </View>
           </Animated.View>
 
-          {/* BAMBOO FOREST & STOOL CELEBRATION STAGE */}
+          {/* BAMBOO FOREST & TABLE CELEBRATION STAGE */}
           <View
             style={[
               styles.bambooStage,
               {
-                borderColor: isDark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(167, 243, 208, 0.6)',
-                backgroundColor: isDark ? 'rgba(6, 78, 59, 0.2)' : 'rgba(236, 253, 245, 0.6)',
+                borderColor: isDark ? 'rgba(16, 185, 129, 0.35)' : 'rgba(5, 150, 105, 0.45)',
+                backgroundColor: isDark ? '#022C22' : '#064E3B',
               },
             ]}
           >
-            {/* Aura Forest Glow */}
-            <Animated.View
-              style={[
-                styles.auraCircle,
-                {
-                  transform: [{ scale: auraPulse }],
-                },
-              ]}
-            />
-
-            {/* Lush Bamboo Forest Environment + Crafted Bamboo Stool */}
+            {/* Lush Bamboo Forest Environment + Crafted Bamboo Table */}
             <Svg width="100%" height={215} viewBox="0 0 320 215" style={styles.bambooSvg}>
               <Defs>
-                {/* Forest Atmosphere Gradient */}
+                {/* Forest Atmosphere Gradient - Deep Vibrant Emerald Bamboo */}
                 <LinearGradient id="forestAtmosphere" x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0%" stopColor={isDark ? '#064E3B' : '#DCFCE7'} stopOpacity={0.45} />
-                  <Stop offset="60%" stopColor={isDark ? '#022C22' : '#F0FDF4'} stopOpacity={0.7} />
-                  <Stop offset="100%" stopColor={isDark ? '#064E3B' : '#BBF7D0'} stopOpacity={0.9} />
+                  <Stop offset="0%" stopColor={isDark ? '#064E3B' : '#047857'} stopOpacity={0.9} />
+                  <Stop offset="50%" stopColor={isDark ? '#022C22' : '#065F46'} stopOpacity={0.85} />
+                  <Stop offset="100%" stopColor={isDark ? '#064E3B' : '#047857'} stopOpacity={0.95} />
                 </LinearGradient>
 
                 {/* Distant Bamboo Trunk Gradient */}
@@ -846,27 +815,28 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                   {/* 😋 STAGE 3: EATING & MUNCHING BAMBOO SNACK (100%)    */}
                   {/* ==================================================== */}
                   <G id="rp-eating-bamboo-snack">
-                    <Path d="M 74 72 L 108 102" stroke="#22C55E" strokeWidth={5.2} strokeLinecap="round" />
-                    <Line x1="84" y1="81" x2="88" y2="84" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
-                    <Line x1="97" y1="92" x2="101" y2="95" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                    {/* Bamboo stalk held firmly in left hand going directly to mouth */}
+                    <Path d="M 75 70 L 58 96" stroke="#22C55E" strokeWidth={5.2} strokeLinecap="round" />
+                    <Line x1="68" y1="79" x2="72" y2="81" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
+                    <Line x1="63" y1="88" x2="67" y2="90" stroke="#14532D" strokeWidth={1.8} strokeLinecap="round" />
                     {/* Nibbled Bite Marks at Top */}
-                    <Circle cx="74" cy="72" r="3" fill="#FEF08A" />
-                    <Circle cx="76" cy="70" r="1.5" fill="#4ADE80" />
+                    <Circle cx="75" cy="70" r="3" fill="#FEF08A" />
+                    <Circle cx="77" cy="68" r="1.5" fill="#4ADE80" />
                     {/* Leaves on snack */}
-                    <Path d="M 92 88 Q 104 82 108 88 Q 98 94 92 88 Z" fill="#16A34A" />
-                    <Path d="M 102 96 Q 114 90 117 97 Q 107 101 102 96 Z" fill="#4ADE80" />
+                    <Path d="M 68 76 Q 56 70 50 77 Q 60 82 68 76 Z" fill="#16A34A" />
+                    <Path d="M 62 86 Q 50 80 46 87 Q 56 92 62 86 Z" fill="#4ADE80" />
                     {/* Tiny Munching Leaf Crumbs */}
-                    <Circle cx="70" cy="78" r="1.2" fill="#22C55E" />
-                    <Circle cx="78" cy="80" r="1" fill="#4ADE80" />
+                    <Circle cx="72" cy="74" r="1.2" fill="#22C55E" />
+                    <Circle cx="78" cy="76" r="1" fill="#4ADE80" />
 
-                    {/* 🐾 PAW 1: Left Hand Holding Bamboo Snack */}
+                    {/* 🐾 PAW 1: Left Hand Securely Gripping Bamboo Snack */}
                     <G id="rp-feast-paw-left">
-                      <Path d="M 52 94 C 54 88, 66 84, 76 86 C 80 87, 82 92, 78 96 C 70 99, 60 102, 52 94 Z" fill="url(#rpDarkFurModal)" />
-                      <Ellipse cx="76" cy="88" rx="5" ry="4.2" fill="url(#rpDarkFurModal)" transform="rotate(-15 76 88)" />
-                      <Ellipse cx="76" cy="88" rx="2.5" ry="2" fill="#FEF08A" opacity={0.95} />
-                      <Circle cx="72" cy="85.5" r="1.1" fill="#FEF08A" opacity={0.95} />
-                      <Circle cx="75.5" cy="83.5" r="1.1" fill="#FEF08A" opacity={0.95} />
-                      <Circle cx="79" cy="84.5" r="1.1" fill="#FEF08A" opacity={0.95} />
+                      <Path d="M 44 96 C 46 88, 56 84, 66 86 C 70 87, 72 92, 68 96 C 60 100, 50 102, 44 96 Z" fill="url(#rpDarkFurModal)" />
+                      <Ellipse cx="62" cy="92" rx="5.5" ry="4.5" fill="url(#rpDarkFurModal)" transform="rotate(-20 62 92)" />
+                      <Ellipse cx="62" cy="92" rx="2.8" ry="2.2" fill="#FEF08A" opacity={0.95} transform="rotate(-20 62 92)" />
+                      <Circle cx="58" cy="89" r="1.2" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="61.5" cy="87" r="1.2" fill="#FEF08A" opacity={0.95} />
+                      <Circle cx="65.5" cy="88" r="1.2" fill="#FEF08A" opacity={0.95} />
                     </G>
                   </G>
 
@@ -1086,13 +1056,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
     marginVertical: 4,
-  },
-  auraCircle: {
-    position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
   },
   bambooSvg: {
     position: 'absolute',
