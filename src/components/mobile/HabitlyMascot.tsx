@@ -103,7 +103,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   // 2: Lush tall stalk (51 - 99% habits done)
   // 3: Eating feast! (100% all habits completed)
   let bambooStage = 0;
-  if ((progressPercent === 100 && totalCount > 0) || forcedMood === 'celebrating') {
+  if (progressPercent === 100 && totalCount > 0) {
     bambooStage = 3; // Eating feast!
   } else if (progressPercent > 50) {
     bambooStage = 2; // Lush tall stalk
