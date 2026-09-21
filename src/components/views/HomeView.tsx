@@ -6,7 +6,7 @@ import { DateStrip } from '../mobile/DateStrip';
 import { TodayProgressCard } from '../mobile/TodayProgressCard';
 import { HabitCard } from '../mobile/HabitCard';
 import { isHabitScheduledOnDate, formatDateKey } from '../../utils/streakCalculator';
-import { Plus, Sparkles, ShoppingBag, LayoutGrid } from 'lucide-react-native';
+import { Plus, Sparkles } from 'lucide-react-native';
 import { LottieAnimation } from '../common/LottieAnimation';
 
 export const HomeView: React.FC = () => {
@@ -19,9 +19,6 @@ export const HomeView: React.FC = () => {
     setIsOnboardingModalOpen,
     t,
     language,
-    bambooCoins,
-    setIsShopModalOpen,
-    setIsWidgetModalOpen,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -53,67 +50,6 @@ export const HomeView: React.FC = () => {
       <HomeHero />
       <DateStrip />
       <TodayProgressCard />
-
-      {/* Quick Actions Strip: Sparky Boutique & Widget Studio */}
-      <View style={styles.quickActionsStrip}>
-        <TouchableOpacity
-          style={[
-            styles.quickCard,
-            {
-              backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-            },
-          ]}
-          onPress={() => setIsShopModalOpen(true)}
-          activeOpacity={0.75}
-        >
-          <View style={[styles.quickIconCircle, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-            <ShoppingBag size={18} color="#F59E0B" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <View style={styles.quickCardHeader}>
-              <Text style={[styles.quickCardTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Boutique
-              </Text>
-              <View style={[styles.coinBadge, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7' }]}>
-                <Text style={styles.coinBadgeText}>🎋 {bambooCoins}</Text>
-              </View>
-            </View>
-            <Text style={[styles.quickCardSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Dress up Sparky 🐼
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.quickCard,
-            {
-              backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-            },
-          ]}
-          onPress={() => setIsWidgetModalOpen(true)}
-          activeOpacity={0.75}
-        >
-          <View style={[styles.quickIconCircle, { backgroundColor: 'rgba(124, 92, 255, 0.15)' }]}>
-            <LayoutGrid size={18} color="#7C5CFF" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <View style={styles.quickCardHeader}>
-              <Text style={[styles.quickCardTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Widgets
-              </Text>
-              <View style={[styles.coinBadge, { backgroundColor: isDark ? 'rgba(124, 92, 255, 0.15)' : '#EDE9FE' }]}>
-                <Text style={[styles.coinBadgeText, { color: '#7C5CFF' }]}>LIVE</Text>
-              </View>
-            </View>
-            <Text style={[styles.quickCardSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-              Lock & Home Studio 📱
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
 
       {/* Habits Section Header & Filter Tabs */}
       <View style={styles.sectionHeader}>
@@ -441,58 +377,5 @@ const styles = StyleSheet.create({
   templateBtnText: {
     fontSize: 13,
     fontWeight: '700',
-  },
-  quickActionsStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingHorizontal: 20,
-    marginTop: 12,
-  },
-  quickCard: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    padding: 12,
-    borderRadius: 18,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  quickIconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 2,
-  },
-  quickCardTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: -0.2,
-  },
-  coinBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  coinBadgeText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#10B981',
-  },
-  quickCardSub: {
-    fontSize: 10,
-    fontWeight: '600',
   },
 });
