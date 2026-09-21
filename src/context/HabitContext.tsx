@@ -142,6 +142,9 @@ interface HabitContextType {
   importJsonData: (json: string) => boolean;
   exportJsonData: () => string;
   triggerCelebration: () => void;
+  isCelebrationModalOpen: boolean;
+  setIsCelebrationModalOpen: (open: boolean) => void;
+  triggerSparkyCelebration: () => void;
   isConfettiActive: boolean;
   triggerConfetti: () => void;
   isSyncing: boolean;
@@ -1110,6 +1113,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [equippedHat, setEquippedHat] = useState<string | null>(null);
   const [equippedGlasses, setEquippedGlasses] = useState<string | null>(null);
   const [isShopModalOpen, setIsShopModalOpen] = useState<boolean>(false);
+  const [isCelebrationModalOpen, setIsCelebrationModalOpen] = useState<boolean>(false);
 
   // Feature 3: Smart Widgets & Lock Screen Studio State
   const [isWidgetModalOpen, setIsWidgetModalOpen] = useState<boolean>(false);
@@ -2148,6 +2152,16 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [soundEnabled, hapticsEnabled, triggerConfetti]);
 
+  const triggerSparkyCelebration = useCallback(() => {
+    setIsCelebrationModalOpen(true);
+    triggerConfetti();
+    setBambooCoins((prev) => {
+      const updated = prev + 25;
+      AsyncStorage.setItem('habitup_bamboo_coins_v1', JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+  }, [triggerConfetti]);
+
   const switchAccountData = useCallback(async (targetUser: UserProfile) => {
     isLoggingOut.current = false;
     const uid = targetUser.id;
@@ -2642,7 +2656,23 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             AsyncStorage.setItem('habitup_completions_usr_default', JSON.stringify(updated)).catch(() => {});
           }
 
-          triggerCelebration();
+          const activeHabits = habits.filter((h) => !h.archived_at && !h.deleted_at && !h.paused_at);
+          const targetDateTime = new Date(targetDate + 'T12:00:00');
+          const scheduledToday = activeHabits.filter((h) => isHabitScheduledOnDate(h, targetDateTime));
+          const areAllCompleted =
+            scheduledToday.length > 0 &&
+            scheduledToday.every((h) =>
+              updated.some((c) => c.habit_id === h.id && (c.completion_date || '').split('T')[0] === targetDate)
+            );
+
+          if (areAllCompleted) {
+            setTimeout(() => {
+              triggerSparkyCelebration();
+            }, 200);
+          } else {
+            triggerCelebration();
+          }
+
           // Award +10 Bamboo Coins for completing habit!
           setBambooCoins((c) => {
             const added = c + 10;
@@ -2670,7 +2700,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         }
       });
     },
-    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, addMutationToQueue]
+    [selectedDate, user, habits, hapticsEnabled, isOffline, triggerCelebration, triggerSparkyCelebration, addMutationToQueue]
   );
 
   const earnBambooCoins = useCallback((amount: number, reason?: string) => {
@@ -4241,6 +4271,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         importJsonData,
         exportJsonData,
         triggerCelebration,
+        isCelebrationModalOpen,
+        setIsCelebrationModalOpen,
+        triggerSparkyCelebration,
         isConfettiActive,
         triggerConfetti,
         isSyncing,

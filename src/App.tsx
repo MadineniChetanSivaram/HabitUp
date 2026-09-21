@@ -20,6 +20,7 @@ import { AuthSessionModal } from './components/modals/AuthSessionModal';
 import { BiometricScanModal } from './components/modals/BiometricScanModal';
 import { PlantGardenModal } from './components/modals/PlantGardenModal';
 import { SparkyShopModal } from './components/modals/SparkyShopModal';
+import { SparkyCelebrationModal } from './components/modals/SparkyCelebrationModal';
 import { WidgetPreviewModal } from './components/modals/WidgetPreviewModal';
 import { NotificationBanner } from './components/common/NotificationBanner';
 import { FullScreenConfetti } from './components/common/FullScreenConfetti';
@@ -77,6 +78,7 @@ const AppContent: React.FC = () => {
       <AuthSessionModal />
       <PlantGardenModal />
       <SparkyShopModal />
+      <SparkyCelebrationModal />
       <WidgetPreviewModal />
     </MobileShell>
   );
