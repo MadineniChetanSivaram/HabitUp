@@ -196,25 +196,61 @@ export const FriendsView: React.FC = () => {
   const [activeCheerFriendId, setActiveCheerFriendId] = useState<string | null>(null);
 
   const flamePulseAnim = useRef(new Animated.Value(1)).current;
+  const avatarFloatAnim = useRef(new Animated.Value(0)).current;
+  const clockPulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const useNative = Platform.OS !== 'web';
-    const loop = Animated.loop(
+    const flameLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(flamePulseAnim, {
-          toValue: 1.08,
-          duration: 1200,
+          toValue: 1.10,
+          duration: 1000,
           useNativeDriver: useNative,
         }),
         Animated.timing(flamePulseAnim, {
           toValue: 1.0,
+          duration: 1000,
+          useNativeDriver: useNative,
+        }),
+      ])
+    );
+    const avatarLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(avatarFloatAnim, {
+          toValue: -3.5,
+          duration: 1200,
+          useNativeDriver: useNative,
+        }),
+        Animated.timing(avatarFloatAnim, {
+          toValue: 0,
           duration: 1200,
           useNativeDriver: useNative,
         }),
       ])
     );
-    loop.start();
-    return () => loop.stop();
+    const clockLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(clockPulseAnim, {
+          toValue: 1.14,
+          duration: 900,
+          useNativeDriver: useNative,
+        }),
+        Animated.timing(clockPulseAnim, {
+          toValue: 1.0,
+          duration: 900,
+          useNativeDriver: useNative,
+        }),
+      ])
+    );
+    flameLoop.start();
+    avatarLoop.start();
+    clockLoop.start();
+    return () => {
+      flameLoop.stop();
+      avatarLoop.stop();
+      clockLoop.stop();
+    };
   }, []);
 
   const handleCheer = (friend: FriendUser) => {
@@ -892,9 +928,9 @@ export const FriendsView: React.FC = () => {
             {/* Friend Profile Header */}
             <View style={styles.friendProfileRow}>
               <View style={styles.friendProfileLeft}>
-                <View style={styles.friendAvatarCircle}>
+                <Animated.View style={[styles.friendAvatarCircle, { transform: [{ translateY: avatarFloatAnim }] }]}>
                   <Text style={styles.friendAvatarEmoji}>{friend.avatar}</Text>
-                </View>
+                </Animated.View>
                 <View style={styles.friendNameContainer}>
                   <View style={styles.friendNameStreakRow}>
                     <Text
@@ -1089,7 +1125,9 @@ export const FriendsView: React.FC = () => {
                             {friendHabit.currentStreak > 0 && (
                               <>
                                 <Text style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 10 }}>•</Text>
-                                <Flame size={11} color="#F59E0B" fill="#F59E0B" />
+                                <Animated.View style={{ transform: [{ scale: flamePulseAnim }] }}>
+                                  <Flame size={11} color="#F59E0B" fill="#F59E0B" />
+                                </Animated.View>
                                 <Text style={{ color: '#F59E0B', fontSize: 11, fontWeight: '800' }}>
                                   {friendHabit.currentStreak}d {t('habits.streak', 'streak')}
                                 </Text>
@@ -1595,7 +1633,9 @@ export const FriendsView: React.FC = () => {
                       ]}
                     >
                       <View style={styles.checkinUserMeta}>
-                        <Text style={styles.checkinAvatar}>{user?.avatar || '🌟'}</Text>
+                        <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                          <Text style={styles.checkinAvatar}>{user?.avatar || '🌟'}</Text>
+                        </Animated.View>
                         <Text
                           style={[
                             styles.checkinUserName,
@@ -1619,7 +1659,9 @@ export const FriendsView: React.FC = () => {
                         {myModalDone ? (
                           <Check size={14} color="#10B981" strokeWidth={3} />
                         ) : (
-                          <Clock size={13} color="#F59E0B" strokeWidth={2.5} />
+                          <Animated.View style={{ transform: [{ scale: clockPulseAnim }] }}>
+                            <Clock size={13} color="#F59E0B" strokeWidth={2.5} />
+                          </Animated.View>
                         )}
                       </View>
                     </View>
@@ -1635,7 +1677,9 @@ export const FriendsView: React.FC = () => {
                       ]}
                     >
                       <View style={styles.checkinUserMeta}>
-                        <Text style={styles.checkinAvatar}>{liveFriend.avatar || '👤'}</Text>
+                        <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                          <Text style={styles.checkinAvatar}>{liveFriend.avatar || '👤'}</Text>
+                        </Animated.View>
                         <Text
                           style={[
                             styles.checkinUserName,
@@ -1659,7 +1703,9 @@ export const FriendsView: React.FC = () => {
                         {friendModalDone ? (
                           <Check size={14} color="#7C5CFF" strokeWidth={3} />
                         ) : (
-                          <Clock size={13} color="#F59E0B" strokeWidth={2.5} />
+                          <Animated.View style={{ transform: [{ scale: clockPulseAnim }] }}>
+                            <Clock size={13} color="#F59E0B" strokeWidth={2.5} />
+                          </Animated.View>
                         )}
                       </View>
                     </View>
@@ -1692,7 +1738,9 @@ export const FriendsView: React.FC = () => {
                       },
                     ]}
                   >
-                    <Flame size={18} color="#F59E0B" fill="#F59E0B" />
+                    <Animated.View style={{ transform: [{ scale: flamePulseAnim }] }}>
+                      <Flame size={18} color="#F59E0B" fill="#F59E0B" />
+                    </Animated.View>
                     <Text
                       style={[
                         styles.modalStatValue,
@@ -1720,7 +1768,9 @@ export const FriendsView: React.FC = () => {
                       },
                     ]}
                   >
-                    <Text style={{ fontSize: 16 }}>{user?.avatar || '🌟'}</Text>
+                    <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                      <Text style={{ fontSize: 16 }}>{user?.avatar || '🌟'}</Text>
+                    </Animated.View>
                     <Text style={[styles.modalStatValue, { color: '#10B981' }]}>
                       {myCount}/7
                     </Text>
@@ -1743,7 +1793,9 @@ export const FriendsView: React.FC = () => {
                       },
                     ]}
                   >
-                    <Text style={{ fontSize: 16 }}>{liveFriend.avatar || '👤'}</Text>
+                    <Animated.View style={{ transform: [{ translateY: avatarFloatAnim }] }}>
+                      <Text style={{ fontSize: 16 }}>{liveFriend.avatar || '👤'}</Text>
+                    </Animated.View>
                     <Text style={[styles.modalStatValue, { color: '#7C5CFF' }]}>
                       {friendCount}/7
                     </Text>
