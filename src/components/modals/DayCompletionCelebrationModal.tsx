@@ -8,7 +8,6 @@ import {
   Animated,
   Easing,
   Platform,
-  Dimensions,
 } from 'react-native';
 import Svg, {
   Defs,
@@ -26,7 +25,7 @@ import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useHabit } from '../../context/HabitContext';
 import { soundService } from '../../services/soundService';
-import { Sparkles, Flame, Check, Trophy } from 'lucide-react-native';
+import { Flame, Check, Trophy } from 'lucide-react-native';
 
 const CELEBRATION_MESSAGES = [
   'Hi! You did it! 🎉 All habits completed today!',
@@ -50,12 +49,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   const isDark = theme === 'dark';
 
-  // Modal slide from bottom
-  const sheetSlideAnim = useRef(new Animated.Value(450)).current;
-  const sheetScaleAnim = useRef(new Animated.Value(0.8)).current;
+  // Modal fade & float
+  const contentFadeAnim = useRef(new Animated.Value(0)).current;
+  const contentScaleAnim = useRef(new Animated.Value(0.85)).current;
 
   // Panda sliding DOWN the bamboo stalk from top
-  const pandaSlideDownAnim = useRef(new Animated.Value(-240)).current;
+  const pandaSlideDownAnim = useRef(new Animated.Value(-260)).current;
   const pandaBounceAnim = useRef(new Animated.Value(1)).current;
 
   // Waving Paw Animation
@@ -73,9 +72,9 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   useEffect(() => {
     if (!isDayCompletionModalOpen) {
-      sheetSlideAnim.setValue(450);
-      sheetScaleAnim.setValue(0.8);
-      pandaSlideDownAnim.setValue(-240);
+      contentFadeAnim.setValue(0);
+      contentScaleAnim.setValue(0.85);
+      pandaSlideDownAnim.setValue(-260);
       pandaBounceAnim.setValue(1);
       rewardsPopAnim.setValue(0);
       speechBubblePopAnim.setValue(0);
@@ -85,33 +84,33 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     const useNative = Platform.OS !== 'web';
     setMessageIndex(Math.floor(Math.random() * CELEBRATION_MESSAGES.length));
 
-    // 1. Sheet slide-up & Panda slide DOWN the bamboo simultaneously!
+    // 1. Fade in on screen & Panda slides DOWN the bamboo
     Animated.parallel([
-      Animated.spring(sheetSlideAnim, {
-        toValue: 0,
-        friction: 6.5,
+      Animated.timing(contentFadeAnim, {
+        toValue: 1,
+        duration: 350,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: useNative,
+      }),
+      Animated.spring(contentScaleAnim, {
+        toValue: 1,
+        friction: 6,
         tension: 50,
         useNativeDriver: useNative,
       }),
-      Animated.spring(sheetScaleAnim, {
-        toValue: 1,
-        friction: 5.5,
-        tension: 45,
-        useNativeDriver: useNative,
-      }),
-      // Panda slides smoothly down the bamboo pole from top (-240 -> 0)
+      // Panda slides smoothly down the bamboo pole from top (-260 -> 0)
       Animated.sequence([
         Animated.delay(100),
         Animated.timing(pandaSlideDownAnim, {
           toValue: 0,
-          duration: 650,
-          easing: Easing.out(Easing.back(1.4)),
+          duration: 700,
+          easing: Easing.out(Easing.back(1.5)),
           useNativeDriver: useNative,
         }),
         // Landing bounce on bamboo
         Animated.sequence([
           Animated.timing(pandaBounceAnim, {
-            toValue: 1.12,
+            toValue: 1.14,
             duration: 90,
             useNativeDriver: useNative,
           }),
@@ -172,7 +171,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
         }),
-        Animated.delay(300),
+        Animated.delay(350),
       ])
     );
     waveLoop.start();
@@ -200,7 +199,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(breatheAnim, {
-          toValue: -4,
+          toValue: -5,
           duration: 1100,
           easing: Easing.inOut(Easing.sin),
           useNativeDriver: useNative,
@@ -254,14 +253,14 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
     const useNative = Platform.OS !== 'web';
     Animated.parallel([
-      Animated.timing(sheetSlideAnim, {
-        toValue: 500,
+      Animated.timing(contentFadeAnim, {
+        toValue: 0,
         duration: 250,
-        easing: Easing.in(Easing.back(1.5)),
+        easing: Easing.in(Easing.quad),
         useNativeDriver: useNative,
       }),
-      Animated.timing(sheetScaleAnim, {
-        toValue: 0.75,
+      Animated.timing(contentScaleAnim, {
+        toValue: 0.8,
         duration: 250,
         useNativeDriver: useNative,
       }),
@@ -277,12 +276,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   const waveRotation = waveAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: ['-18deg', '0deg', '22deg'],
+    outputRange: ['-20deg', '0deg', '24deg'],
   });
 
   const tailRotation = tailAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: ['-14deg', '0deg', '14deg'],
+    outputRange: ['-15deg', '0deg', '15deg'],
   });
 
   return (
@@ -292,28 +291,28 @@ export const DayCompletionCelebrationModal: React.FC = () => {
       animationType="fade"
       onRequestClose={handleDismiss}
     >
+      {/* Dimmed Screen Backdrop without any boxed white container */}
       <View style={styles.modalBackdrop}>
         <Animated.View
           style={[
-            styles.sheetContainer,
+            styles.screenContentWrapper,
             {
-              backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-              borderColor: isDark ? '#1E293B' : '#E2E8F0',
-              transform: [{ translateY: sheetSlideAnim }, { scale: sheetScaleAnim }],
+              opacity: contentFadeAnim,
+              transform: [{ scale: contentScaleAnim }],
             },
           ]}
         >
           {/* Top Trophy Banner */}
           <View style={styles.topBadgeRow}>
             <View style={styles.trophyBadge}>
-              <Trophy size={14} color="#F59E0B" />
+              <Trophy size={15} color="#F59E0B" />
               <Text style={styles.trophyBadgeText}>
                 {t('celebration.perfect_day', 'PERFECT 100% DAY!')}
               </Text>
             </View>
           </View>
 
-          {/* Speech Bubble (Duolingo Style) */}
+          {/* Floating Speech Bubble (Duolingo Style) */}
           <Animated.View
             style={[
               styles.speechBubbleWrapper,
@@ -334,8 +333,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.speechBubble,
                 {
-                  backgroundColor: isDark ? '#1E293B' : '#F1F5F9',
-                  borderColor: isDark ? '#334155' : '#CBD5E1',
+                  backgroundColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                  borderColor: isDark ? '#334155' : '#E2E8F0',
                 },
               ]}
             >
@@ -347,7 +346,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 style={[
                   styles.speechArrow,
                   {
-                    borderTopColor: isDark ? '#1E293B' : '#F1F5F9',
+                    borderTopColor: isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.98)',
                   },
                 ]}
               />
@@ -356,7 +355,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
           {/* BAMBOO TREE CLIMB & SLIDE STAGE */}
           <View style={styles.bambooStage}>
-            {/* Aura Glow */}
+            {/* Ambient Aura Glow behind Bamboo */}
             <Animated.View
               style={[
                 styles.auraCircle,
@@ -366,8 +365,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               ]}
             />
 
-            {/* Static Bamboo Trunk (Vertical Stalk) */}
-            <Svg width={220} height={200} viewBox="0 0 220 200" style={styles.bambooSvg}>
+            {/* Tall Vertical Bamboo Stalk */}
+            <Svg width={240} height={210} viewBox="0 0 240 210" style={styles.bambooSvg}>
               <Defs>
                 <LinearGradient id="bambooTrunkGrad" x1="0" y1="0" x2="1" y2="0">
                   <Stop offset="0%" stopColor="#15803D" />
@@ -382,18 +381,18 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               </Defs>
 
               {/* Main Thick Bamboo Stalk */}
-              <Rect x="120" y="0" width="22" height="200" rx="4" fill="url(#bambooTrunkGrad)" />
-              {/* Bamboo Segment Rings */}
-              <Line x1="118" y1="35" x2="144" y2="35" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="118" y1="85" x2="144" y2="85" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="118" y1="140" x2="144" y2="140" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="118" y1="190" x2="144" y2="190" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Rect x="130" y="0" width="22" height="210" rx="5" fill="url(#bambooTrunkGrad)" />
+              {/* Bamboo Segment Joint Rings */}
+              <Line x1="128" y1="35" x2="154" y2="35" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Line x1="128" y1="85" x2="154" y2="85" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Line x1="128" y1="145" x2="154" y2="145" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              <Line x1="128" y1="195" x2="154" y2="195" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
 
-              {/* Sprouting Bamboo Shoots & Leaves on top & bottom */}
-              <Path d="M 142 35 Q 170 20 185 30 Q 165 42 142 38 Z" fill="url(#leafGrad)" />
-              <Path d="M 142 37 Q 165 45 178 60 Q 155 58 142 41 Z" fill="url(#leafGrad)" />
-              <Path d="M 120 140 Q 95 125 80 135 Q 100 148 120 143 Z" fill="url(#leafGrad)" />
-              <Path d="M 142 140 Q 168 130 180 142 Q 160 152 142 143 Z" fill="url(#leafGrad)" />
+              {/* Sprouting Bamboo Shoots & Leaves on sides */}
+              <Path d="M 152 35 Q 180 20 198 30 Q 175 44 152 38 Z" fill="url(#leafGrad)" />
+              <Path d="M 152 37 Q 178 46 190 62 Q 165 60 152 41 Z" fill="url(#leafGrad)" />
+              <Path d="M 130 145 Q 100 130 82 140 Q 105 154 130 148 Z" fill="url(#leafGrad)" />
+              <Path d="M 152 145 Q 182 134 195 146 Q 172 158 152 148 Z" fill="url(#leafGrad)" />
             </Svg>
 
             {/* SLIDING PANDA (Hugging bamboo & Sliding down with waving paw) */}
@@ -419,32 +418,37 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                   },
                 ]}
               >
-                <Svg width={70} height={70} viewBox="0 0 70 70">
+                <Svg width={76} height={76} viewBox="0 0 76 76">
                   <Defs>
                     <LinearGradient id="tailGrad" x1="0" y1="0" x2="1" y2="1">
                       <Stop offset="0%" stopColor="#FB923C" />
                       <Stop offset="50%" stopColor="#EA580C" />
-                      <Stop offset="100%" stopColor="#9A3412" />
+                      <Stop offset="100%" stopColor="#C2410C" />
                     </LinearGradient>
                   </Defs>
-                  <Path d="M 50 55 C 20 60, 2 45, 8 20 C 12 5, 30 10, 42 30 Z" fill="url(#tailGrad)" />
-                  <Path d="M 8 20 C 10 8, 24 6, 28 16 C 18 20, 10 24, 8 20 Z" fill="#FEF3C7" />
-                  <Path d="M 15 28 C 22 25, 28 28, 32 35 C 26 38, 18 36, 15 28 Z" fill="#240F05" opacity={0.8} />
-                  <Path d="M 24 38 C 30 36, 36 39, 40 46 C 34 49, 28 47, 24 38 Z" fill="#240F05" opacity={0.8} />
+                  <Path d="M 54 60 C 22 66, 2 50, 8 22 C 12 6, 32 12, 46 32 Z" fill="url(#tailGrad)" />
+                  <Path d="M 8 22 C 10 10, 26 8, 30 18 C 20 22, 10 26, 8 22 Z" fill="#FFF7ED" />
+                  <Path d="M 16 30 C 24 27, 30 30, 35 38 C 28 42, 20 40, 16 30 Z" fill="#3B1A0E" opacity={0.7} />
+                  <Path d="M 26 42 C 32 40, 38 43, 43 50 C 37 54, 30 52, 26 42 Z" fill="#3B1A0E" opacity={0.7} />
                 </Svg>
               </Animated.View>
 
-              {/* Main Panda Body (Hugging Bamboo) */}
+              {/* Main Red Panda Body (Natural Reddish-Orange Fur Matching Head & Tail!) */}
               <Svg width={180} height={180} viewBox="0 0 180 180">
                 <Defs>
-                  <RadialGradient id="pandaFur" cx="45%" cy="35%" r="65%">
+                  <RadialGradient id="pandaHeadFur" cx="45%" cy="35%" r="65%">
                     <Stop offset="0%" stopColor="#FB923C" />
-                    <Stop offset="60%" stopColor="#EA580C" />
+                    <Stop offset="55%" stopColor="#EA580C" />
                     <Stop offset="100%" stopColor="#C2410C" />
                   </RadialGradient>
-                  <LinearGradient id="pandaDarkFur" x1="0" y1="0" x2="0" y2="1">
-                    <Stop offset="0%" stopColor="#3F1D0B" />
-                    <Stop offset="100%" stopColor="#1C0B03" />
+                  <LinearGradient id="pandaBodyFur" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor="#FB923C" />
+                    <Stop offset="50%" stopColor="#EA580C" />
+                    <Stop offset="100%" stopColor="#9A3412" />
+                  </LinearGradient>
+                  <LinearGradient id="chestFurGrad" x1="0" y1="0" x2="0" y2="1">
+                    <Stop offset="0%" stopColor="#FFF7ED" />
+                    <Stop offset="100%" stopColor="#FFEDD5" />
                   </LinearGradient>
                   <LinearGradient id="goldCrown" x1="0" y1="0" x2="0" y2="1">
                     <Stop offset="0%" stopColor="#FDE047" />
@@ -454,35 +458,40 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 </Defs>
 
                 {/* Back Left Leg wrapped on bamboo */}
-                <Ellipse cx="118" cy="130" rx="14" ry="10" fill="#1C0B03" transform="rotate(15, 118, 130)" />
+                <Ellipse cx="120" cy="130" rx="14" ry="10" fill="#EA580C" transform="rotate(15, 120, 130)" />
+                <Circle cx="132" cy="132" r="6.5" fill="#38180C" />
                 {/* Back Right Leg on other side of bamboo */}
-                <Ellipse cx="146" cy="126" rx="12" ry="9" fill="#1C0B03" transform="rotate(-15, 146, 126)" />
+                <Ellipse cx="148" cy="126" rx="12" ry="9" fill="#EA580C" transform="rotate(-15, 148, 126)" />
+                <Circle cx="156" cy="126" r="6" fill="#38180C" />
 
-                {/* Chubby Body */}
+                {/* Chubby Red-Panda Torso (Warm Reddish-Orange Fur matching head!) */}
                 <Path
                   d="M 68 85 C 55 115, 68 140, 98 140 C 124 140, 136 120, 130 85 C 115 80, 80 80, 68 85 Z"
-                  fill="url(#pandaDarkFur)"
+                  fill="url(#pandaBodyFur)"
                 />
 
-                {/* White Belly Patch */}
-                <Ellipse cx="94" cy="116" rx="18" ry="14" fill="#2D1307" />
+                {/* Soft Creamy Chest & Belly Patch */}
+                <Path
+                  d="M 80 92 C 80 84, 108 84, 108 92 C 112 110, 106 130, 94 130 C 82 130, 76 110, 80 92 Z"
+                  fill="url(#chestFurGrad)"
+                />
 
                 {/* Left Arm Gripping Bamboo Trunk */}
                 <Path
-                  d="M 80 88 C 95 86, 122 84, 128 92 C 128 98, 120 102, 108 102 C 92 102, 78 98, 80 88 Z"
-                  fill="#1C0B03"
+                  d="M 80 88 C 95 85, 122 83, 128 92 C 128 98, 120 102, 108 102 C 92 102, 78 98, 80 88 Z"
+                  fill="url(#pandaBodyFur)"
                 />
-                <Circle cx="128" cy="94" r="8" fill="#1C0B03" />
+                <Circle cx="128" cy="93" r="8" fill="#38180C" />
 
                 {/* Fluffy Round Ears */}
                 <G id="ears">
-                  <Path d="M 52 44 C 40 26, 52 14, 68 24 C 72 30, 68 38, 62 44 Z" fill="url(#pandaFur)" />
+                  <Path d="M 52 44 C 40 26, 52 14, 68 24 C 72 30, 68 38, 62 44 Z" fill="url(#pandaHeadFur)" />
                   <Path d="M 54 42 C 44 30, 54 22, 64 30 Z" fill="#FFFFFF" />
-                  <Path d="M 124 44 C 136 26, 124 14, 108 24 C 104 30, 108 38, 114 44 Z" fill="url(#pandaFur)" />
+                  <Path d="M 124 44 C 136 26, 124 14, 108 24 C 104 30, 108 38, 114 44 Z" fill="url(#pandaHeadFur)" />
                   <Path d="M 122 42 C 132 30, 122 22, 112 30 Z" fill="#FFFFFF" />
                 </G>
 
-                {/* Equipped Hat */}
+                {/* Equipped Hat (Rendered ONLY if user equipped one - No default crown) */}
                 {equippedHat === 'detective' && (
                   <G id="hat-detective">
                     <Path d="M 64 34 C 62 20, 74 14, 90 14 C 106 14, 118 20, 116 34 Z" fill="#78350F" />
@@ -502,7 +511,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                     <Rect x="70" y="28" width="42" height="6" rx="2" fill="#E2E8F0" />
                   </G>
                 )}
-                {(equippedHat === 'crown' || !equippedHat) && (
+                {equippedHat === 'crown' && (
                   <G id="hat-crown">
                     <Path d="M 74 28 L 78 12 L 84 20 L 88 8 L 92 20 L 98 12 L 102 28 Z" fill="url(#goldCrown)" stroke="#B45309" strokeWidth={1} />
                     <Circle cx="88" cy="15" r="2.2" fill="#EF4444" />
@@ -511,8 +520,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                   </G>
                 )}
 
-                {/* Round Head */}
-                <Circle cx="88" cy="65" r="35" fill="url(#pandaFur)" />
+                {/* Round Cute Head */}
+                <Circle cx="88" cy="65" r="35" fill="url(#pandaHeadFur)" />
 
                 {/* Soft White Cheek Fur Patches */}
                 <Ellipse cx="64" cy="69" rx="13" ry="10" fill="#FFFFFF" />
@@ -574,10 +583,10 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 ]}
               >
                 <Svg width={46} height={46} viewBox="0 0 46 46">
-                  {/* Waving Arm & Paw */}
-                  <Path d="M 12 36 C 10 24, 20 12, 32 8 C 38 12, 40 20, 32 28 C 24 34, 18 38, 12 36 Z" fill="#1C0B03" />
-                  <Circle cx="32" cy="12" r="7" fill="#1C0B03" />
-                  {/* Paw pads (pink accents) */}
+                  {/* Waving Arm & Paw in matching Reddish Fur */}
+                  <Path d="M 12 36 C 10 24, 20 12, 32 8 C 38 12, 40 20, 32 28 C 24 34, 18 38, 12 36 Z" fill="#EA580C" />
+                  <Circle cx="32" cy="12" r="7.5" fill="#38180C" />
+                  {/* Pink Paw Pads */}
                   <Circle cx="31" cy="12" r="3.2" fill="#F472B6" />
                   <Circle cx="26" cy="10" r="1.4" fill="#F472B6" />
                   <Circle cx="29" cy="6" r="1.4" fill="#F472B6" />
@@ -587,7 +596,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
             </Animated.View>
           </View>
 
-          {/* Rewards Grid */}
+          {/* Floating Rewards Grid (Glassmorphic) */}
           <Animated.View
             style={[
               styles.rewardsGrid,
@@ -609,8 +618,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.rewardCard,
                 {
-                  backgroundColor: isDark ? 'rgba(16, 185, 129, 0.12)' : '#DCFCE7',
-                  borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : '#86EFAC',
+                  backgroundColor: isDark ? 'rgba(16, 185, 129, 0.18)' : 'rgba(255, 255, 255, 0.95)',
+                  borderColor: isDark ? 'rgba(16, 185, 129, 0.4)' : '#86EFAC',
                 },
               ]}
             >
@@ -628,8 +637,8 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.rewardCard,
                 {
-                  backgroundColor: isDark ? 'rgba(245, 158, 11, 0.12)' : '#FEF3C7',
-                  borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : '#FCD34D',
+                  backgroundColor: isDark ? 'rgba(245, 158, 11, 0.18)' : 'rgba(255, 255, 255, 0.95)',
+                  borderColor: isDark ? 'rgba(245, 158, 11, 0.4)' : '#FCD34D',
                 },
               ]}
             >
@@ -643,7 +652,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
             </View>
           </Animated.View>
 
-          {/* Duolingo-style Action Dismiss Button */}
+          {/* Floating Duolingo-style Action Dismiss Button */}
           <TouchableOpacity
             style={styles.awesomeBtn}
             onPress={handleDismiss}
@@ -655,7 +664,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               end={{ x: 1, y: 1 }}
               style={styles.awesomeBtnGradient}
             >
-              <Check size={20} color="#FFFFFF" strokeWidth={3} />
+              <Check size={22} color="#FFFFFF" strokeWidth={3} />
               <Text style={styles.awesomeBtnText}>
                 {t('celebration.continue_btn', 'AWESOME!')}
               </Text>
@@ -670,100 +679,97 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(11, 17, 32, 0.82)',
-    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(5, 10, 20, 0.82)',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: Platform.OS === 'ios' ? 24 : 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
   },
-  sheetContainer: {
+  screenContentWrapper: {
     width: '100%',
-    maxWidth: 440,
-    borderRadius: 32,
-    borderWidth: 1.5,
-    paddingHorizontal: 22,
-    paddingTop: 18,
-    paddingBottom: 22,
+    maxWidth: 400,
     alignItems: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.35,
-    shadowRadius: 24,
-    elevation: 12,
+    justifyContent: 'center',
   },
   topBadgeRow: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   trophyBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
+    backgroundColor: 'rgba(245, 158, 11, 0.22)',
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 22,
     gap: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderWidth: 1.5,
+    borderColor: '#F59E0B',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 4,
   },
   trophyBadgeText: {
     color: '#F59E0B',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '900',
     letterSpacing: 0.8,
   },
   speechBubbleWrapper: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 2,
+    marginBottom: 6,
     zIndex: 20,
   },
   speechBubble: {
     position: 'relative',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 22,
     borderWidth: 1.5,
     maxWidth: '92%',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 5,
   },
   speechBubbleText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '800',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
   },
   speechArrow: {
     position: 'absolute',
-    bottom: -10,
+    bottom: -11,
     alignSelf: 'center',
     width: 0,
     height: 0,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderTopWidth: 10,
+    borderLeftWidth: 11,
+    borderRightWidth: 11,
+    borderTopWidth: 11,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
   },
   bambooStage: {
     position: 'relative',
-    width: 220,
-    height: 190,
+    width: 240,
+    height: 205,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    marginVertical: 6,
   },
   auraCircle: {
     position: 'absolute',
-    width: 170,
-    height: 170,
-    borderRadius: 85,
-    backgroundColor: 'rgba(16, 185, 129, 0.18)',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(16, 185, 129, 0.22)',
   },
   bambooSvg: {
     position: 'absolute',
@@ -781,65 +787,70 @@ const styles = StyleSheet.create({
   },
   tailLayer: {
     position: 'absolute',
-    left: 10,
-    bottom: 30,
+    left: 8,
+    bottom: 28,
     zIndex: 1,
   },
   wavingPawWrapper: {
     position: 'absolute',
-    right: 28,
-    top: 48,
+    right: 26,
+    top: 46,
     zIndex: 10,
   },
   rewardsGrid: {
     flexDirection: 'row',
-    gap: 10,
+    gap: 12,
     width: '100%',
-    marginVertical: 12,
+    marginVertical: 16,
   },
   rewardCard: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 18,
-    borderWidth: 1.2,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 1.5,
     gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 3,
   },
   rewardEmoji: {
-    fontSize: 22,
+    fontSize: 24,
   },
   rewardTitle: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '900',
   },
   rewardSub: {
-    fontSize: 10.5,
+    fontSize: 11,
     fontWeight: '700',
-    marginTop: 1,
+    marginTop: 2,
   },
   awesomeBtn: {
     width: '100%',
-    borderRadius: 20,
+    borderRadius: 22,
     overflow: 'hidden',
     shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 6,
   },
   awesomeBtnGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 15,
+    paddingVertical: 16,
     gap: 8,
   },
   awesomeBtnText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '900',
-    letterSpacing: 0.6,
+    letterSpacing: 0.8,
   },
 });
