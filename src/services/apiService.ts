@@ -1300,6 +1300,69 @@ class ApiClient {
     }
   }
 
+  async getUserPreferredLanguage(): Promise<string | null> {
+    try {
+      const res = await this.request<{ language: string }>('/users/preferences/language');
+      if (res.ok && res.data?.language) {
+        return res.data.language;
+      }
+    } catch (err) {
+      console.warn('getUserPreferredLanguage error:', err);
+    }
+    return null;
+  }
+
+  async updateUserPreferredLanguage(language: string): Promise<{ success: boolean; language?: string; error?: string }> {
+    try {
+      const res = await this.request<{ language: string }>('/users/preferences/language', {
+        method: 'PUT',
+        body: JSON.stringify({ language }),
+      });
+      if (res.ok) {
+        return { success: true, language: res.data?.language || language };
+      }
+      return { success: false, error: res.error };
+    } catch (err: any) {
+      return { success: false, error: err?.message };
+    }
+  }
+
+  async getNotificationPreferences(): Promise<any | null> {
+    try {
+      const res = await this.request<any>('/notifications/preferences');
+      if (res.ok && res.data) {
+        return res.data.preferences || res.data;
+      }
+    } catch (err) {
+      console.warn('getNotificationPreferences error:', err);
+    }
+    return null;
+  }
+
+  async updateNotificationPreferences(prefs: {
+    pushEnabled?: boolean;
+    morningEnabled?: boolean;
+    afternoonEnabled?: boolean;
+    eveningEnabled?: boolean;
+    morningTime?: string;
+    afternoonTime?: string;
+    eveningTime?: string;
+    timezone?: string;
+  }): Promise<{ success: boolean; preferences?: any; error?: string }> {
+    try {
+      const res = await this.request<any>('/notifications/preferences', {
+        method: 'PUT',
+        body: JSON.stringify(prefs),
+      });
+      if (res.ok) {
+        return { success: true, preferences: res.data?.preferences || res.data };
+      }
+      return { success: false, error: res.error };
+    } catch (err: any) {
+      return { success: false, error: err?.message };
+    }
+  }
+
   // --- LOCAL STORAGE CACHE HELPERS ---
 
   getHabits(targetUserId?: string, email?: string): Habit[] {

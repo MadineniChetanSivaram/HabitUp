@@ -1077,6 +1077,10 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (e) {
       console.warn('Failed to persist language setting:', e);
     }
+    // Sync language preference with Railway backend for multilingual push notifications
+    if (localApi.hasAuthToken()) {
+      localApi.updateUserPreferredLanguage(newLang).catch(() => {});
+    }
   }, []);
 
   const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>) => {
@@ -2319,12 +2323,15 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Deliver any queued nudges targeting this newly logged-in account
     checkAndDeliverPendingNudges(targetUser);
 
-    // Immediately sync incoming follow requests and backend friends for this target user
+    // Immediately sync incoming follow requests, backend friends, push token and language preference for this target user
     syncFollowRequests(targetUser);
     syncFriendsWithBackend(targetUser);
     syncExperimentState().catch(() => {});
     registerPushToken().catch(() => {});
-  }, [checkAndDeliverPendingNudges, syncFollowRequests, syncFriendsWithBackend, syncExperimentState, registerPushToken]);
+    if (language) {
+      localApi.updateUserPreferredLanguage(language).catch(() => {});
+    }
+  }, [checkAndDeliverPendingNudges, syncFollowRequests, syncFriendsWithBackend, syncExperimentState, registerPushToken, language]);
 
   const login = useCallback(
     async (identifier: string, password?: string): Promise<{ success: boolean; error?: string }> => {
