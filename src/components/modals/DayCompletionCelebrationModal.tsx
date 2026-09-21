@@ -433,7 +433,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 </Svg>
               </Animated.View>
 
-              {/* Main Red Panda Body (Natural Reddish-Orange Fur Matching Head & Tail!) */}
+              {/* Main Red Panda Body (Turned Right, Showing Left Body & Clinging to Bamboo) */}
               <Svg width={180} height={180} viewBox="0 0 180 180">
                 <Defs>
                   <RadialGradient id="pandaHeadFur" cx="45%" cy="35%" r="65%">
@@ -441,12 +441,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                     <Stop offset="55%" stopColor="#EA580C" />
                     <Stop offset="100%" stopColor="#C2410C" />
                   </RadialGradient>
-                  <LinearGradient id="pandaBodyFur" x1="0" y1="0" x2="0" y2="1">
+                  <LinearGradient id="pandaBodyFur" x1="0" y1="0" x2="1" y2="1">
                     <Stop offset="0%" stopColor="#FB923C" />
-                    <Stop offset="50%" stopColor="#EA580C" />
+                    <Stop offset="45%" stopColor="#EA580C" />
                     <Stop offset="100%" stopColor="#9A3412" />
                   </LinearGradient>
-                  <LinearGradient id="chestFurGrad" x1="0" y1="0" x2="0" y2="1">
+                  <LinearGradient id="chestFurGrad" x1="0" y1="0" x2="1" y2="0">
                     <Stop offset="0%" stopColor="#FFF7ED" />
                     <Stop offset="100%" stopColor="#FFEDD5" />
                   </LinearGradient>
@@ -457,133 +457,159 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                   </LinearGradient>
                 </Defs>
 
-                {/* Back Left Leg wrapped on bamboo */}
-                <Ellipse cx="120" cy="130" rx="14" ry="10" fill="#EA580C" transform="rotate(15, 120, 130)" />
-                <Circle cx="132" cy="132" r="6.5" fill="#38180C" />
-                {/* Back Right Leg on other side of bamboo */}
-                <Ellipse cx="148" cy="126" rx="12" ry="9" fill="#EA580C" transform="rotate(-15, 148, 126)" />
-                <Circle cx="156" cy="126" r="6" fill="#38180C" />
+                {/* 1. FAR HIND LEG (Right Leg - Wrapping around right side of bamboo) */}
+                <G id="far-hind-leg">
+                  <Path
+                    d="M 94 122 C 104 122, 115 120, 122 125 C 126 128, 125 134, 119 136 C 111 136, 101 133, 94 129 Z"
+                    fill="#9A3412"
+                  />
+                  <Circle cx="121" cy="129" r="5.5" fill="#38180C" />
+                  <Circle cx="121" cy="129" r="2.3" fill="#F472B6" />
+                </G>
 
-                {/* Chubby Red-Panda Torso (Warm Reddish-Orange Fur matching head!) */}
+                {/* 2. FAR FRONT ARM (Right Arm - Gripping around right side of bamboo) */}
+                <G id="far-front-arm">
+                  <Path
+                    d="M 80 77 C 94 73, 112 73, 122 77 C 126 79, 125 85, 119 87 C 109 87, 95 85, 80 82 Z"
+                    fill="#EA580C"
+                  />
+                  <Circle cx="121" cy="81" r="5.8" fill="#38180C" />
+                  <Circle cx="120.5" cy="81" r="2.4" fill="#F472B6" />
+                </G>
+
+                {/* 3. CHUBBY RED-PANDA TORSO (Turned right, showing Left Body Profile & Flank) */}
                 <Path
-                  d="M 68 85 C 55 115, 68 140, 98 140 C 124 140, 136 120, 130 85 C 115 80, 80 80, 68 85 Z"
+                  d="M 54 76 C 42 92, 44 120, 56 134 C 72 140, 92 138, 102 131 C 108 115, 106 92, 95 78 C 82 72, 66 72, 54 76 Z"
                   fill="url(#pandaBodyFur)"
                 />
 
-                {/* Soft Creamy Chest & Belly Patch */}
+                {/* Soft Creamy Chest & Belly Patch (Facing right against bamboo) */}
                 <Path
-                  d="M 80 92 C 80 84, 108 84, 108 92 C 112 110, 106 130, 94 130 C 82 130, 76 110, 80 92 Z"
+                  d="M 76 80 C 68 98, 70 124, 82 133 C 94 135, 101 129, 103 119 C 105 101, 99 84, 89 80 C 83 78, 78 78, 76 80 Z"
                   fill="url(#chestFurGrad)"
                 />
 
-                {/* Left Arm Gripping Bamboo Trunk */}
-                <Path
-                  d="M 80 88 C 95 85, 122 83, 128 92 C 128 98, 120 102, 108 102 C 92 102, 78 98, 80 88 Z"
-                  fill="url(#pandaBodyFur)"
-                />
-                <Circle cx="128" cy="93" r="8" fill="#38180C" />
+                {/* 4. NEAR HIND LEG (Left Leg - Bent naturally & firmly gripping front of bamboo) */}
+                <G id="near-hind-leg">
+                  <Path
+                    d="M 54 120 C 52 131, 62 139, 78 139 C 91 139, 101 135, 104 129 C 102 123, 86 121, 72 119 C 62 117, 56 117, 54 120 Z"
+                    fill="url(#pandaBodyFur)"
+                  />
+                  {/* Espresso Paw & Pink Pads on Bamboo */}
+                  <Ellipse cx="101" cy="129" rx="6.5" ry="5.5" fill="#38180C" transform="rotate(-10, 101, 129)" />
+                  <Ellipse cx="101" cy="129" rx="3.2" ry="2.2" fill="#F472B6" />
+                  <Circle cx="97" cy="125.5" r="1.1" fill="#F472B6" />
+                  <Circle cx="101" cy="123.5" r="1.1" fill="#F472B6" />
+                  <Circle cx="105" cy="125.5" r="1.1" fill="#F472B6" />
+                </G>
 
-                {/* Fluffy Round Ears */}
+                {/* Fluffy Round Ears (3/4 Right Perspective) */}
                 <G id="ears">
-                  <Path d="M 52 44 C 40 26, 52 14, 68 24 C 72 30, 68 38, 62 44 Z" fill="url(#pandaHeadFur)" />
-                  <Path d="M 54 42 C 44 30, 54 22, 64 30 Z" fill="#FFFFFF" />
-                  <Path d="M 124 44 C 136 26, 124 14, 108 24 C 104 30, 108 38, 114 44 Z" fill="url(#pandaHeadFur)" />
-                  <Path d="M 122 42 C 132 30, 122 22, 112 30 Z" fill="#FFFFFF" />
+                  {/* Left Ear (Near/Closer) */}
+                  <Path d="M 46 36 C 34 20, 48 8, 62 18 C 66 24, 62 32, 56 38 Z" fill="url(#pandaHeadFur)" />
+                  <Path d="M 48 34 C 38 22, 48 14, 58 22 Z" fill="#FFFFFF" />
+
+                  {/* Right Ear (Far/Receding) */}
+                  <Path d="M 98 34 C 108 18, 96 8, 84 18 C 80 24, 84 32, 90 38 Z" fill="url(#pandaHeadFur)" />
+                  <Path d="M 96 32 C 104 22, 94 14, 86 22 Z" fill="#FFFFFF" />
                 </G>
 
                 {/* Equipped Hat (Rendered ONLY if user equipped one - No default crown) */}
                 {equippedHat === 'detective' && (
                   <G id="hat-detective">
-                    <Path d="M 64 34 C 62 20, 74 14, 90 14 C 106 14, 118 20, 116 34 Z" fill="#78350F" />
-                    <Path d="M 56 34 Q 90 42 124 34 Q 90 30 56 34 Z" fill="#451A03" />
+                    <Path d="M 54 28 C 52 14, 64 8, 80 8 C 96 8, 106 14, 104 28 Z" fill="#78350F" />
+                    <Path d="M 46 28 Q 78 36 110 28 Q 78 24 46 28 Z" fill="#451A03" />
                   </G>
                 )}
                 {equippedHat === 'wizard' && (
                   <G id="hat-wizard">
-                    <Path d="M 66 34 C 76 20, 82 4, 92 2 C 98 8, 102 20, 114 34 Z" fill="#312E81" stroke="#4338CA" strokeWidth={1} />
-                    <Ellipse cx="90" cy="34" rx="26" ry="6" fill="#1E1B4B" />
-                    <Path d="M 86 18 L 87.5 21 L 91 21.5 L 88.5 24 L 89 27 L 86 25.5 L 83 27 L 83.5 24 L 81 21.5 L 84.5 21 Z" fill="#FDE047" />
+                    <Path d="M 56 28 C 66 14, 72 2, 80 0 C 86 6, 90 16, 102 28 Z" fill="#312E81" stroke="#4338CA" strokeWidth={1} />
+                    <Ellipse cx="78" cy="28" rx="24" ry="5.5" fill="#1E1B4B" />
+                    <Path d="M 74 14 L 75.5 17 L 79 17.5 L 76.5 20 L 77 23 L 74 21.5 L 71 23 L 71.5 20 L 69 17.5 L 72.5 17 Z" fill="#FDE047" />
                   </G>
                 )}
                 {equippedHat === 'chef' && (
                   <G id="hat-chef">
-                    <Path d="M 70 30 C 64 18, 74 8, 82 10 C 86 4, 98 4, 102 10 C 110 8, 118 18, 112 30 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth={1.2} />
-                    <Rect x="70" y="28" width="42" height="6" rx="2" fill="#E2E8F0" />
+                    <Path d="M 60 24 C 54 12, 64 2, 72 4 C 76 -2, 88 -2, 92 4 C 100 2, 108 12, 102 24 Z" fill="#F8FAFC" stroke="#CBD5E1" strokeWidth={1.2} />
+                    <Rect x="60" y="22" width="38" height="6" rx="2" fill="#E2E8F0" />
                   </G>
                 )}
                 {equippedHat === 'crown' && (
                   <G id="hat-crown">
-                    <Path d="M 74 28 L 78 12 L 84 20 L 88 8 L 92 20 L 98 12 L 102 28 Z" fill="url(#goldCrown)" stroke="#B45309" strokeWidth={1} />
-                    <Circle cx="88" cy="15" r="2.2" fill="#EF4444" />
-                    <Circle cx="79" cy="19" r="1.6" fill="#3B82F6" />
-                    <Circle cx="97" cy="19" r="1.6" fill="#10B981" />
+                    <Path d="M 64 24 L 68 8 L 74 16 L 78 4 L 82 16 L 88 8 L 92 24 Z" fill="url(#goldCrown)" stroke="#B45309" strokeWidth={1} />
+                    <Circle cx="78" cy="11" r="2" fill="#EF4444" />
+                    <Circle cx="69" cy="15" r="1.5" fill="#3B82F6" />
+                    <Circle cx="87" cy="15" r="1.5" fill="#10B981" />
                   </G>
                 )}
 
-                {/* Round Cute Head */}
-                <Circle cx="88" cy="65" r="35" fill="url(#pandaHeadFur)" />
+                {/* Round Cute Head (3/4 Angle) */}
+                <Circle cx="76" cy="56" r="32" fill="url(#pandaHeadFur)" />
 
                 {/* Soft White Cheek Fur Patches */}
-                <Ellipse cx="64" cy="69" rx="13" ry="10" fill="#FFFFFF" />
-                <Ellipse cx="112" cy="69" rx="13" ry="10" fill="#FFFFFF" />
-                <Ellipse cx="72" cy="46" rx="4.5" ry="6.5" fill="#FFFFFF" transform="rotate(-15, 72, 46)" />
-                <Ellipse cx="104" cy="46" rx="4.5" ry="6.5" fill="#FFFFFF" transform="rotate(15, 104, 46)" />
+                <Ellipse cx="54" cy="62" rx="11" ry="8.5" fill="#FFFFFF" />
+                <Ellipse cx="96" cy="60" rx="10" ry="8" fill="#FFFFFF" />
+                <Ellipse cx="62" cy="42" rx="3.8" ry="5.5" fill="#FFFFFF" transform="rotate(-15, 62, 42)" />
+                <Ellipse cx="88" cy="40" rx="3.5" ry="5" fill="#FFFFFF" transform="rotate(15, 88, 40)" />
 
                 {/* Tear Stripes */}
-                <Path d="M 70 63 C 68 69, 67 77, 63 80" stroke="#9A3412" strokeWidth={2.8} strokeLinecap="round" fill="none" />
-                <Path d="M 106 63 C 108 69, 109 77, 113 80" stroke="#9A3412" strokeWidth={2.8} strokeLinecap="round" fill="none" />
+                <Path d="M 60 56 C 58 62, 57 69, 53 72" stroke="#9A3412" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+                <Path d="M 92 55 C 94 61, 95 68, 98 71" stroke="#9A3412" strokeWidth={2.6} strokeLinecap="round" fill="none" />
 
                 {/* Big Shiny Anime / Duolingo Eyes */}
-                <Circle cx="74" cy="60" r="6.2" fill="#1E1B4B" />
-                <Circle cx="76.5" cy="57.5" r="2.4" fill="#FFFFFF" />
-                <Circle cx="73" cy="62" r="1.1" fill="#FFFFFF" />
+                {/* Left Eye (Near) */}
+                <Circle cx="66" cy="53" r="5.8" fill="#1E1B4B" />
+                <Circle cx="68.2" cy="50.8" r="2.2" fill="#FFFFFF" />
+                <Circle cx="65" cy="55" r="1.0" fill="#FFFFFF" />
 
-                <Circle cx="102" cy="60" r="6.2" fill="#1E1B4B" />
-                <Circle cx="104.5" cy="57.5" r="2.4" fill="#FFFFFF" />
-                <Circle cx="101" cy="62" r="1.1" fill="#FFFFFF" />
+                {/* Right Eye (Far) */}
+                <Circle cx="88" cy="52" r="5.4" fill="#1E1B4B" />
+                <Circle cx="90.2" cy="49.8" r="2.0" fill="#FFFFFF" />
+                <Circle cx="87" cy="54" r="0.9" fill="#FFFFFF" />
 
                 {/* Equipped Glasses */}
                 {equippedGlasses === 'shades' && (
                   <G id="glasses-shades">
-                    <Path d="M 62 56 Q 74 54 85 58 L 84 66 Q 73 68 63 64 Z" fill="#090D16" />
-                    <Path d="M 91 58 Q 102 54 114 56 L 113 64 Q 103 68 92 66 Z" fill="#090D16" />
-                    <Line x1="84" y1="58" x2="92" y2="58" stroke="#090D16" strokeWidth={2.5} />
+                    <Path d="M 54 50 Q 66 48 76 52 L 75 59 Q 65 61 55 57 Z" fill="#090D16" />
+                    <Path d="M 80 52 Q 91 48 100 50 L 99 57 Q 90 61 81 59 Z" fill="#090D16" />
+                    <Line x1="75" y1="52" x2="81" y2="52" stroke="#090D16" strokeWidth={2.5} />
                   </G>
                 )}
                 {equippedGlasses === 'nerd' && (
                   <G id="glasses-nerd">
-                    <Circle cx="74" cy="60" r="8" stroke="#000000" strokeWidth={2} fill="none" />
-                    <Circle cx="102" cy="60" r="8" stroke="#000000" strokeWidth={2} fill="none" />
-                    <Line x1="82" y1="60" x2="94" y2="60" stroke="#000000" strokeWidth={2.2} />
+                    <Circle cx="66" cy="53" r="7.5" stroke="#000000" strokeWidth={2} fill="none" />
+                    <Circle cx="88" cy="52" r="7.2" stroke="#000000" strokeWidth={2} fill="none" />
+                    <Line x1="73.5" y1="53" x2="81" y2="52.5" stroke="#000000" strokeWidth={2.2} />
                   </G>
                 )}
 
-                {/* Snout */}
-                <Ellipse cx="88" cy="70" rx="12" ry="8" fill="#FFFFFF" />
-                <Path d="M 85 67 C 85 65, 91 65, 91 67 C 91 69, 88 71, 88 71 C 88 71, 85 69, 85 67 Z" fill="#1F2937" />
+                {/* Snout & Nose */}
+                <Ellipse cx="78" cy="64" rx="11" ry="7.5" fill="#FFFFFF" />
+                <Path d="M 75 61 C 75 59, 81 59, 81 61 C 81 63, 78 65, 78 65 C 78 65, 75 63, 75 61 Z" fill="#1F2937" />
+                <Circle cx="76.8" cy="60.5" r="0.6" fill="#FFFFFF" />
 
                 {/* Happy Big Smile */}
-                <Path d="M 82 72 Q 88 78 94 72" stroke="#991B1B" strokeWidth={2.6} fill="#EF4444" strokeLinecap="round" />
+                <Path d="M 73 66 Q 78 72 83 66" stroke="#991B1B" strokeWidth={2.4} fill="#EF4444" strokeLinecap="round" />
 
                 {/* Whiskers */}
-                <Line x1="52" y1="69" x2="38" y2="67" stroke="#FFFFFF" strokeWidth={1.4} strokeLinecap="round" opacity={0.85} />
-                <Line x1="52" y1="73" x2="39" y2="76" stroke="#FFFFFF" strokeWidth={1.4} strokeLinecap="round" opacity={0.85} />
-                <Line x1="124" y1="69" x2="138" y2="67" stroke="#FFFFFF" strokeWidth={1.4} strokeLinecap="round" opacity={0.85} />
-                <Line x1="124" y1="73" x2="137" y2="76" stroke="#FFFFFF" strokeWidth={1.4} strokeLinecap="round" opacity={0.85} />
+                <Line x1="46" y1="62" x2="32" y2="60" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
+                <Line x1="46" y1="66" x2="33" y2="69" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
+                <Line x1="104" y1="60" x2="116" y2="58" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
+                <Line x1="104" y1="64" x2="115" y2="67" stroke="#FFFFFF" strokeWidth={1.3} strokeLinecap="round" opacity={0.85} />
               </Svg>
 
-              {/* SEPARATE ANIMATED WAVING RIGHT PAW ("Hi! 👋") */}
+              {/* SEPARATE ANIMATED WAVING LEFT FRONT PAW ("Hi! 👋") */}
               <Animated.View
                 style={[
                   styles.wavingPawWrapper,
                   {
                     transform: [{ rotate: waveRotation }],
-                    transformOrigin: '20% 80%' as any,
+                    transformOrigin: '25% 75%' as any,
                   },
                 ]}
               >
                 <Svg width={46} height={46} viewBox="0 0 46 46">
-                  {/* Waving Arm & Paw in matching Reddish Fur */}
+                  {/* Waving Near Left Arm & Paw */}
                   <Path d="M 12 36 C 10 24, 20 12, 32 8 C 38 12, 40 20, 32 28 C 24 34, 18 38, 12 36 Z" fill="#EA580C" />
                   <Circle cx="32" cy="12" r="7.5" fill="#38180C" />
                   {/* Pink Paw Pads */}
@@ -787,14 +813,14 @@ const styles = StyleSheet.create({
   },
   tailLayer: {
     position: 'absolute',
-    left: 8,
-    bottom: 28,
+    left: 2,
+    bottom: 24,
     zIndex: 1,
   },
   wavingPawWrapper: {
     position: 'absolute',
-    right: 26,
-    top: 46,
+    left: 42,
+    top: 38,
     zIndex: 10,
   },
   rewardsGrid: {
