@@ -254,8 +254,6 @@ export const DayCompletionCelebrationModal: React.FC = () => {
           style={[
             styles.sheetContainer,
             {
-              backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-              borderColor: isDark ? '#1E293B' : '#E2E8F0',
               transform: [{ translateY: sheetSlideAnim }, { scale: sheetScaleAnim }],
             },
           ]}
@@ -287,27 +285,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               },
             ]}
           >
-            <View
-              style={[
-                styles.speechBubble,
-                {
-                  backgroundColor: isDark ? '#1E293B' : '#F1F5F9',
-                  borderColor: isDark ? '#334155' : '#CBD5E1',
-                },
-              ]}
-            >
-              <Text style={[styles.speechBubbleText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
+            <View style={styles.speechBubble}>
+              <Text style={styles.speechBubbleText}>
                 {CELEBRATION_MESSAGES[messageIndex]}
               </Text>
               {/* Pointer arrow pointing down to Panda */}
-              <View
-                style={[
-                  styles.speechArrow,
-                  {
-                    borderTopColor: isDark ? '#1E293B' : '#F1F5F9',
-                  },
-                ]}
-              />
+              <View style={styles.speechArrow} />
             </View>
           </Animated.View>
 
@@ -316,7 +299,7 @@ export const DayCompletionCelebrationModal: React.FC = () => {
             style={[
               styles.bambooStage,
               {
-                borderColor: isDark ? 'rgba(16, 185, 129, 0.35)' : 'rgba(5, 150, 105, 0.45)',
+                borderColor: isDark ? 'rgba(16, 185, 129, 0.45)' : 'rgba(5, 150, 105, 0.45)',
                 backgroundColor: isDark ? '#022C22' : '#064E3B',
               },
             ]}
@@ -904,16 +887,16 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.rewardCard,
                 {
-                  backgroundColor: isDark ? 'rgba(16, 185, 129, 0.12)' : '#DCFCE7',
-                  borderColor: isDark ? 'rgba(16, 185, 129, 0.3)' : '#86EFAC',
+                  backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                  borderColor: 'rgba(52, 211, 153, 0.45)',
                 },
               ]}
             >
               <Text style={styles.rewardEmoji}>🎋</Text>
               <View>
-                <Text style={[styles.rewardTitle, { color: '#10B981' }]}>+15 Bamboo</Text>
-                <Text style={[styles.rewardSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Coins Added
+                <Text style={[styles.rewardTitle, { color: '#4ADE80' }]}>+15 Bamboo</Text>
+                <Text style={[styles.rewardSub, { color: '#D1FAE5' }]}>
+                  {t('celebration.coins_added', 'Coins Added')}
                 </Text>
               </View>
             </View>
@@ -923,16 +906,16 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               style={[
                 styles.rewardCard,
                 {
-                  backgroundColor: isDark ? 'rgba(245, 158, 11, 0.12)' : '#FEF3C7',
-                  borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : '#FCD34D',
+                  backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                  borderColor: 'rgba(251, 191, 36, 0.45)',
                 },
               ]}
             >
-              <Flame size={22} color="#F59E0B" />
+              <Flame size={22} color="#FBBF24" />
               <View>
-                <Text style={[styles.rewardTitle, { color: '#F59E0B' }]}>{streakDays}d Streak</Text>
-                <Text style={[styles.rewardSub, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  Active & On Fire!
+                <Text style={[styles.rewardTitle, { color: '#FBBF24' }]}>{streakDays}d Streak</Text>
+                <Text style={[styles.rewardSub, { color: '#FEF3C7' }]}>
+                  {t('celebration.streak_active', 'Active & On Fire!')}
                 </Text>
               </View>
             </View>
@@ -965,85 +948,83 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(11, 17, 32, 0.82)',
-    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(11, 17, 32, 0.85)',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: Platform.OS === 'ios' ? 24 : 16,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
   sheetContainer: {
     width: '100%',
-    maxWidth: 440,
-    borderRadius: 32,
-    borderWidth: 1.5,
-    paddingHorizontal: 22,
-    paddingTop: 18,
-    paddingBottom: 22,
+    maxWidth: 380,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
     alignItems: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.35,
-    shadowRadius: 24,
-    elevation: 12,
   },
   topBadgeRow: {
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   trophyBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    backgroundColor: 'rgba(245, 158, 11, 0.18)',
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
     gap: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(245, 158, 11, 0.45)',
   },
   trophyBadgeText: {
-    color: '#F59E0B',
-    fontSize: 11,
+    color: '#FBBF24',
+    fontSize: 12,
     fontWeight: '900',
     letterSpacing: 0.8,
   },
   speechBubbleWrapper: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 2,
+    marginBottom: 6,
     zIndex: 20,
   },
   speechBubble: {
     position: 'relative',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 13,
+    borderRadius: 22,
     borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: '#FFFFFF',
     maxWidth: '92%',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 5,
   },
   speechBubbleText: {
-    fontSize: 14,
+    fontSize: 14.5,
     fontWeight: '800',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 21,
+    color: '#0F172A',
   },
   speechArrow: {
     position: 'absolute',
-    bottom: -10,
+    bottom: -9,
     alignSelf: 'center',
     width: 0,
     height: 0,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderTopWidth: 10,
+    borderLeftWidth: 9,
+    borderRightWidth: 9,
+    borderTopWidth: 9,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
+    borderTopColor: '#FFFFFF',
   },
   bambooStage: {
     position: 'relative',
@@ -1052,10 +1033,16 @@ const styles = StyleSheet.create({
     height: 215,
     borderRadius: 24,
     borderWidth: 1.5,
+    borderColor: 'rgba(16, 185, 129, 0.45)',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    marginVertical: 4,
+    marginVertical: 8,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
+    elevation: 8,
   },
   bambooSvg: {
     position: 'absolute',
@@ -1085,14 +1072,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     width: '100%',
-    marginVertical: 12,
+    maxWidth: 360,
+    marginVertical: 10,
   },
   rewardCard: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingVertical: 11,
     borderRadius: 18,
     borderWidth: 1.2,
     gap: 10,
@@ -1101,16 +1089,17 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   rewardTitle: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: '900',
   },
   rewardSub: {
-    fontSize: 10.5,
+    fontSize: 11,
     fontWeight: '700',
     marginTop: 1,
   },
   awesomeBtn: {
     width: '100%',
+    maxWidth: 360,
     borderRadius: 20,
     overflow: 'hidden',
     shadowColor: '#10B981',
@@ -1118,6 +1107,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 5,
+    marginTop: 4,
   },
   awesomeBtnGradient: {
     flexDirection: 'row',
