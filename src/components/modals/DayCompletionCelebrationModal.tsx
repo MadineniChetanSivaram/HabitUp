@@ -354,9 +354,17 @@ export const DayCompletionCelebrationModal: React.FC = () => {
             </View>
           </Animated.View>
 
-          {/* BAMBOO TREE CLIMB & SLIDE STAGE */}
-          <View style={styles.bambooStage}>
-            {/* Aura Glow */}
+          {/* BAMBOO FOREST & STOOL CELEBRATION STAGE */}
+          <View
+            style={[
+              styles.bambooStage,
+              {
+                borderColor: isDark ? 'rgba(16, 185, 129, 0.25)' : 'rgba(167, 243, 208, 0.6)',
+                backgroundColor: isDark ? 'rgba(6, 78, 59, 0.2)' : 'rgba(236, 253, 245, 0.6)',
+              },
+            ]}
+          >
+            {/* Aura Forest Glow */}
             <Animated.View
               style={[
                 styles.auraCircle,
@@ -366,37 +374,212 @@ export const DayCompletionCelebrationModal: React.FC = () => {
               ]}
             />
 
-            {/* Static Bamboo Trunk (Vertical Stalk) */}
-            <Svg width={220} height={200} viewBox="0 0 220 200" style={styles.bambooSvg}>
+            {/* Lush Bamboo Forest Environment + Crafted Bamboo Stool */}
+            <Svg width="100%" height={215} viewBox="0 0 320 215" style={styles.bambooSvg}>
               <Defs>
-                <LinearGradient id="bambooTrunkGrad" x1="0" y1="0" x2="1" y2="0">
+                {/* Forest Atmosphere Gradient */}
+                <LinearGradient id="forestAtmosphere" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%" stopColor={isDark ? '#064E3B' : '#DCFCE7'} stopOpacity={0.45} />
+                  <Stop offset="60%" stopColor={isDark ? '#022C22' : '#F0FDF4'} stopOpacity={0.7} />
+                  <Stop offset="100%" stopColor={isDark ? '#064E3B' : '#BBF7D0'} stopOpacity={0.9} />
+                </LinearGradient>
+
+                {/* Distant Bamboo Trunk Gradient */}
+                <LinearGradient id="deepBambooGrad" x1="0" y1="0" x2="1" y2="0">
+                  <Stop offset="0%" stopColor="#047857" />
+                  <Stop offset="50%" stopColor="#059669" />
+                  <Stop offset="100%" stopColor="#065F46" />
+                </LinearGradient>
+
+                {/* Mid-ground Bamboo Stalk Gradient */}
+                <LinearGradient id="midBambooGrad" x1="0" y1="0" x2="1" y2="0">
                   <Stop offset="0%" stopColor="#15803D" />
-                  <Stop offset="25%" stopColor="#22C55E" />
-                  <Stop offset="75%" stopColor="#4ADE80" />
+                  <Stop offset="40%" stopColor="#22C55E" />
                   <Stop offset="100%" stopColor="#166534" />
                 </LinearGradient>
-                <LinearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+
+                {/* Main Slide Bamboo Trunk Gradient */}
+                <LinearGradient id="slideBambooGrad" x1="0" y1="0" x2="1" y2="0">
+                  <Stop offset="0%" stopColor="#166534" />
+                  <Stop offset="30%" stopColor="#22C55E" />
+                  <Stop offset="70%" stopColor="#4ADE80" />
+                  <Stop offset="100%" stopColor="#15803D" />
+                </LinearGradient>
+
+                {/* Leaf Foliage Gradient */}
+                <LinearGradient id="forestLeafGrad" x1="0" y1="0" x2="1" y2="1">
                   <Stop offset="0%" stopColor="#86EFAC" />
                   <Stop offset="100%" stopColor="#16A34A" />
                 </LinearGradient>
+
+                {/* Distant Foliage Gradient */}
+                <LinearGradient id="distantLeafGrad" x1="0" y1="0" x2="1" y2="1">
+                  <Stop offset="0%" stopColor="#6EE7B7" />
+                  <Stop offset="100%" stopColor="#047857" />
+                </LinearGradient>
+
+                {/* Forest Moss Ground Gradient */}
+                <LinearGradient id="mossGroundGrad" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%" stopColor="#16A34A" />
+                  <Stop offset="35%" stopColor="#15803D" />
+                  <Stop offset="100%" stopColor="#14532D" />
+                </LinearGradient>
+
+                {/* Bamboo Stool Timber Log Gradient */}
+                <LinearGradient id="bambooStoolLogGrad" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0%" stopColor="#FDE68A" />
+                  <Stop offset="40%" stopColor="#F59E0B" />
+                  <Stop offset="80%" stopColor="#D97706" />
+                  <Stop offset="100%" stopColor="#92400E" />
+                </LinearGradient>
+
+                {/* Bamboo Stool Green Tone Gradient for Legs */}
+                <LinearGradient id="bambooStoolFreshGrad" x1="0" y1="0" x2="1" y2="0">
+                  <Stop offset="0%" stopColor="#4D7C0F" />
+                  <Stop offset="40%" stopColor="#84CC16" />
+                  <Stop offset="80%" stopColor="#65A30D" />
+                  <Stop offset="100%" stopColor="#3F6212" />
+                </LinearGradient>
+
+                {/* Log End Cap Radial Gradient */}
+                <RadialGradient id="logCapGrad" cx="50%" cy="50%" r="50%">
+                  <Stop offset="0%" stopColor="#FEF3C7" />
+                  <Stop offset="70%" stopColor="#F59E0B" />
+                  <Stop offset="100%" stopColor="#B45309" />
+                </RadialGradient>
               </Defs>
 
-              {/* Main Thick Bamboo Stalk */}
-              <Rect x="120" y="0" width="22" height="200" rx="4" fill="url(#bambooTrunkGrad)" />
-              {/* Bamboo Segment Rings */}
-              <Line x1="118" y1="35" x2="144" y2="35" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="118" y1="85" x2="144" y2="85" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="118" y1="140" x2="144" y2="140" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
-              <Line x1="118" y1="190" x2="144" y2="190" stroke="#14532D" strokeWidth={3.5} strokeLinecap="round" />
+              {/* 1. Atmospheric Forest Background Tint */}
+              <Rect x="0" y="0" width="320" height="215" rx="24" fill="url(#forestAtmosphere)" />
 
-              {/* Sprouting Bamboo Shoots & Leaves on top & bottom */}
-              <Path d="M 142 35 Q 170 20 185 30 Q 165 42 142 38 Z" fill="url(#leafGrad)" />
-              <Path d="M 142 37 Q 165 45 178 60 Q 155 58 142 41 Z" fill="url(#leafGrad)" />
-              <Path d="M 120 140 Q 95 125 80 135 Q 100 148 120 143 Z" fill="url(#leafGrad)" />
-              <Path d="M 142 140 Q 168 130 180 142 Q 160 152 142 143 Z" fill="url(#leafGrad)" />
+              {/* 2. Distant Forest Bamboo Grove */}
+              {/* Stalk 1 (Far Left) */}
+              <Rect x="20" y="0" width="9" height="185" rx="2" fill="url(#deepBambooGrad)" opacity={0.45} />
+              <Line x1="19" y1="35" x2="30" y2="35" stroke="#065F46" strokeWidth={2} opacity={0.45} />
+              <Line x1="19" y1="80" x2="30" y2="80" stroke="#065F46" strokeWidth={2} opacity={0.45} />
+              <Line x1="19" y1="130" x2="30" y2="130" stroke="#065F46" strokeWidth={2} opacity={0.45} />
+              <Path d="M 28 35 Q 50 20 60 28 Q 45 38 28 36 Z" fill="url(#distantLeafGrad)" opacity={0.5} />
+              <Path d="M 28 37 Q 48 45 55 60 Q 38 55 28 40 Z" fill="url(#distantLeafGrad)" opacity={0.5} />
+
+              {/* Stalk 2 (Mid-Left Background) */}
+              <Rect x="58" y="0" width="12" height="185" rx="2.5" fill="url(#midBambooGrad)" opacity={0.65} />
+              <Line x1="57" y1="45" x2="71" y2="45" stroke="#14532D" strokeWidth={2.2} opacity={0.65} />
+              <Line x1="57" y1="95" x2="71" y2="95" stroke="#14532D" strokeWidth={2.2} opacity={0.65} />
+              <Line x1="57" y1="145" x2="71" y2="145" stroke="#14532D" strokeWidth={2.2} opacity={0.65} />
+              <Path d="M 58 45 Q 35 30 22 38 Q 40 48 58 46 Z" fill="url(#forestLeafGrad)" opacity={0.7} />
+              <Path d="M 70 95 Q 95 82 108 92 Q 90 102 70 97 Z" fill="url(#forestLeafGrad)" opacity={0.7} />
+
+              {/* Stalk 3 (Far Right Background) */}
+              <Rect x="290" y="0" width="8" height="185" rx="2" fill="url(#deepBambooGrad)" opacity={0.45} />
+              <Line x1="289" y1="40" x2="299" y2="40" stroke="#065F46" strokeWidth={2} opacity={0.45} />
+              <Line x1="289" y1="90" x2="299" y2="90" stroke="#065F46" strokeWidth={2} opacity={0.45} />
+              <Line x1="289" y1="140" x2="299" y2="140" stroke="#065F46" strokeWidth={2} opacity={0.45} />
+              <Path d="M 290 40 Q 268 25 258 35 Q 275 44 290 42 Z" fill="url(#distantLeafGrad)" opacity={0.5} />
+
+              {/* Stalk 4 (Mid-Right Background) */}
+              <Rect x="252" y="0" width="13" height="185" rx="3" fill="url(#midBambooGrad)" opacity={0.7} />
+              <Line x1="251" y1="50" x2="266" y2="50" stroke="#14532D" strokeWidth={2.5} opacity={0.7} />
+              <Line x1="251" y1="105" x2="266" y2="105" stroke="#14532D" strokeWidth={2.5} opacity={0.7} />
+              <Line x1="251" y1="155" x2="266" y2="155" stroke="#14532D" strokeWidth={2.5} opacity={0.7} />
+              <Path d="M 265 50 Q 290 35 305 45 Q 288 56 265 52 Z" fill="url(#forestLeafGrad)" opacity={0.75} />
+              <Path d="M 252 105 Q 228 92 215 102 Q 235 112 252 107 Z" fill="url(#forestLeafGrad)" opacity={0.75} />
+
+              {/* Floating Forest Sparkles / Fireflies */}
+              <Circle cx="45" cy="70" r="2.2" fill="#FDE047" opacity={0.8} />
+              <Circle cx="85" cy="35" r="1.8" fill="#FDE047" opacity={0.7} />
+              <Circle cx="240" cy="65" r="2" fill="#FDE047" opacity={0.85} />
+              <Circle cx="280" cy="115" r="2.5" fill="#FDE047" opacity={0.75} />
+              <Circle cx="100" cy="130" r="1.6" fill="#FDE047" opacity={0.7} />
+              <Path d="M 275 35 L 277 40 L 282 41 L 278 44 L 279 49 L 275 46 L 271 49 L 272 44 L 268 41 L 273 40 Z" fill="#FDE047" opacity={0.85} />
+              <Path d="M 50 110 L 51.5 114 L 55.5 115 L 52.5 117 L 53.5 121 L 50 119 L 46.5 121 L 47.5 117 L 44.5 115 L 48.5 114 Z" fill="#FDE047" opacity={0.8} />
+
+              {/* 3. The Slide Bamboo Stalk (Foreground Slide Pole) */}
+              <Rect x="194" y="0" width="18" height="190" rx="3.5" fill="url(#slideBambooGrad)" />
+              <Line x1="192" y1="30" x2="214" y2="30" stroke="#14532D" strokeWidth={3} strokeLinecap="round" />
+              <Line x1="192" y1="75" x2="214" y2="75" stroke="#14532D" strokeWidth={3} strokeLinecap="round" />
+              <Line x1="192" y1="120" x2="214" y2="120" stroke="#14532D" strokeWidth={3} strokeLinecap="round" />
+              <Line x1="192" y1="165" x2="214" y2="165" stroke="#14532D" strokeWidth={3} strokeLinecap="round" />
+
+              {/* Canopy Branches & Leaves on Slide Stalk */}
+              <Path d="M 212 30 Q 240 15 255 25 Q 235 37 212 33 Z" fill="url(#forestLeafGrad)" />
+              <Path d="M 212 32 Q 235 40 248 55 Q 225 53 212 36 Z" fill="url(#forestLeafGrad)" />
+              <Path d="M 194 75 Q 168 60 155 70 Q 175 80 194 77 Z" fill="url(#forestLeafGrad)" />
+              <Path d="M 212 120 Q 238 108 250 120 Q 230 130 212 123 Z" fill="url(#forestLeafGrad)" />
+
+              {/* 4. Mossy Forest Floor Ground */}
+              <Path d="M -10 182 Q 70 168 160 172 Q 250 176 330 168 L 330 220 L -10 220 Z" fill="url(#mossGroundGrad)" />
+
+              {/* Sprouting Young Bamboo Shoots on Ground */}
+              <Path d="M 38 184 L 38 170 Q 42 165 44 170 L 44 184 Z" fill="#84CC16" />
+              <Path d="M 41 168 Q 32 162 30 168 Q 36 172 41 168 Z" fill="#4ADE80" />
+              <Path d="M 41 168 Q 48 160 52 165 Q 46 171 41 168 Z" fill="#22C55E" />
+
+              <Path d="M 280 180 L 280 166 Q 284 161 286 166 L 286 180 Z" fill="#84CC16" />
+              <Path d="M 283 164 Q 275 158 273 164 Q 279 168 283 164 Z" fill="#4ADE80" />
+              <Path d="M 283 164 Q 290 156 294 161 Q 288 167 283 164 Z" fill="#22C55E" />
+
+              {/* 5. 🎋 THE CRAFTED BAMBOO STOOL (Sitting Stool for Panda) */}
+              <G id="bamboo-stool">
+                {/* Stool Soft Ground Shadow */}
+                <Ellipse cx="160" cy="198" rx="52" ry="9" fill="rgba(6, 78, 59, 0.45)" />
+
+                {/* Stool Back Legs */}
+                <Path d="M 122 154 L 114 192 L 121 192 L 129 154 Z" fill="url(#bambooStoolFreshGrad)" />
+                <Line x1="117" y1="172" x2="126" y2="172" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+
+                <Path d="M 191 154 L 199 192 L 206 192 L 198 154 Z" fill="url(#bambooStoolFreshGrad)" />
+                <Line x1="194" y1="172" x2="203" y2="172" stroke="#14532D" strokeWidth={2} strokeLinecap="round" />
+
+                {/* Stool Stretcher Crossbar */}
+                <Rect x="117" y="174" width="86" height="7" rx="3.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                <Line x1="145" y1="174" x2="145" y2="181" stroke="#92400E" strokeWidth={1.5} />
+                <Line x1="175" y1="174" x2="175" y2="181" stroke="#92400E" strokeWidth={1.5} />
+
+                {/* Stool Front Left Leg */}
+                <Path d="M 127 156 L 120 197 L 128 197 L 135 156 Z" fill="url(#bambooStoolFreshGrad)" stroke="#14532D" strokeWidth={0.8} />
+                <Line x1="123" y1="176" x2="132" y2="176" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+                <Line x1="121" y1="192" x2="129" y2="192" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+
+                {/* Stool Front Right Leg */}
+                <Path d="M 185 156 L 192 197 L 200 197 L 193 156 Z" fill="url(#bambooStoolFreshGrad)" stroke="#14532D" strokeWidth={0.8} />
+                <Line x1="188" y1="176" x2="197" y2="176" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+                <Line x1="191" y1="192" x2="199" y2="192" stroke="#14532D" strokeWidth={2.2} strokeLinecap="round" />
+
+                {/* Bamboo Stool Seat Logs (Polished Canes) */}
+                <Rect x="110" y="146" width="100" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                <Rect x="108" y="151" width="104" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+                <Rect x="110" y="156" width="100" height="9" rx="4.5" fill="url(#bambooStoolLogGrad)" stroke="#B45309" strokeWidth={0.8} />
+
+                {/* Node Rings across the seat */}
+                <Line x1="140" y1="146" x2="140" y2="165" stroke="#92400E" strokeWidth={1.8} strokeLinecap="round" />
+                <Line x1="180" y1="146" x2="180" y2="165" stroke="#92400E" strokeWidth={1.8} strokeLinecap="round" />
+
+                {/* Round Cut Ends of Bamboo Logs */}
+                <Ellipse cx="112" cy="151" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="112" cy="151" r="1.5" fill="#78350F" />
+                <Ellipse cx="110" cy="156" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="110" cy="156" r="1.5" fill="#78350F" />
+                <Ellipse cx="112" cy="161" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="112" cy="161" r="1.5" fill="#78350F" />
+
+                <Ellipse cx="208" cy="151" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="208" cy="151" r="1.5" fill="#78350F" />
+                <Ellipse cx="210" cy="156" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="210" cy="156" r="1.5" fill="#78350F" />
+                <Ellipse cx="208" cy="161" rx="3.5" ry="4" fill="url(#logCapGrad)" stroke="#92400E" strokeWidth={0.8} />
+                <Circle cx="208" cy="161" r="1.5" fill="#78350F" />
+
+                {/* Twine Rope Cross-Ties on Joints */}
+                <Path d="M 124 153 L 132 165 M 132 153 L 124 165" stroke="#78350F" strokeWidth={2} strokeLinecap="round" />
+                <Path d="M 188 153 L 196 165 M 196 153 L 188 165" stroke="#78350F" strokeWidth={2} strokeLinecap="round" />
+
+                {/* Woven Green Leaf Cushion on Stool Seat */}
+                <Path d="M 132 148 Q 160 145 188 148 Q 186 154 184 156 Q 160 153 136 156 Z" fill="#15803D" opacity={0.85} />
+                <Path d="M 134 149 Q 160 147 186 149" stroke="#86EFAC" strokeWidth={1} strokeDasharray="3,2" fill="none" />
+              </G>
             </Svg>
 
-            {/* SLIDING PANDA (Exact HabitlyMascot 100% Feast Red Panda) */}
+            {/* SLIDING PANDA (Slides Down Bamboo & Lands on Bamboo Stool) */}
             <Animated.View
               style={[
                 styles.slidingPandaWrapper,
@@ -917,29 +1100,36 @@ const styles = StyleSheet.create({
   },
   bambooStage: {
     position: 'relative',
-    width: 220,
-    height: 190,
+    width: '100%',
+    maxWidth: 360,
+    height: 215,
+    borderRadius: 24,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    marginVertical: 4,
   },
   auraCircle: {
     position: 'absolute',
-    width: 170,
-    height: 170,
-    borderRadius: 85,
-    backgroundColor: 'rgba(16, 185, 129, 0.18)',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
   },
   bambooSvg: {
     position: 'absolute',
     top: 0,
     left: 0,
+    right: 0,
+    bottom: 0,
     zIndex: 2,
   },
   slidingPandaWrapper: {
-    position: 'relative',
+    position: 'absolute',
     width: 160,
     height: 160,
+    top: 14,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 5,
