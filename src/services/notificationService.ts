@@ -773,12 +773,3 @@ export const notificationService = {
   playChime: playWebAudioChime,
   addListener: addInAppNotificationListener,
 };
-
-// Expose on window for easy developer testing in browser console
-if (typeof window !== 'undefined') {
-  (window as any).notificationService = notificationService;
-  (window as any).triggerSparkyAlert = (scenario: MascotNotificationScenario = 'evening_danger') => {
-    return triggerMascotNotification(scenario);
-  };
-}
-
