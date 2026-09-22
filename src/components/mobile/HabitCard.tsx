@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet, Platform, Animated } f
 import { Habit } from '../../types';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
-import { formatTo12Hour } from '../../utils/streakCalculator';
+import { formatTo12Hour, formatFriendDisplayName } from '../../utils/streakCalculator';
 import { Check, MoreVertical, Calendar, Pause, Play, Archive, Trash2, X } from 'lucide-react-native';
 import { LottieAnimation } from '../common/LottieAnimation';
 import { UserAvatar } from '../common/UserAvatar';
@@ -173,14 +173,28 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
               </View>
             )}
             {habit.is_shared && (
-              <View style={styles.badgeBuddy}>
+              <View
+                style={[
+                  styles.badgeBuddy,
+                  {
+                    backgroundColor: isDark ? 'rgba(124, 92, 255, 0.18)' : 'rgba(124, 92, 255, 0.10)',
+                    borderColor: isDark ? 'rgba(124, 92, 255, 0.35)' : 'rgba(124, 92, 255, 0.25)',
+                  },
+                ]}
+              >
                 <UserAvatar
                   avatar={habit.buddy_avatar}
                   name={habit.buddy_name || 'Buddy'}
                   size={14}
                 />
-                <Text style={styles.badgeBuddyText}>
-                  {habit.buddy_name || t('friends.together', 'Buddy')}
+                <Text
+                  style={[
+                    styles.badgeBuddyText,
+                    { color: isDark ? '#C4B5FD' : '#7C5CFF' },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {formatFriendDisplayName({ name: habit.buddy_name, username: habit.buddy_name }).usernameTag}
                 </Text>
               </View>
             )}
@@ -374,17 +388,19 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
   badgeBuddy: {
-    backgroundColor: 'rgba(124, 92, 255, 0.15)',
-    borderColor: 'rgba(124, 92, 255, 0.3)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     borderWidth: 1,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingHorizontal: 7,
+    paddingVertical: 2.5,
+    borderRadius: 10,
+    flexShrink: 0,
   },
   badgeBuddyText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#7C5CFF',
+    fontSize: 10.5,
+    fontWeight: '700',
+    letterSpacing: -0.2,
   },
   subRow: {
     flexDirection: 'row',
