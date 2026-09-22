@@ -217,7 +217,6 @@ export const CalendarView: React.FC = () => {
         </TouchableOpacity>
 
         <View style={styles.monthTitleWrapper}>
-          <LottieAnimation source="plantGrowing" size={24} />
           <Text style={[styles.monthTitleText, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
             {monthName}
           </Text>
