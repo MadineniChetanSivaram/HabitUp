@@ -528,8 +528,13 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 style={[
                   styles.layerAbsolute,
                   {
-                    transform: [{ rotate: tailRotation }],
-                    transformOrigin: '58% 68%' as any,
+                    transform: [
+                      { translateX: 93 },
+                      { translateY: 109 },
+                      { rotate: tailRotation },
+                      { translateX: -93 },
+                      { translateY: -109 },
+                    ],
                     zIndex: 1,
                   },
                 ]}
@@ -837,8 +842,13 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                 style={[
                   styles.layerAbsolute,
                   {
-                    transform: [{ rotate: waveRotation }],
-                    transformOrigin: '61.25% 57.5%' as any,
+                    transform: [
+                      { translateX: 96 },
+                      { translateY: 92 },
+                      { rotate: waveRotation },
+                      { translateX: -96 },
+                      { translateY: -92 },
+                    ],
                     zIndex: 8,
                   },
                 ]}
