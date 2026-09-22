@@ -486,7 +486,7 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   // Waving rotation (natural cute wrist/forearm tilt from shoulder joint)
   const pawWaveRotate = handWave.interpolate({
     inputRange: [-1, 1],
-    outputRange: ['-10deg', '14deg'],
+    outputRange: ['-6deg', '14deg'],
   });
 
   // Lively Tail wagging rotation
@@ -514,6 +514,10 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
   const isWavingMood = (mood === 'hopeful' || mood === 'hyped' || mood === 'awake') && bambooStage !== 3;
   const isMunchingStage = bambooStage === 3;
   const mascotPixelSize = size * 1.25;
+
+  // Exact shoulder joint pivot offsets (center is (80,80), shoulder is (98,92) in 160x160 canvas)
+  const shoulderPivotOffsetX = (18 / 160) * mascotPixelSize;
+  const shoulderPivotOffsetY = (12 / 160) * mascotPixelSize;
 
   return (
     <View style={[styles.outerWrapper, { width: size * 1.3, height: size * 1.25 }]}>
@@ -1188,8 +1192,14 @@ export const HabitlyMascot: React.FC<HabitlyMascotProps> = ({
               style={[
                 styles.layerAbsolute,
                 {
-                  transform: [{ rotate: pawWaveRotate }],
-                  transformOrigin: '61.25% 57.5%' as any,
+                  transform: [
+                    { translateX: shoulderPivotOffsetX },
+                    { translateY: shoulderPivotOffsetY },
+                    { rotate: pawWaveRotate },
+                    { translateX: -shoulderPivotOffsetX },
+                    { translateY: -shoulderPivotOffsetY },
+                  ],
+                  transformOrigin: '98px 92px' as any,
                   zIndex: 8,
                 },
               ]}

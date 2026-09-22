@@ -42,9 +42,15 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
     <View style={styles.container}>
       {/* Top Action Icons Row */}
       <View style={styles.topRow}>
-        <Text style={[styles.greeting, { color: isDark ? '#E2E8F0' : '#0F172A' }]}>
-          {getGreetingTime()}, {user?.name ? user.name.split(' ')[0] : 'Hero'}! 👋
-        </Text>
+        <View style={styles.greetingWrapper}>
+          <Text
+            style={[styles.greeting, { color: isDark ? '#E2E8F0' : '#0F172A' }]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {getGreetingTime()}, {user?.name ? user.name.split(' ')[0] : 'Hero'}! 👋
+          </Text>
+        </View>
 
         <View style={styles.iconActions}>
           {/* Bamboo Coins & Boutique Button */}
@@ -175,7 +181,7 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
-    paddingTop: 14,
+    paddingTop: 10,
     paddingBottom: 4,
     overflow: 'visible',
   },
@@ -183,18 +189,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    minHeight: 36,
+    marginBottom: 10,
     position: 'relative',
     zIndex: 50,
   },
+  greetingWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    marginRight: 8,
+    minHeight: 34,
+  },
   greeting: {
-    fontSize: 14,
+    fontSize: 14.5,
     fontWeight: '700',
+    letterSpacing: -0.2,
   },
   iconActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flexShrink: 0,
   },
   offlineBtn: {
     backgroundColor: 'rgba(245, 158, 11, 0.2)',
@@ -251,9 +266,10 @@ const styles = StyleSheet.create({
   coinsBadgeBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 12,
+    justifyContent: 'center',
+    height: 34,
+    paddingHorizontal: 9,
+    borderRadius: 11,
     borderWidth: 1,
     gap: 4,
   },

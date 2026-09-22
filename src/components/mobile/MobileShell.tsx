@@ -17,7 +17,7 @@ export const MobileShell: React.FC<MobileShellProps> = ({ children }) => {
 
   // Ensure Android status bar height + extra breathing room is strictly padded
   const topPadding = Platform.OS === 'android'
-    ? Math.max(insets.top, RNStatusBar.currentHeight || 0, 24)
+    ? Math.max(insets.top, (RNStatusBar.currentHeight || 24) + 8, 38)
     : insets.top;
 
   return (

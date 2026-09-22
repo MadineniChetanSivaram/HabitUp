@@ -158,7 +158,23 @@ class SoundService {
   /**
    * Plays snappy click sound for UI buttons
    */
-  playClickSound(): void {
+  async playClickSound(): Promise<void> {
+    if (Platform.OS !== 'web') {
+      try {
+        await this.ensureAudioMode();
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/mascot_chirp.wav'),
+          { shouldPlay: true, volume: 0.25 }
+        );
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if (status.isLoaded && status.didJustFinish) {
+            sound.unloadAsync().catch(() => {});
+          }
+        });
+      } catch {}
+      return;
+    }
+
     const ctx = this.getAudioContext();
     if (!ctx) return;
     try {
@@ -179,11 +195,63 @@ class SoundService {
     }
   }
 
+  private getMascotSoundAsset(soundType: MascotSoundType | string): any {
+    switch (soundType) {
+      case 'wake':
+      case 'sleepy_yawn':
+        return require('../../assets/sounds/mascot_yawn.wav');
+      case 'sad_whimper':
+      case 'sad':
+        return require('../../assets/sounds/mascot_sad.wav');
+      case 'half_done_chirp':
+      case 'determined':
+        return require('../../assets/sounds/mascot_chirp.wav');
+      case 'starry':
+      case 'trill':
+      case 'excited_twitter':
+        return require('../../assets/sounds/mascot_twitter.wav');
+      case 'bamboo_crunch':
+      case 'munch':
+      case 'feast':
+        return require('../../assets/sounds/mascot_crunch.wav');
+      case 'happy_bleat':
+      case 'happy':
+      case 'wink':
+      case 'love':
+      case 'playful':
+      case 'squeak':
+      default:
+        return require('../../assets/sounds/mascot_happy.wav');
+    }
+  }
+
   /**
    * Plays authentic bio-acoustic Red Panda animal vocalizations!
-   * Formants + glottal pulses + vocal tract resonances + breath dynamics.
+   * Native studio-grade 44.1kHz PCM WAV audio on Android & iOS via expo-av;
+   * Formants + glottal pulses on Web Audio API for web browsers.
    */
-  playMascotCuteSound(soundType: MascotSoundType | string = 'happy_bleat'): void {
+  async playMascotCuteSound(soundType: MascotSoundType | string = 'happy_bleat'): Promise<void> {
+    if (Platform.OS !== 'web') {
+      try {
+        await this.ensureAudioMode();
+        const asset = this.getMascotSoundAsset(soundType);
+        if (asset) {
+          const { sound } = await Audio.Sound.createAsync(asset, {
+            shouldPlay: true,
+            volume: 1.0,
+          });
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.isLoaded && status.didJustFinish) {
+              sound.unloadAsync().catch(() => {});
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('Native mascot sound error:', err);
+      }
+      return;
+    }
+
     const ctx = this.getAudioContext();
     if (!ctx) return;
 
