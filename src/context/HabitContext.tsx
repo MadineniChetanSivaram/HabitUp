@@ -1157,8 +1157,8 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (cached) {
         try {
           const parsed = JSON.parse(cached);
-          if (parsed && typeof parsed.friendsEnabled === 'boolean') {
-            setFriendsEnabled(parsed.friendsEnabled);
+          if (parsed) {
+            setFriendsEnabled(true);
             setExperimentVariant(parsed.variant || null);
           }
         } catch {}
@@ -1167,9 +1167,10 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // 2. Fetch live experiment from backend
       const exp = await localApi.getExperiment('friends_feature_v1');
       if (exp) {
-        setFriendsEnabled(exp.friendsEnabled);
+        // Keep friends enabled for all users so old and new users can access the Friends tab
+        setFriendsEnabled(true);
         setExperimentVariant(exp.variant);
-        AsyncStorage.setItem('habitup_exp_friends_feature_v1', JSON.stringify(exp)).catch(() => {});
+        AsyncStorage.setItem('habitup_exp_friends_feature_v1', JSON.stringify({ ...exp, friendsEnabled: true })).catch(() => {});
       }
     } catch (e) {
       console.warn('syncExperimentState error:', e);
@@ -1526,7 +1527,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Safety: If friends feature is disabled by A/B experiment (Variant A), redirect friends tab to streaks
   useEffect(() => {
-    if (!friendsEnabled && (activeTab === 'friends' || activeTab === 'habits')) {
+    if (!friendsEnabled && activeTab === 'friends') {
       setActiveTab('streaks');
     }
   }, [friendsEnabled, activeTab]);
