@@ -873,7 +873,6 @@ export const FriendsView: React.FC = () => {
                     />
                   </Animated.View>
                   <View style={styles.friendNameContainer}>
-                  <View style={styles.friendNameStreakRow}>
                     <Text
                       style={[styles.friendName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}
                       numberOfLines={1}
@@ -881,27 +880,28 @@ export const FriendsView: React.FC = () => {
                     >
                       {friendDisplayName}
                     </Text>
-                    {isPendingSent ? (
-                      <View style={styles.pendingBadge}>
-                        <Clock size={11} color="#F59E0B" />
-                        <Text style={styles.pendingBadgeText}>{t('friends.requested', 'Requested')} ⏳</Text>
-                      </View>
-                    ) : (
-                      <View style={styles.streakFlameBadge}>
-                        <LottieAnimation source="streakFlame" size={18} />
-                        <Text style={styles.streakFlameText}>{friend.currentStreak}d</Text>
-                      </View>
-                    )}
+                    <View style={styles.friendSubRow}>
+                      <Text
+                        style={[styles.friendUserTag, { color: isDark ? '#94A3B8' : '#64748B' }]}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {friend.plantStage || '🌱 Fresh Seedling (Lvl 1)'}
+                      </Text>
+                      {isPendingSent ? (
+                        <View style={styles.pendingBadge}>
+                          <Clock size={10} color="#F59E0B" />
+                          <Text style={styles.pendingBadgeText}>{t('friends.requested', 'Requested')} ⏳</Text>
+                        </View>
+                      ) : (
+                        <View style={styles.streakFlameBadge}>
+                          <LottieAnimation source="streakFlame" size={15} />
+                          <Text style={styles.streakFlameText}>{friend.currentStreak}d</Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
-                  <Text
-                    style={[styles.friendUserTag, { color: isDark ? '#94A3B8' : '#64748B' }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {friend.plantStage || '🌱 Fresh Seedling (Lvl 1)'}
-                  </Text>
                 </View>
-              </View>
 
               <View style={styles.friendHeaderRight}>
                 {!isPendingSent && (
@@ -1041,7 +1041,7 @@ export const FriendsView: React.FC = () => {
                                 <Text style={{ color: isDark ? '#475569' : '#CBD5E1', fontSize: 10 }}>•</Text>
                                 <LottieAnimation source="streakFlame" size={16} />
                                 <Text style={{ color: '#F59E0B', fontSize: 11, fontWeight: '800' }}>
-                                  {friendHabit.currentStreak}d {t('habits.streak', 'streak')}
+                                  {friendHabit.currentStreak}d
                                 </Text>
                               </>
                             )}
@@ -2522,11 +2522,18 @@ const styles = StyleSheet.create({
   friendName: {
     fontSize: 15.5,
     fontWeight: '900',
-    flexShrink: 1,
+    letterSpacing: -0.2,
+  },
+  friendSubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+    flexWrap: 'nowrap',
   },
   friendUserTag: {
     fontSize: 11.5,
-    marginTop: 1.5,
+    flexShrink: 1,
   },
   friendHeaderRight: {
     flexDirection: 'row',
@@ -2538,10 +2545,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 107, 107, 0.15)',
-    paddingHorizontal: 7,
-    paddingVertical: 2.5,
-    borderRadius: 8,
-    gap: 2.5,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    borderRadius: 6,
+    gap: 2,
     flexShrink: 0,
   },
   streakFlameText: {

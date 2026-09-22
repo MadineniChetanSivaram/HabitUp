@@ -71,21 +71,20 @@ export const CalendarView: React.FC = () => {
 
   const changeMonth = (offset: number) => {
     const useNative = Platform.OS !== 'web';
-    monthGridFade.setValue(0.3);
-    monthGridSlide.setValue(offset * 16);
+    monthGridFade.setValue(0.7);
+    monthGridSlide.setValue(offset * 20);
 
     setCalendarDate(new Date(year, month + offset, 1));
 
     Animated.parallel([
       Animated.timing(monthGridFade, {
         toValue: 1,
-        duration: 300,
+        duration: 220,
         useNativeDriver: useNative,
       }),
-      Animated.spring(monthGridSlide, {
+      Animated.timing(monthGridSlide, {
         toValue: 0,
-        friction: 6,
-        tension: 50,
+        duration: 220,
         useNativeDriver: useNative,
       }),
     ]).start();
@@ -254,7 +253,7 @@ export const CalendarView: React.FC = () => {
           styles.calGridContainer,
           {
             opacity: monthGridFade,
-            transform: [{ translateY: monthGridSlide }],
+            transform: [{ translateX: monthGridSlide }],
           },
         ]}
       >
