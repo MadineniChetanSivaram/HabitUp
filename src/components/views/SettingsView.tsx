@@ -41,8 +41,6 @@ import {
   X,
   Globe,
   Check,
-  ShoppingBag,
-  Sparkles,
   MessageSquare,
   Flame,
   Zap,
@@ -73,9 +71,6 @@ export const SettingsView: React.FC = () => {
     language,
     setLanguage,
     t,
-    bambooCoins,
-    ownedAccessories,
-    setIsShopModalOpen,
   } = useHabit();
 
   const [isLanguageModalOpen, setIsLanguageModalOpen] = useState<boolean>(false);
@@ -497,55 +492,6 @@ export const SettingsView: React.FC = () => {
           />
         </View>
 
-      </View>
-
-      {/* SPARKY BOUTIQUE & WARDROBE SECTION (Finch Style) */}
-      <View
-        style={[
-          styles.sectionCard,
-          {
-            backgroundColor: isDark ? '#141D2E' : '#FFFFFF',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
-          },
-        ]}
-      >
-        <View style={styles.sectionHeaderRow}>
-          <Text style={[styles.sectionTitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-            SPARKY'S BOUTIQUE & WARDROBE
-          </Text>
-          <View style={[styles.bambooPill, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7' }]}>
-            <Text style={{ fontSize: 13, fontWeight: '800', color: '#10B981' }}>🎋 {bambooCoins}</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={styles.preferenceRow}
-          onPress={() => setIsShopModalOpen(true)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.prefLeft}>
-            <View style={[styles.prefIconBadge, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-              <ShoppingBag size={16} color="#F59E0B" />
-            </View>
-            <View>
-              <Text style={[styles.prefName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
-                Shop Outfits & Accessories
-              </Text>
-              <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                {ownedAccessories.length} items unlocked • Hats & Glasses 🎩🕶️
-              </Text>
-            </View>
-          </View>
-          <View
-            style={[
-              styles.actionPillBtn,
-              { backgroundColor: '#F59E0B' },
-            ]}
-          >
-            <Sparkles size={12} color="#FFFFFF" />
-            <Text style={styles.actionPillBtnText}>Open Shop</Text>
-          </View>
-        </TouchableOpacity>
       </View>
 
       {/* Standalone Export CSV Button */}
