@@ -24,6 +24,7 @@ import { WidgetPreviewModal } from './components/modals/WidgetPreviewModal';
 import { DayCompletionCelebrationModal } from './components/modals/DayCompletionCelebrationModal';
 import { NotificationBanner } from './components/common/NotificationBanner';
 import { FullScreenConfetti } from './components/common/FullScreenConfetti';
+import { AiSmartCoach } from './components/common/AiSmartCoach';
 
 import { useFonts } from 'expo-font';
 import { customFontsToLoad } from './utils/loadFonts';
@@ -94,6 +95,9 @@ const AppContent: React.FC = () => {
 
       {/* Global Full-Page Confetti Celebration Burst */}
       <FullScreenConfetti />
+
+      {/* Floating AI Smart Coach FAB & Interactive Chat */}
+      <AiSmartCoach />
 
       {/* Global Modals & Biometrics */}
       <BiometricScanModal />
