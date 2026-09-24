@@ -25,6 +25,13 @@ import { DayCompletionCelebrationModal } from './components/modals/DayCompletion
 import { NotificationBanner } from './components/common/NotificationBanner';
 import { FullScreenConfetti } from './components/common/FullScreenConfetti';
 
+import { useFonts } from 'expo-font';
+import { customFontsToLoad } from './utils/loadFonts';
+import { configureDefaultTypography } from './utils/typography';
+
+// Configure global typography for all Text and TextInput components
+configureDefaultTypography();
+
 const AppContent: React.FC = () => {
   const { activeTab, isAuthenticated, isAuthLoading } = useHabit();
   const [safetyTimedOut, setSafetyTimedOut] = useState(false);
@@ -85,11 +92,20 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
+  const [fontsLoaded] = useFonts(customFontsToLoad);
+
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
         <HabitProvider>
-          <AppContent />
+          {fontsLoaded ? (
+            <AppContent />
+          ) : (
+            <View style={{ flex: 1, backgroundColor: '#0B1120', alignItems: 'center', justifyContent: 'center' }}>
+              <HabitUpLogo size="md" themeMode="dark" />
+              <ActivityIndicator color="#7C5CFF" style={{ marginTop: 24 }} size="small" />
+            </View>
+          )}
         </HabitProvider>
       </SafeAreaProvider>
     </ErrorBoundary>

@@ -1277,7 +1277,6 @@ const styles = StyleSheet.create({
     top: 36,
   },
   zzzText: {
-    fontFamily: 'System',
     fontWeight: '800',
   },
   speechBubble: {

@@ -16,6 +16,7 @@
     "build:apk:release": "npx expo prebuild --platform android --clean --no-install && cd android && gradlew.bat assembleRelease && cd .."
   },
   "dependencies": {
+    "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/metro-runtime": "~4.0.1",
     "@google/genai": "^2.4.0",
     "@lottiefiles/dotlottie-react": "^0.6.5",
@@ -33,6 +34,7 @@
     "expo-av": "~15.0.2",
     "expo-clipboard": "~7.0.1",
     "expo-file-system": "~18.0.12",
+    "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.1",
     "expo-image-picker": "~16.0.6",
     "expo-linear-gradient": "~14.0.2",
