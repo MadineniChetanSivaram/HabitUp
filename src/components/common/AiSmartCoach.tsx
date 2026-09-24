@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Modal,
   TextInput,
   ScrollView,
   KeyboardAvoidingView,
@@ -15,7 +14,7 @@ import {
 } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
 import { apiService } from '../../services/apiService';
-import { Bot, Sparkles, Send, X, ArrowUpRight } from 'lucide-react-native';
+import { Bot, Sparkles, Send, X } from 'lucide-react-native';
 
 interface ChatMessage {
   id: string;
@@ -42,7 +41,7 @@ export const AiSmartCoach: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const slideAnim = useRef(new Animated.Value(0)).current;
+  const popAnim = useRef(new Animated.Value(0)).current;
 
   // Gentle breathing glow animation on the floating button
   useEffect(() => {
@@ -58,15 +57,16 @@ export const AiSmartCoach: React.FC = () => {
 
   useEffect(() => {
     if (isOpen) {
-      slideAnim.setValue(450);
-      Animated.spring(slideAnim, {
-        toValue: 0,
+      Animated.spring(popAnim, {
+        toValue: 1,
         friction: 8,
-        tension: 65,
+        tension: 80,
         useNativeDriver: Platform.OS !== 'web',
       }).start();
+    } else {
+      popAnim.setValue(0);
     }
-  }, [isOpen, slideAnim]);
+  }, [isOpen, popAnim]);
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 80);
@@ -142,6 +142,15 @@ export const AiSmartCoach: React.FC = () => {
 
   return (
     <>
+      {/* Subtle dismiss backdrop (stays within app container) */}
+      {isOpen && (
+        <TouchableOpacity
+          style={s.backdropOverlay}
+          onPress={() => setIsOpen(false)}
+          activeOpacity={1}
+        />
+      )}
+
       {/* Floating Action Button (FAB) anchored bottom-right */}
       {!isOpen && (
         <Animated.View style={[s.fabWrapper, { transform: [{ scale: pulseAnim }] }]}>
@@ -160,168 +169,188 @@ export const AiSmartCoach: React.FC = () => {
         </Animated.View>
       )}
 
-      {/* Coach Chat Sheet Modal */}
-      <Modal visible={isOpen} transparent animationType="none" onRequestClose={() => setIsOpen(false)}>
-        <View style={s.overlay}>
-          <TouchableOpacity style={s.backdrop} onPress={() => setIsOpen(false)} activeOpacity={1} />
-          <Animated.View
+      {/* Floating Compact Coach Chat Card anchored bottom-right */}
+      {isOpen && (
+        <Animated.View
+          style={[
+            s.floatingCard,
+            {
+              backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+              borderColor: isDark ? 'rgba(124, 92, 255, 0.35)' : 'rgba(124, 92, 255, 0.25)',
+              opacity: popAnim,
+              transform: [
+                {
+                  scale: popAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.88, 1],
+                  }),
+                },
+                {
+                  translateY: popAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [18, 0],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          {/* Header */}
+          <View
             style={[
-              s.sheet,
+              s.header,
               {
-                backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0',
-                transform: [{ translateY: slideAnim }],
+                backgroundColor: isDark ? '#0A0F1D' : '#F8FAFC',
+                borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
               },
             ]}
           >
-            {/* Header */}
+            <View style={s.headerLeft}>
+              <View style={s.avatar}>
+                <Bot size={20} color="#7C5CFF" />
+              </View>
+              <View>
+                <Text style={[s.htitle, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>AI Smart Coach</Text>
+                <Text style={s.hsub}>Personal Habit Mentor ✨</Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={() => setIsOpen(false)} style={s.closeBtn}>
+              <X size={18} color={isDark ? '#94A3B8' : '#64748B'} />
+            </TouchableOpacity>
+          </View>
+
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
+            {/* Messages ScrollView */}
+            <ScrollView
+              ref={scrollRef}
+              style={{ flex: 1 }}
+              contentContainerStyle={s.msgContent}
+              onContentSizeChange={scrollToBottom}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {messages.map((m) => (
+                <View
+                  key={m.id}
+                  style={[
+                    s.bubble,
+                    m.role === 'user' ? s.bubbleU : isDark ? s.bubbleADark : s.bubbleALight,
+                  ]}
+                >
+                  {m.role === 'assistant' && (
+                    <View style={s.coachBadgeRow}>
+                      <Sparkles size={11} color="#7C5CFF" />
+                      <Text style={s.coach}>Smart Coach</Text>
+                    </View>
+                  )}
+                  <Text style={[s.bubbleTxt, m.role === 'user' ? s.txtU : isDark ? s.txtADark : s.txtALight]}>
+                    {m.content}
+                  </Text>
+                </View>
+              ))}
+
+              {isLoading && (
+                <View
+                  style={[
+                    s.bubble,
+                    isDark ? s.bubbleADark : s.bubbleALight,
+                    { flexDirection: 'row', alignItems: 'center', gap: 8 },
+                  ]}
+                >
+                  <ActivityIndicator size="small" color="#7C5CFF" />
+                  <Text style={[s.bubbleTxt, isDark ? s.txtADark : s.txtALight]}>Analyzing your habits...</Text>
+                </View>
+              )}
+            </ScrollView>
+
+            {/* Quick Prompt Chips */}
+            {messages.length <= 1 && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={[s.chips, { borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : '#E2E8F0' }]}
+                contentContainerStyle={s.chipsContent}
+                keyboardShouldPersistTaps="handled"
+              >
+                {[
+                  'How am I doing this week?',
+                  'Tips to build consistency',
+                  'What habit should I focus on?',
+                  'Help me stay motivated 🔥',
+                ].map((c) => (
+                  <TouchableOpacity
+                    key={c}
+                    style={[
+                      s.chip,
+                      {
+                        backgroundColor: isDark ? 'rgba(124, 92, 255, 0.12)' : 'rgba(124, 92, 255, 0.08)',
+                        borderColor: isDark ? 'rgba(124, 92, 255, 0.25)' : 'rgba(124, 92, 255, 0.2)',
+                      },
+                    ]}
+                    onPress={() => setInput(c)}
+                  >
+                    <Text style={[s.chipTxt, { color: isDark ? '#C7D2FE' : '#6366F1' }]}>{c}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+
+            {/* Input Row */}
             <View
               style={[
-                s.header,
+                s.inputRow,
                 {
                   backgroundColor: isDark ? '#0A0F1D' : '#F8FAFC',
-                  borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+                  borderTopColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
                 },
               ]}
             >
-              <View style={s.headerLeft}>
-                <View style={s.avatar}>
-                  <Bot size={22} color="#7C5CFF" />
-                </View>
-                <View>
-                  <Text style={[s.htitle, { color: isDark ? '#F8FAFC' : '#0F172A' }]}>AI Smart Coach</Text>
-                  <Text style={s.hsub}>Personal Habit Mentor ✨</Text>
-                </View>
-              </View>
-              <TouchableOpacity onPress={() => setIsOpen(false)} style={s.closeBtn}>
-                <X size={18} color={isDark ? '#94A3B8' : '#64748B'} />
-              </TouchableOpacity>
-            </View>
-
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            >
-              {/* Messages ScrollView */}
-              <ScrollView
-                ref={scrollRef}
-                style={{ flex: 1 }}
-                contentContainerStyle={s.msgContent}
-                onContentSizeChange={scrollToBottom}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-              >
-                {messages.map((m) => (
-                  <View
-                    key={m.id}
-                    style={[
-                      s.bubble,
-                      m.role === 'user' ? s.bubbleU : isDark ? s.bubbleADark : s.bubbleALight,
-                    ]}
-                  >
-                    {m.role === 'assistant' && (
-                      <View style={s.coachBadgeRow}>
-                        <Sparkles size={11} color="#7C5CFF" />
-                        <Text style={s.coach}>Smart Coach</Text>
-                      </View>
-                    )}
-                    <Text style={[s.bubbleTxt, m.role === 'user' ? s.txtU : isDark ? s.txtADark : s.txtALight]}>
-                      {m.content}
-                    </Text>
-                  </View>
-                ))}
-
-                {isLoading && (
-                  <View
-                    style={[
-                      s.bubble,
-                      isDark ? s.bubbleADark : s.bubbleALight,
-                      { flexDirection: 'row', alignItems: 'center', gap: 8 },
-                    ]}
-                  >
-                    <ActivityIndicator size="small" color="#7C5CFF" />
-                    <Text style={[s.bubbleTxt, isDark ? s.txtADark : s.txtALight]}>Analyzing your habits...</Text>
-                  </View>
-                )}
-              </ScrollView>
-
-              {/* Quick Prompt Chips */}
-              {messages.length <= 1 && (
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={[s.chips, { borderTopColor: isDark ? 'rgba(255,255,255,0.06)' : '#E2E8F0' }]}
-                  contentContainerStyle={s.chipsContent}
-                  keyboardShouldPersistTaps="handled"
-                >
-                  {[
-                    'How am I doing this week?',
-                    'Tips to build consistency',
-                    'What habit should I focus on?',
-                    'Help me stay motivated 🔥',
-                  ].map((c) => (
-                    <TouchableOpacity
-                      key={c}
-                      style={[
-                        s.chip,
-                        {
-                          backgroundColor: isDark ? 'rgba(124, 92, 255, 0.12)' : 'rgba(124, 92, 255, 0.08)',
-                          borderColor: isDark ? 'rgba(124, 92, 255, 0.25)' : 'rgba(124, 92, 255, 0.2)',
-                        },
-                      ]}
-                      onPress={() => setInput(c)}
-                    >
-                      <Text style={[s.chipTxt, { color: isDark ? '#C7D2FE' : '#6366F1' }]}>{c}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              )}
-
-              {/* Input Row */}
-              <View
+              <TextInput
                 style={[
-                  s.inputRow,
+                  s.input,
                   {
-                    backgroundColor: isDark ? '#0A0F1D' : '#F8FAFC',
-                    borderTopColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
+                    backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+                    color: isDark ? '#F8FAFC' : '#0F172A',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#CBD5E1',
                   },
                 ]}
+                value={input}
+                onChangeText={setInput}
+                placeholder="Ask your coach anything..."
+                placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
+                multiline
+                maxLength={500}
+                blurOnSubmit={false}
+              />
+              <TouchableOpacity
+                style={[s.send, (!input.trim() || isLoading) && s.sendOff]}
+                onPress={sendMessage}
+                disabled={!input.trim() || isLoading}
+                activeOpacity={0.8}
               >
-                <TextInput
-                  style={[
-                    s.input,
-                    {
-                      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-                      color: isDark ? '#F8FAFC' : '#0F172A',
-                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#CBD5E1',
-                    },
-                  ]}
-                  value={input}
-                  onChangeText={setInput}
-                  placeholder="Ask your coach anything..."
-                  placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
-                  multiline
-                  maxLength={500}
-                  blurOnSubmit={false}
-                />
-                <TouchableOpacity
-                  style={[s.send, (!input.trim() || isLoading) && s.sendOff]}
-                  onPress={sendMessage}
-                  disabled={!input.trim() || isLoading}
-                  activeOpacity={0.8}
-                >
-                  <Send size={18} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-            </KeyboardAvoidingView>
-          </Animated.View>
-        </View>
-      </Modal>
+                <Send size={16} color="#FFFFFF" />
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
+        </Animated.View>
+      )}
     </>
   );
 };
 
 const s = StyleSheet.create({
+  backdropOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.18)',
+    zIndex: 998,
+  },
   fabWrapper: {
     position: 'absolute',
     bottom: 84,
@@ -357,38 +386,47 @@ const s = StyleSheet.create({
     borderRadius: 8,
     padding: 2,
   },
-  overlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-  },
-  sheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    height: '84%',
+  floatingCard: {
+    position: 'absolute',
+    bottom: 84,
+    right: 14,
+    width: 360,
+    maxWidth: '92%',
+    height: 480,
+    maxHeight: '70%',
+    borderRadius: 22,
+    borderWidth: 1.5,
     overflow: 'hidden',
-    borderTopWidth: 1,
+    zIndex: 1000,
+    ...(Platform.OS === 'web'
+      ? ({
+          boxShadow: '0 20px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(124, 92, 255, 0.25)',
+        } as any)
+      : {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.3,
+          shadowRadius: 16,
+          elevation: 10,
+        }),
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 18,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     borderBottomWidth: 1,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: 'rgba(124, 92, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -396,32 +434,32 @@ const s = StyleSheet.create({
     borderColor: 'rgba(124, 92, 255, 0.35)',
   },
   htitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
   },
   hsub: {
     color: '#7C5CFF',
-    fontSize: 11,
+    fontSize: 10.5,
     fontWeight: '600',
-    marginTop: 2,
+    marginTop: 1,
   },
   closeBtn: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 16,
+    borderRadius: 15,
   },
   msgContent: {
-    padding: 16,
-    gap: 12,
+    padding: 12,
+    gap: 10,
     flexGrow: 1,
   },
   bubble: {
-    maxWidth: '85%',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 18,
+    maxWidth: '88%',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
   },
   bubbleU: {
     alignSelf: 'flex-end',
@@ -446,21 +484,18 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   coach: {
     color: '#7C5CFF',
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: '800',
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
   bubbleTxt: {
-    fontSize: 13.5,
-    lineHeight: 20,
-  },
-  txtA: {
-    color: '#E5E7EB',
+    fontSize: 13,
+    lineHeight: 18,
   },
   txtU: {
     color: '#FFFFFF',
@@ -472,52 +507,53 @@ const s = StyleSheet.create({
     color: '#0F172A',
   },
   chips: {
-    maxHeight: 46,
+    maxHeight: 42,
     borderTopWidth: 1,
   },
   chipsContent: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    gap: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 6,
     alignItems: 'center',
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
     borderWidth: 1,
   },
   chipTxt: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    gap: 10,
+    padding: 8,
+    paddingHorizontal: 10,
+    gap: 8,
     borderTopWidth: 1,
   },
   input: {
     flex: 1,
-    borderRadius: 22,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 13.5,
-    maxHeight: 90,
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    fontSize: 13,
+    maxHeight: 75,
     borderWidth: 1,
   },
   send: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#7C5CFF',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#7C5CFF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,
-    shadowRadius: 5,
+    shadowRadius: 4,
     elevation: 3,
   },
   sendOff: {
