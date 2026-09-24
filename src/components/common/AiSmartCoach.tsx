@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
 import { apiService } from '../../services/apiService';
+import { generateSmartCoachResponse } from '../../utils/aiCoachEngine';
 import { Bot, Sparkles, Send, X, Maximize2, Minimize2 } from 'lucide-react-native';
 
 interface ChatMessage {
@@ -95,8 +96,8 @@ export const AiSmartCoach: React.FC = () => {
     scrollToBottom();
 
     try {
-      // First try /ai/coach, fallback to /ai/chat if coach is on standard chat endpoint
-      let res: any = await (apiService as any).request('/ai/coach', {
+      // 1. Attempt to call live Railway backend /ai/chat
+      const res: any = await (apiService as any).request('/ai/chat', {
         method: 'POST',
         body: JSON.stringify({
           message: text,
@@ -105,33 +106,40 @@ export const AiSmartCoach: React.FC = () => {
         }),
       });
 
-      if (!res.ok) {
-        res = await (apiService as any).request('/ai/chat', {
-          method: 'POST',
-          body: JSON.stringify({
-            message: text,
-            context: buildContext(),
-            history: messages.slice(-6).map((m) => ({ role: m.role, content: m.content })),
-          }),
-        });
-      }
-
-      const reply =
-        res.ok && (res.data?.reply || res.data?.message || res.data?.response)
+      const backendReply =
+        res?.ok && (res.data?.reply || res.data?.message || res.data?.response)
           ? res.data?.reply || res.data?.message || res.data?.response
-          : "You're making great progress! Stay consistent with small steps every day. Would you like a tip on a specific habit?";
+          : null;
+
+      // 2. If backend LLM returned a valid response, use it!
+      // Otherwise, use our smart context-aware coach engine tailored to user's question and habit data!
+      const reply =
+        backendReply ||
+        generateSmartCoachResponse(text, {
+          habits,
+          overallStats,
+          user,
+          history: messages.map((m) => ({ role: m.role, content: m.content })),
+        });
 
       setMessages((p) => [
         ...p,
         { id: `a_${Date.now()}`, role: 'assistant', content: reply, timestamp: new Date() },
       ]);
     } catch {
+      // Network or offline fallback: still provide dynamic, personalized coaching
+      const fallback = generateSmartCoachResponse(text, {
+        habits,
+        overallStats,
+        user,
+        history: messages.map((m) => ({ role: m.role, content: m.content })),
+      });
       setMessages((p) => [
         ...p,
         {
-          id: `e_${Date.now()}`,
+          id: `a_${Date.now()}`,
           role: 'assistant',
-          content: 'Keep showing up every day! Small wins lead to giant transformations. How can I help you right now?',
+          content: fallback,
           timestamp: new Date(),
         },
       ]);
@@ -139,7 +147,7 @@ export const AiSmartCoach: React.FC = () => {
       setIsLoading(false);
       scrollToBottom();
     }
-  }, [input, isLoading, messages, buildContext, scrollToBottom]);
+  }, [input, isLoading, messages, buildContext, scrollToBottom, habits, overallStats, user]);
 
   return (
     <>
