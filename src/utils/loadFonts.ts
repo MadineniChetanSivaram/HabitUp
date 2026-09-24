@@ -1,25 +1,24 @@
-import { Platform } from 'react-native';
 import {
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold,
-  PlusJakartaSans_800ExtraBold,
-} from '@expo-google-fonts/plus-jakarta-sans';
+  Comfortaa_300Light,
+  Comfortaa_400Regular,
+  Comfortaa_500Medium,
+  Comfortaa_600SemiBold,
+  Comfortaa_700Bold,
+} from '@expo-google-fonts/comfortaa';
 
 /**
- * Global Font definitions mapped to Plus Jakarta Sans weights.
+ * Global Font definitions mapped to Comfortaa weights.
  *
- * Mapped to both standard names and weight-specific aliases so that
+ * Mapped to standard names and weight-specific aliases so that
  * any Text component applying fontFamily or default styling picks up
  * the custom font seamlessly across Android, iOS, and Web.
  */
 export const customFontsToLoad = {
   // Named font family
-  'PlusJakartaSans': PlusJakartaSans_400Regular,
-  'PlusJakartaSans-Regular': PlusJakartaSans_400Regular,
-  'PlusJakartaSans-Medium': PlusJakartaSans_500Medium,
-  'PlusJakartaSans-SemiBold': PlusJakartaSans_600SemiBold,
-  'PlusJakartaSans-Bold': PlusJakartaSans_700Bold,
-  'PlusJakartaSans-ExtraBold': PlusJakartaSans_800ExtraBold,
+  'Comfortaa': Comfortaa_400Regular,
+  'Comfortaa-Light': Comfortaa_300Light,
+  'Comfortaa-Regular': Comfortaa_400Regular,
+  'Comfortaa-Medium': Comfortaa_500Medium,
+  'Comfortaa-SemiBold': Comfortaa_600SemiBold,
+  'Comfortaa-Bold': Comfortaa_700Bold,
 };

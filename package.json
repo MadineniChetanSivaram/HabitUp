@@ -16,6 +16,7 @@
     "build:apk:release": "npx expo prebuild --platform android --clean --no-install && cd android && gradlew.bat assembleRelease && cd .."
   },
   "dependencies": {
+    "@expo-google-fonts/comfortaa": "^0.4.2",
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/metro-runtime": "~4.0.1",
     "@google/genai": "^2.4.0",
