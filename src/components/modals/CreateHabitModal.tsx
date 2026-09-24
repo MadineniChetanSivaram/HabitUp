@@ -335,7 +335,7 @@ export const CreateHabitModal: React.FC = () => {
                     {t('create_habit.icon', 'ICON')}
                   </Text>
                   <View style={styles.iconGrid}>
-                    {AVAILABLE_ICONS.slice(0, 16).map((iconName) => {
+                    {AVAILABLE_ICONS.map((iconName) => {
                       const isSelected = iconName === selectedIcon;
                       return (
                         <TouchableOpacity
@@ -344,17 +344,24 @@ export const CreateHabitModal: React.FC = () => {
                             styles.iconCell,
                             isSelected && {
                               backgroundColor: selectedColor,
+                              borderColor: selectedColor,
+                              shadowColor: selectedColor,
+                              shadowOpacity: 0.35,
+                              shadowRadius: 6,
+                              elevation: 4,
                             },
                             !isSelected && {
-                              backgroundColor: isDark ? '#1F2937' : '#F1F5F9',
+                              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                              borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)',
                             },
                           ]}
                           onPress={() => setSelectedIcon(iconName)}
+                          activeOpacity={0.7}
                         >
                           <IconRenderer
                             name={iconName}
-                            size={18}
-                            color={isSelected ? '#FFFFFF' : isDark ? '#94A3B8' : '#64748B'}
+                            size={19}
+                            color={isSelected ? '#FFFFFF' : isDark ? '#E2E8F0' : '#475569'}
                           />
                         </TouchableOpacity>
                       );

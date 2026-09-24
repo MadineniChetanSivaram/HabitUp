@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, StyleSheet, Platform, Animated } f
 import { Habit } from '../../types';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { DuotoneIconBadge } from '../common/DuotoneIconBadge';
 import { formatTo12Hour, formatFriendDisplayName } from '../../utils/streakCalculator';
 import { Check, MoreVertical, Calendar, Pause, Play, Archive, Trash2, X } from 'lucide-react-native';
 import { LottieAnimation } from '../common/LottieAnimation';
@@ -114,18 +115,15 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit }) => {
       activeOpacity={0.88}
     >
       <View style={styles.contentRow}>
-        {/* Habit Icon */}
-        <View
-          style={[
-            styles.iconCircle,
-            {
-              backgroundColor: habit.color || '#7C5CFF',
-              opacity: isCompleted ? 0.9 : 1,
-            },
-          ]}
-        >
-          <IconRenderer name={habit.icon} size={20} color="#FFFFFF" />
-        </View>
+        {/* Duotone Glass Habit Icon */}
+        <DuotoneIconBadge
+          name={habit.icon}
+          color={habit.color || '#7C5CFF'}
+          size={20}
+          containerSize={44}
+          borderRadius={15}
+          isCompleted={isCompleted}
+        />
 
         {/* Title & Stats */}
         <View style={styles.textContainer}>

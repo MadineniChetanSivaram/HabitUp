@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { DuotoneIconBadge } from '../common/DuotoneIconBadge';
 import {
   getMonthCalendarDays,
   formatDateKey,
@@ -153,14 +154,13 @@ export const HabitDetailModal: React.FC = () => {
           >
             {/* Habit Hero Pill */}
             <View style={styles.habitHeroRow}>
-              <View
-                style={[
-                  styles.habitIconCircle,
-                  { backgroundColor: habit.color || '#7C5CFF' },
-                ]}
-              >
-                <IconRenderer name={habit.icon} size={24} color="#FFFFFF" />
-              </View>
+              <DuotoneIconBadge
+                name={habit.icon}
+                color={habit.color || '#7C5CFF'}
+                size={26}
+                containerSize={52}
+                borderRadius={18}
+              />
               <View style={{ flex: 1 }}>
                 <Text style={[styles.habitTitle, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                   {tHabitName(habit.name)}

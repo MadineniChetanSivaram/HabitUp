@@ -11,6 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { DuotoneIconBadge } from '../common/DuotoneIconBadge';
 import { LottieAnimation } from '../common/LottieAnimation';
 import {
   getMonthCalendarDays,
@@ -502,9 +503,13 @@ export const CalendarView: React.FC = () => {
                 ]}
               >
                 <View style={styles.habitItemLeft}>
-                  <View style={[styles.habitIconBox, { backgroundColor: habit.color || '#7C5CFF' }]}>
-                    <IconRenderer name={habit.icon} size={18} color="#FFFFFF" />
-                  </View>
+                  <DuotoneIconBadge
+                    name={habit.icon}
+                    color={habit.color || '#7C5CFF'}
+                    size={18}
+                    containerSize={38}
+                    borderRadius={13}
+                  />
                   <View>
                     <Text style={[styles.habitItemName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                       {tHabitName(habit.name)}

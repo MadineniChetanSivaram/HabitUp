@@ -17,6 +17,7 @@ import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { DuotoneIconBadge } from '../common/DuotoneIconBadge';
 import { LottieAnimation } from '../common/LottieAnimation';
 import { UserAvatar } from '../common/UserAvatar';
 import {
@@ -1008,14 +1009,13 @@ export const FriendsView: React.FC = () => {
                       activeOpacity={0.8}
                     >
                       <View style={styles.habitItemLeft}>
-                        <View
-                          style={[
-                            styles.habitIconBox,
-                            { backgroundColor: friendHabit.color || '#7C5CFF' },
-                          ]}
-                        >
-                          <IconRenderer name={friendHabit.icon} size={16} color="#FFFFFF" />
-                        </View>
+                        <DuotoneIconBadge
+                          name={friendHabit.icon}
+                          color={friendHabit.color || '#7C5CFF'}
+                          size={16}
+                          containerSize={36}
+                          borderRadius={12}
+                        />
                         <View style={{ flex: 1, justifyContent: 'center' }}>
                           <Text
                             style={[
