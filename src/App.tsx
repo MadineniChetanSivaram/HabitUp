@@ -28,6 +28,24 @@ import { FullScreenConfetti } from './components/common/FullScreenConfetti';
 import { useFonts } from 'expo-font';
 import { customFontsToLoad } from './utils/loadFonts';
 import { configureDefaultTypography } from './utils/typography';
+import { Platform } from 'react-native';
+import './index.css';
+
+// Ensure Web loads and forces Comfortaa directly in the DOM
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  const styleId = 'habitup-global-comfortaa-font';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
+      *, *::before, *::after, html, body, #root, div, span, p, h1, h2, h3, h4, h5, h6, input, textarea, button, [class*="r-"], [dir="auto"] {
+        font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+}
 
 // Configure global typography for all Text and TextInput components
 configureDefaultTypography();
