@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
 import { apiService } from '../../services/apiService';
-import { Bot, Sparkles, Send, X } from 'lucide-react-native';
+import { Bot, Sparkles, Send, X, Maximize2, Minimize2 } from 'lucide-react-native';
 
 interface ChatMessage {
   id: string;
@@ -36,6 +36,7 @@ export const AiSmartCoach: React.FC = () => {
   const isDark = theme === 'dark';
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -142,8 +143,8 @@ export const AiSmartCoach: React.FC = () => {
 
   return (
     <>
-      {/* Subtle dismiss backdrop (stays within app container) */}
-      {isOpen && (
+      {/* Subtle dismiss backdrop when floating (dismisses on outside click) */}
+      {isOpen && !isFullScreen && (
         <TouchableOpacity
           style={s.backdropOverlay}
           onPress={() => setIsOpen(false)}
@@ -169,29 +170,35 @@ export const AiSmartCoach: React.FC = () => {
         </Animated.View>
       )}
 
-      {/* Floating Compact Coach Chat Card anchored bottom-right */}
+      {/* Coach Chat Window (Floating Card or Full Screen) */}
       {isOpen && (
         <Animated.View
           style={[
-            s.floatingCard,
+            isFullScreen ? s.cardFullScreen : s.floatingCard,
             {
               backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
-              borderColor: isDark ? 'rgba(124, 92, 255, 0.35)' : 'rgba(124, 92, 255, 0.25)',
+              borderColor: isFullScreen
+                ? 'transparent'
+                : isDark
+                ? 'rgba(124, 92, 255, 0.35)'
+                : 'rgba(124, 92, 255, 0.25)',
               opacity: popAnim,
-              transform: [
-                {
-                  scale: popAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.88, 1],
-                  }),
-                },
-                {
-                  translateY: popAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [18, 0],
-                  }),
-                },
-              ],
+              transform: isFullScreen
+                ? []
+                : [
+                    {
+                      scale: popAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.88, 1],
+                      }),
+                    },
+                    {
+                      translateY: popAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [18, 0],
+                      }),
+                    },
+                  ],
             },
           ]}
         >
@@ -214,9 +221,41 @@ export const AiSmartCoach: React.FC = () => {
                 <Text style={s.hsub}>Personal Habit Mentor ✨</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => setIsOpen(false)} style={s.closeBtn}>
-              <X size={18} color={isDark ? '#94A3B8' : '#64748B'} />
-            </TouchableOpacity>
+
+            <View style={s.headerRight}>
+              {/* Expand / Minimize Full Screen Toggle */}
+              <TouchableOpacity
+                onPress={() => setIsFullScreen((prev) => !prev)}
+                style={[
+                  s.headerBtn,
+                  { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+                ]}
+                activeOpacity={0.7}
+                accessibilityLabel={isFullScreen ? 'Minimize window' : 'Full screen'}
+              >
+                {isFullScreen ? (
+                  <Minimize2 size={16} color={isDark ? '#CBD5E1' : '#475569'} />
+                ) : (
+                  <Maximize2 size={16} color={isDark ? '#CBD5E1' : '#475569'} />
+                )}
+              </TouchableOpacity>
+
+              {/* Close Button */}
+              <TouchableOpacity
+                onPress={() => {
+                  setIsOpen(false);
+                  setIsFullScreen(false);
+                }}
+                style={[
+                  s.headerBtn,
+                  { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+                ]}
+                activeOpacity={0.7}
+                accessibilityLabel="Close coach"
+              >
+                <X size={17} color={isDark ? '#CBD5E1' : '#475569'} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <KeyboardAvoidingView
@@ -353,8 +392,8 @@ const s = StyleSheet.create({
   },
   fabWrapper: {
     position: 'absolute',
-    bottom: 84,
-    right: 18,
+    bottom: 18,
+    right: 16,
     zIndex: 999,
   },
   fabBtn: {
@@ -388,7 +427,7 @@ const s = StyleSheet.create({
   },
   floatingCard: {
     position: 'absolute',
-    bottom: 84,
+    bottom: 18,
     right: 14,
     width: 360,
     maxWidth: '92%',
@@ -410,6 +449,21 @@ const s = StyleSheet.create({
           elevation: 10,
         }),
   },
+  cardFullScreen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: Platform.OS === 'ios' ? -72 : -66,
+    width: '100%',
+    maxWidth: '100%',
+    height: undefined,
+    maxHeight: undefined,
+    borderRadius: 0,
+    borderWidth: 0,
+    overflow: 'hidden',
+    zIndex: 1000,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -422,6 +476,18 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerBtn: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
   },
   avatar: {
     width: 36,
@@ -442,13 +508,6 @@ const s = StyleSheet.create({
     fontSize: 10.5,
     fontWeight: '600',
     marginTop: 1,
-  },
-  closeBtn: {
-    width: 30,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 15,
   },
   msgContent: {
     padding: 12,
