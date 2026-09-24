@@ -360,7 +360,7 @@ export const AiSmartCoach: React.FC = () => {
                 onChangeText={setInput}
                 placeholder="Ask your coach anything..."
                 placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
-                textAlign={input ? 'left' : 'center'}
+                textAlign="left"
                 maxLength={500}
                 onSubmitEditing={sendMessage}
                 returnKeyType="send"
@@ -598,13 +598,13 @@ const s = StyleSheet.create({
     flex: 1,
     borderRadius: 21,
     paddingHorizontal: 16,
-    paddingVertical: Platform.OS === 'ios' ? 10 : 8,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     fontSize: 13.5,
     height: 42,
     minHeight: 42,
     maxHeight: 42,
     borderWidth: 1,
-    textAlign: 'center',
+    textAlign: 'left',
     textAlignVertical: 'center',
     ...(Platform.OS === 'web'
       ? ({
