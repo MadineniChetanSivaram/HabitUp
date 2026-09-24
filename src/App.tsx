@@ -43,6 +43,13 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
       *, *::before, *::after, html, body, #root, div, span, p, h1, h2, h3, h4, h5, h6, input, textarea, button, [class*="r-"], [dir="auto"] {
         font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
       }
+      input, textarea {
+        outline: none !important;
+      }
+      input:focus, textarea:focus, input:focus-visible, textarea:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
     `;
     document.head.appendChild(style);
   }

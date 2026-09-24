@@ -353,16 +353,17 @@ export const AiSmartCoach: React.FC = () => {
                   {
                     backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
                     color: isDark ? '#F8FAFC' : '#0F172A',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#CBD5E1',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : '#E2E8F0',
                   },
                 ]}
                 value={input}
                 onChangeText={setInput}
                 placeholder="Ask your coach anything..."
                 placeholderTextColor={isDark ? '#64748B' : '#94A3B8'}
-                multiline
+                textAlign={input ? 'left' : 'center'}
                 maxLength={500}
-                blurOnSubmit={false}
+                onSubmitEditing={sendMessage}
+                returnKeyType="send"
               />
               <TouchableOpacity
                 style={[s.send, (!input.trim() || isLoading) && s.sendOff]}
@@ -595,12 +596,24 @@ const s = StyleSheet.create({
   },
   input: {
     flex: 1,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    fontSize: 13,
-    maxHeight: 75,
+    borderRadius: 21,
+    paddingHorizontal: 16,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 8,
+    fontSize: 13.5,
+    height: 42,
+    minHeight: 42,
+    maxHeight: 42,
     borderWidth: 1,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    ...(Platform.OS === 'web'
+      ? ({
+          outline: 'none',
+          outlineStyle: 'none',
+          outlineWidth: 0,
+          boxShadow: 'none',
+        } as any)
+      : {}),
   },
   send: {
     width: 38,

@@ -18,6 +18,14 @@
     font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
+  input, textarea {
+    outline: none !important;
+  }
+  input:focus, textarea:focus, input:focus-visible, textarea:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
   button, [role="button"], a {
     cursor: pointer;
   }
