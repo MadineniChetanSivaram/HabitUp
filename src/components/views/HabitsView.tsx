@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { DuotoneIconBadge } from '../common/DuotoneIconBadge';
 import {
   getMonthCalendarDays,
   formatDateKey,
@@ -287,9 +288,13 @@ export const HabitsView: React.FC = () => {
                   ]}
                 >
                   <View style={styles.archivedCardTop}>
-                    <View style={[styles.archivedIcon, { backgroundColor: h.color || '#7C5CFF' }]}>
-                      <IconRenderer name={h.icon} size={22} color="#FFFFFF" />
-                    </View>
+                    <DuotoneIconBadge
+                      name={h.icon}
+                      color={h.color || '#7C5CFF'}
+                      size={20}
+                      containerSize={42}
+                      borderRadius={14}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.archivedName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                         {tHabitName(h.name)}
@@ -364,9 +369,13 @@ export const HabitsView: React.FC = () => {
                   ]}
                 >
                   <View style={styles.archivedCardTop}>
-                    <View style={[styles.archivedIcon, { backgroundColor: h.color || '#7C5CFF' }]}>
-                      <IconRenderer name={h.icon} size={22} color="#FFFFFF" />
-                    </View>
+                    <DuotoneIconBadge
+                      name={h.icon}
+                      color={h.color || '#7C5CFF'}
+                      size={20}
+                      containerSize={42}
+                      borderRadius={14}
+                    />
                     <View style={{ flex: 1 }}>
                       <Text style={[styles.archivedName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                         {tHabitName(h.name)}
@@ -507,14 +516,13 @@ export const HabitsView: React.FC = () => {
           {/* Hero Icon, Habit Name & Description */}
           {currentHabit && stats && (
             <View style={styles.heroSection}>
-              <View
-                style={[
-                  styles.heroIconBox,
-                  { backgroundColor: currentHabit.color || '#7C5CFF' },
-                ]}
-              >
-                <IconRenderer name={currentHabit.icon} size={32} color="#FFFFFF" />
-              </View>
+              <DuotoneIconBadge
+                name={currentHabit.icon}
+                color={currentHabit.color || '#7C5CFF'}
+                size={32}
+                containerSize={64}
+                borderRadius={22}
+              />
 
               <Text style={[styles.heroHabitName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
                 {tHabitName(currentHabit.name)}

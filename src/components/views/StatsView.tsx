@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import Svg, { Circle } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
 import { IconRenderer } from '../common/IconRenderer';
+import { DuotoneIconBadge } from '../common/DuotoneIconBadge';
 import { formatDateKey, isHabitScheduledOnDate } from '../../utils/streakCalculator';
 import { ChevronLeft, Flame, Trophy, CheckCircle2, TrendingUp } from 'lucide-react-native';
 import { LottieAnimation } from '../common/LottieAnimation';
@@ -615,9 +616,13 @@ export const StatsView: React.FC = () => {
               onPress={() => setSelectedHabitForDetail(item.habit)}
               activeOpacity={0.75}
             >
-              <View style={[styles.habitIconCircle, { backgroundColor: item.color }]}>
-                <IconRenderer name={item.icon} size={18} color="#FFFFFF" />
-              </View>
+              <DuotoneIconBadge
+                name={item.icon}
+                color={item.color}
+                size={18}
+                containerSize={42}
+                borderRadius={14}
+              />
 
               <View style={{ flex: 1 }}>
                 <Text style={[styles.habitName, { color: isDark ? '#FFFFFF' : '#0F172A' }]}>
