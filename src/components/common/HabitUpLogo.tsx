@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg, { G, Rect, Path, Circle, Text as SvgText } from 'react-native-svg';
 import { useHabit } from '../../context/HabitContext';
@@ -16,7 +16,13 @@ export const HabitUpLogo: React.FC<HabitUpLogoProps> = ({
   themeMode,
   style,
 }) => {
-  const { theme: contextTheme } = useHabit();
+  let contextTheme: string | undefined;
+  try {
+    const habitCtx = useHabit();
+    contextTheme = habitCtx?.theme;
+  } catch {
+    contextTheme = undefined;
+  }
   const activeTheme = themeMode || contextTheme || 'dark';
   const isDark = activeTheme === 'dark';
 

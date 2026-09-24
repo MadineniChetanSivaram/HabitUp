@@ -92,20 +92,14 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
-  const [fontsLoaded] = useFonts(customFontsToLoad);
+  // Asynchronously load fonts in background; fallback cleanly so app never hangs
+  useFonts(customFontsToLoad);
 
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
         <HabitProvider>
-          {fontsLoaded ? (
-            <AppContent />
-          ) : (
-            <View style={{ flex: 1, backgroundColor: '#0B1120', alignItems: 'center', justifyContent: 'center' }}>
-              <HabitUpLogo size="md" themeMode="dark" />
-              <ActivityIndicator color="#7C5CFF" style={{ marginTop: 24 }} size="small" />
-            </View>
-          )}
+          <AppContent />
         </HabitProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
