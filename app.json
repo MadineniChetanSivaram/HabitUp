@@ -11,7 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#0B1120"
     },
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.habitup.tracker",
