@@ -21,4 +21,9 @@ export const customFontsToLoad = {
   'Comfortaa-Medium': Comfortaa_500Medium,
   'Comfortaa-SemiBold': Comfortaa_600SemiBold,
   'Comfortaa-Bold': Comfortaa_700Bold,
+  Comfortaa_300Light,
+  Comfortaa_400Regular,
+  Comfortaa_500Medium,
+  Comfortaa_600SemiBold,
+  Comfortaa_700Bold,
 };

@@ -32,6 +32,9 @@ import { configureDefaultTypography } from './utils/typography';
 import { Platform } from 'react-native';
 import './index.css';
 
+// Configure default Comfortaa typography across React Native Text & TextInput
+configureDefaultTypography();
+
 // Ensure Web loads and forces Comfortaa directly in the DOM
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
   const styleId = 'habitup-global-comfortaa-font';
