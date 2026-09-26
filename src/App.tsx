@@ -124,8 +124,8 @@ const AppContent: React.FC = () => {
 };
 
 export default function App() {
-  // Asynchronously load fonts in background; fallback cleanly so app never hangs
-  useFonts(customFontsToLoad);
+  // Asynchronously load fonts in background; triggers re-render when assets are ready
+  const [fontsLoaded] = useFonts(customFontsToLoad);
 
   return (
     <ErrorBoundary>
