@@ -159,12 +159,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderTopWidth: 1,
     height: Platform.OS === 'ios' ? 72 : 66,
-    zIndex: 40,
+    zIndex: 1100,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
-    elevation: 8,
+    elevation: 12,
+    overflow: 'visible',
   },
   tabButton: {
     alignItems: 'center',
@@ -200,6 +201,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 60,
+    zIndex: 1200,
+    elevation: 20,
+    overflow: 'visible',
   },
   floatingButton: {
     width: 52,
@@ -213,7 +217,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.45,
     shadowRadius: 10,
-    elevation: 8,
+    elevation: 20,
+    zIndex: 1200,
     ...(Platform.OS === 'web'
       ? {
           boxShadow: '0 8px 20px -3px rgba(124, 92, 255, 0.5), 0 0 12px 1px rgba(124, 92, 255, 0.3)',

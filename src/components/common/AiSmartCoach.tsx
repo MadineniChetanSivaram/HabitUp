@@ -353,6 +353,11 @@ export const AiSmartCoach: React.FC = () => {
                   backgroundColor: isDark ? '#0A0F1D' : '#F8FAFC',
                   borderTopColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#E2E8F0',
                 },
+                isFullScreen && {
+                  paddingTop: 8,
+                  paddingBottom: Platform.OS === 'ios' ? 18 : 20,
+                  alignItems: 'flex-start',
+                },
               ]}
             >
               <TextInput
@@ -374,7 +379,11 @@ export const AiSmartCoach: React.FC = () => {
                 returnKeyType="send"
               />
               <TouchableOpacity
-                style={[s.send, (!input.trim() || isLoading) && s.sendOff]}
+                style={[
+                  s.send,
+                  (!input.trim() || isLoading) && s.sendOff,
+                  isFullScreen && { marginTop: 2 },
+                ]}
                 onPress={sendMessage}
                 disabled={!input.trim() || isLoading}
                 activeOpacity={0.8}
