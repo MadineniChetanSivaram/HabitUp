@@ -104,6 +104,26 @@ const BUILTIN_COMMON_HABITS: Record<string, Partial<Record<SupportedLanguage, st
     hi: 'सुबह की सैर', te: 'ఉదయపు నడక', ta: 'காலை நடைப்பயிற்சி',
     kn: 'ಬೆಳಗಿನ ವಾಯುವಿಹಾರ', ml: 'രാവിലെയുള്ള നടത്തം', bn: 'সকালের হাঁটা',
     mr: 'सकाळची फेरी', gu: 'સવારની મોર્નિંગ વૉક'
+  },
+  'movie': {
+    hi: 'फिल्म', te: 'సినిమా', ta: 'திரைப்படம்',
+    kn: 'ಚಲನಚಿತ್ರ', ml: 'സിനിമ', bn: 'চলচ্চিত্র',
+    mr: 'चित्रपट', gu: 'ચલચિત્ર'
+  },
+  'moovi': {
+    hi: 'मूवी', te: 'సినిమా', ta: 'திரைப்படம்',
+    kn: 'ಚಲನಚಿತ್ರ', ml: 'സിനിമ', bn: 'মুভি',
+    mr: 'चित्रपट', gu: 'મૂવી'
+  },
+  'watch movie': {
+    hi: 'फिल्म देखना', te: 'సినిమా చూడటం', ta: 'திரைப்படம் பார்க்கவும்',
+    kn: 'ಚಲನಚಿತ್ರ ವೀಕ್ಷಿಸಿ', ml: 'സിനിമ കാണുക', bn: 'সিনেমা দেখা',
+    mr: 'चित्रपट पाहणे', gu: 'ફિલ્મ જોવી'
+  },
+  'watch movies': {
+    hi: 'फिल्में देखना', te: 'సినిమాలు చూడటం', ta: 'திரைப்படங்கள் பார்க்கவும்',
+    kn: 'ಚಲನಚಿತ್ರಗಳನ್ನು ವೀಕ್ಷಿಸಿ', ml: 'സിനിമകൾ കാണുക', bn: 'সিনেমা দেখা',
+    mr: 'चित्रपट पाहणे', gu: 'ફિલ્મો જોવી'
   }
 };
 
@@ -333,6 +353,13 @@ class TranslationService {
         .replace(/&gt;/g, '>');
 
       const cleaned = trans.trim();
+
+      // Reject responses that do not contain the target language's native script (e.g. untranslated English words like "moovi")
+      const scriptRegex = SCRIPT_RANGES[targetLang];
+      if (scriptRegex && !scriptRegex.test(cleaned)) {
+        return null;
+      }
+
       return cleaned.length > 0 ? cleaned : null;
     } catch {
       clearTimeout(timeout);
@@ -342,7 +369,7 @@ class TranslationService {
 
   private async fetchFromBackendAi(text: string, targetLang: SupportedLanguage): Promise<string | null> {
     const langName = LANGUAGE_NAMES[targetLang] || targetLang;
-    const prompt = `Translate the habit name "${text}" into ${langName}. Respond with ONLY the translated habit name in ${langName} script, nothing else, no quotes, no explanations, no markdown formatting.`;
+    const prompt = `Translate or transliterate the habit "${text}" into natural ${langName} using ${langName} script. Even if it is slang, typo, or a single English word, output ONLY the translated/transliterated word in ${langName} script, nothing else, no quotes, no explanations, no English letters:`;
 
     const res = await apiService.sendAiChat({
       message: prompt,
@@ -352,6 +379,11 @@ class TranslationService {
       let reply = res.data.reply.trim().replace(/^["']|["']$/g, '');
       if (reply.includes(':')) {
         reply = reply.split(':').pop()?.trim() || reply;
+      }
+      reply = reply.split('\n')[0].trim().replace(/^["'(]+|[)"']+$/g, '');
+      const scriptRegex = SCRIPT_RANGES[targetLang];
+      if (scriptRegex && !scriptRegex.test(reply)) {
+        return null;
       }
       return reply.length > 0 ? reply : null;
     }
