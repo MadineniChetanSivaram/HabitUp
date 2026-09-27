@@ -234,12 +234,12 @@ export const DayCompletionCelebrationModal: React.FC = () => {
 
   const waveRotation = waveAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: ['-18deg', '0deg', '22deg'],
+    outputRange: ['-8deg', '0deg', '14deg'],
   });
 
   const tailRotation = tailAnim.interpolate({
     inputRange: [-1, 0, 1],
-    outputRange: ['-14deg', '0deg', '14deg'],
+    outputRange: ['-8deg', '0deg', '10deg'],
   });
 
   return (
@@ -529,12 +529,13 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                   styles.layerAbsolute,
                   {
                     transform: [
-                      { translateX: 93 },
-                      { translateY: 109 },
+                      { translateX: 14 },
+                      { translateY: 24 },
                       { rotate: tailRotation },
-                      { translateX: -93 },
-                      { translateY: -109 },
+                      { translateX: -14 },
+                      { translateY: -24 },
                     ],
+                    transformOrigin: '94px 104px' as any,
                     zIndex: 1,
                   },
                 ]}
@@ -843,12 +844,13 @@ export const DayCompletionCelebrationModal: React.FC = () => {
                   styles.layerAbsolute,
                   {
                     transform: [
-                      { translateX: 96 },
-                      { translateY: 92 },
+                      { translateX: 18 },
+                      { translateY: 12 },
                       { rotate: waveRotation },
-                      { translateX: -96 },
-                      { translateY: -92 },
+                      { translateX: -18 },
+                      { translateY: -12 },
                     ],
+                    transformOrigin: '98px 92px' as any,
                     zIndex: 8,
                   },
                 ]}
