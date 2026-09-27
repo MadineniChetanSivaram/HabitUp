@@ -46,9 +46,10 @@ export const HomeHero: React.FC<HomeHeroProps> = ({ onMascotClick }) => {
           <Text
             style={[styles.greeting, { color: isDark ? '#E2E8F0' : '#0F172A' }]}
             numberOfLines={1}
-            ellipsizeMode="tail"
+            adjustsFontSizeToFit={true}
+            minimumFontScale={0.65}
           >
-            {getGreetingTime()}, {user?.name ? user.name.split(' ')[0] : 'Hero'}! 👋
+            {getGreetingTime()}, {user?.name || 'Hero'}! 👋
           </Text>
         </View>
 
@@ -197,31 +198,31 @@ const styles = StyleSheet.create({
   greetingWrapper: {
     flex: 1,
     justifyContent: 'center',
-    marginRight: 8,
-    minHeight: 34,
+    marginRight: 6,
+    minHeight: 32,
   },
   greeting: {
-    fontSize: 14.5,
+    fontSize: 14,
     fontWeight: '700',
     letterSpacing: -0.2,
   },
   iconActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 4,
     flexShrink: 0,
   },
   offlineBtn: {
     backgroundColor: 'rgba(245, 158, 11, 0.2)',
-    padding: 6,
-    borderRadius: 10,
+    padding: 5,
+    borderRadius: 9,
     borderWidth: 1,
     borderColor: 'rgba(245, 158, 11, 0.3)',
   },
   actionBtn: {
-    width: 34,
-    height: 34,
-    borderRadius: 11,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -267,11 +268,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 34,
-    paddingHorizontal: 9,
-    borderRadius: 11,
+    height: 32,
+    paddingHorizontal: 7,
+    borderRadius: 10,
     borderWidth: 1,
-    gap: 4,
+    gap: 3,
   },
   coinsBadgeEmoji: {
     fontSize: 12,

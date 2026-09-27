@@ -350,7 +350,7 @@ export const SettingsView: React.FC = () => {
                 {t('settings.language', 'Language')}
               </Text>
               <Text style={[styles.prefDesc, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                {t('settings.language_desc', '8 Indian Languages + English')}
+                {t('settings.language_desc', '8+ Indian Languages')}
               </Text>
             </View>
           </View>
@@ -588,7 +588,7 @@ export const SettingsView: React.FC = () => {
                   {t('settings.select_language', 'Select Language')}
                 </Text>
                 <Text style={[styles.deleteModalSubtitle, { color: isDark ? '#94A3B8' : '#64748B' }]}>
-                  {t('settings.select_language_desc', '8 Indian Languages + English')}
+                  {t('settings.select_language_desc', '8+ Indian Languages')}
                 </Text>
               </View>
               <TouchableOpacity
