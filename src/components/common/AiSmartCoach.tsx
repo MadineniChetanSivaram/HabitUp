@@ -15,7 +15,7 @@ import {
 import { useHabit } from '../../context/HabitContext';
 import { apiService } from '../../services/apiService';
 import { generateSmartCoachResponse } from '../../utils/aiCoachEngine';
-import { Bot, Sparkles, Send, X, Maximize2, Minimize2 } from 'lucide-react-native';
+import { Bot, Sparkles, Send, X, Maximize2, Minimize2, RotateCcw } from 'lucide-react-native';
 
 interface ChatMessage {
   id: string;
@@ -41,9 +41,18 @@ export const AiSmartCoach: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
   const scrollRef = useRef<ScrollView>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const popAnim = useRef(new Animated.Value(0)).current;
+
+  const startNewChat = useCallback(() => {
+    setConversationId(null);
+    conversationIdRef.current = null;
+    setMessages([WELCOME]);
+    setInput('');
+  }, []);
 
   // Gentle breathing glow animation on the floating button
   useEffect(() => {
@@ -96,15 +105,18 @@ export const AiSmartCoach: React.FC = () => {
     scrollToBottom();
 
     try {
-      // 1. Attempt to call live Railway backend /ai/chat
-      const res: any = await (apiService as any).request('/ai/chat', {
-        method: 'POST',
-        body: JSON.stringify({
-          message: text,
-          context: buildContext(),
-          history: messages.slice(-6).map((m) => ({ role: m.role, content: m.content })),
-        }),
+      // 1. Attempt to call live Railway backend /ai/chat with conversationId
+      const res = await apiService.sendAiChat({
+        message: text,
+        conversationId: conversationIdRef.current,
+        context: buildContext(),
+        history: messages.slice(-6).map((m) => ({ role: m.role, content: m.content })),
       });
+
+      if (res?.ok && res.data?.conversationId) {
+        setConversationId(res.data.conversationId);
+        conversationIdRef.current = res.data.conversationId;
+      }
 
       const backendReply =
         res?.ok && (res.data?.reply || res.data?.message || res.data?.response)
@@ -231,6 +243,21 @@ export const AiSmartCoach: React.FC = () => {
             </View>
 
             <View style={s.headerRight}>
+              {/* New Chat Button */}
+              {messages.length > 1 && (
+                <TouchableOpacity
+                  onPress={startNewChat}
+                  style={[
+                    s.headerBtn,
+                    { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+                  ]}
+                  activeOpacity={0.7}
+                  accessibilityLabel="New chat"
+                >
+                  <RotateCcw size={15} color={isDark ? '#CBD5E1' : '#475569'} />
+                </TouchableOpacity>
+              )}
+
               {/* Expand / Minimize Full Screen Toggle */}
               <TouchableOpacity
                 onPress={() => setIsFullScreen((prev) => !prev)}

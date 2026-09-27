@@ -1363,6 +1363,43 @@ class ApiClient {
     }
   }
 
+  // --- AI SMART COACH METHODS ---
+
+  async sendAiChat(data: {
+    message: string;
+    conversationId?: string | null;
+    context?: string;
+    history?: Array<{ role: string; content: string }>;
+  }): Promise<{
+    ok: boolean;
+    status: number;
+    data?: { conversationId?: string; reply?: string; message?: string; response?: string };
+    error?: string;
+  }> {
+    const payload: Record<string, any> = {
+      message: data.message,
+    };
+    if (data.conversationId) {
+      payload.conversationId = data.conversationId;
+    }
+    if (data.context) {
+      payload.context = data.context;
+    }
+    if (data.history && data.history.length > 0) {
+      payload.history = data.history;
+    }
+
+    return this.request<{
+      conversationId?: string;
+      reply?: string;
+      message?: string;
+      response?: string;
+    }>('/ai/chat', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
   // --- LOCAL STORAGE CACHE HELPERS ---
 
   getHabits(targetUserId?: string, email?: string): Habit[] {
