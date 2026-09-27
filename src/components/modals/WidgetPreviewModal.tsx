@@ -38,6 +38,7 @@ export const WidgetPreviewModal: React.FC = () => {
     widgetTheme,
     setWidgetTheme,
     theme,
+    tHabitName,
   } = useHabit();
 
   const isDark = theme === 'dark';
@@ -292,7 +293,7 @@ export const WidgetPreviewModal: React.FC = () => {
                             ]}
                             numberOfLines={1}
                           >
-                            {h.name}
+                            {tHabitName(h.name)}
                           </Text>
                         </TouchableOpacity>
                       );

@@ -28,6 +28,7 @@ import {
   SupportedLanguage,
 } from '../types';
 import { translate, localizeHabitName, localizeHabitDescription } from '../i18n/translations';
+import { translationService } from '../services/translationService';
 import { INITIAL_FRIENDS, INITIAL_FEED } from '../constants/socialData';
 import { getDetectedTimezone } from '../constants/timezones';
 import { localApi, getUserIdFromEmail, createDefaultUserProfile } from '../services/apiService';
@@ -1068,6 +1069,14 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [hapticsEnabled, setHapticsEnabled] = useState<boolean>(true);
   const [language, setLanguageState] = useState<SupportedLanguage>('en');
+  const [translationVersion, setTranslationVersion] = useState<number>(0);
+
+  useEffect(() => {
+    const unsub = translationService.subscribe(() => {
+      setTranslationVersion((v) => v + 1);
+    });
+    return unsub;
+  }, []);
 
   const setLanguage = useCallback(async (newLang: SupportedLanguage) => {
     setLanguageState(newLang);
@@ -1081,19 +1090,32 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (localApi.hasAuthToken()) {
       localApi.updateUserPreferredLanguage(newLang).catch(() => {});
     }
-  }, []);
+    // Automatically translate existing habits into newly selected language
+    if (newLang !== 'en' && habits && habits.length > 0) {
+      translationService.pretranslateHabits(habits, newLang).catch(() => {});
+    }
+  }, [habits]);
+
+  // When habits or language change, pre-translate missing habits in the background
+  useEffect(() => {
+    if (language !== 'en' && habits && habits.length > 0) {
+      translationService.pretranslateHabits(habits, language).catch(() => {});
+    }
+  }, [language, habits]);
 
   const t = useCallback((key: string, fallback?: string, params?: Record<string, string | number>) => {
     return translate(language, key, fallback, params);
   }, [language]);
 
   const tHabitName = useCallback((name?: string | null): string => {
-    return localizeHabitName(name, language);
-  }, [language]);
+    if (!name) return '';
+    return translationService.getOrTranslate(name, language);
+  }, [language, translationVersion]);
 
   const tHabitDesc = useCallback((desc?: string | null): string => {
-    return localizeHabitDescription(desc, language);
-  }, [language]);
+    if (!desc) return '';
+    return translationService.getOrTranslate(desc, language);
+  }, [language, translationVersion]);
 
   const [isOffline, setIsOffline] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastData | null>(null);
@@ -2837,9 +2859,17 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         });
       }
 
+      // Automatically translate newly created habit if current language is non-English
+      if (language !== 'en') {
+        translationService.translateText(newHabit.name, language).catch(() => {});
+        if (newHabit.description) {
+          translationService.translateText(newHabit.description, language).catch(() => {});
+        }
+      }
+
       return newHabit;
     },
-    [user?.id, isOffline, showToast, addMutationToQueue, t, tHabitName]
+    [user?.id, isOffline, showToast, addMutationToQueue, t, tHabitName, language]
   );
 
   const updateHabit = useCallback(
@@ -2847,6 +2877,9 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setHabits((prev) =>
         prev.map((h) => (h.id === habitId ? { ...h, ...updates, updated_at: new Date().toISOString() } : h))
       );
+      if (updates.name && language !== 'en') {
+        translationService.translateText(updates.name, language).catch(() => {});
+      }
       if (isOffline) {
         addMutationToQueue(`/habits/${habitId}`, 'PATCH', updates);
       } else {
@@ -2856,7 +2889,7 @@ export const HabitProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
       showToast('Habit updated.', undefined, 'info');
     },
-    [isOffline, showToast, addMutationToQueue]
+    [isOffline, showToast, addMutationToQueue, language]
   );
 
   const pauseHabit = useCallback((habitId: string) => {

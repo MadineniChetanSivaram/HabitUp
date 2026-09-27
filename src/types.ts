@@ -21,6 +21,7 @@ export interface Habit {
   buddy_name?: string;
   buddy_avatar?: string;
   is_shared?: boolean;
+  translations?: Record<string, string>;
 }
 
 export interface HabitCompletion {
